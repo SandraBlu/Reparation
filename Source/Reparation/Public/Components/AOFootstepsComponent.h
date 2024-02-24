@@ -6,6 +6,12 @@
 #include "Components/ActorComponent.h"
 #include "AOFootstepsComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EFoot : uint8
+{
+	Left UMETA(DisplayName = "Left"), 
+	Right UMETA(DisplayName = "Right")
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class REPARATION_API UAOFootstepsComponent : public UActorComponent
@@ -16,13 +22,13 @@ public:
 	// Sets default values for this component's properties
 	UAOFootstepsComponent();
 
+	void HandleFootstep(EFoot Foot);
+
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditDefaultsOnly)
+	FName LeftFootSocket = TEXT("foot_l");
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
+	UPROPERTY(EditDefaultsOnly)
+	FName RightFootSocket = TEXT("foot_r");	
 };

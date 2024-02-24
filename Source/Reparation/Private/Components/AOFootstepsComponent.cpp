@@ -2,33 +2,47 @@
 
 
 #include "Components/AOFootstepsComponent.h"
+#include "Character/AOCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "FX/AOPhysicalMat.h"
 
-// Sets default values for this component's properties
+
 UAOFootstepsComponent::UAOFootstepsComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
-
-// Called when the game starts
-void UAOFootstepsComponent::BeginPlay()
+void UAOFootstepsComponent::HandleFootstep(EFoot Foot)
 {
-	Super::BeginPlay();
+	if (AAOCharacter* Character = Cast<AAOCharacter>(GetOwner()))
+	{
+		if (USkeletalMeshComponent* Mesh = Character->GetMesh())
+		{
+			FHitResult HitResult;
+			const FVector SocketLocation = Mesh->GetSocketLocation(Foot == EFoot::Left ? LeftFootSocket : RightFootSocket);
+			const FVector Location = SocketLocation + FVector::UpVector * 20;
 
-	// ...
-	
-}
+			FCollisionQueryParams QueryParams;
+			QueryParams.bReturnPhysicalMaterial = true;
+			QueryParams.AddIgnoredActor(Character);
 
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, Location + FVector::UpVector * -50.f, ECollisionChannel::ECC_WorldStatic, QueryParams))
+			{
+				if (HitResult.bBlockingHit)
+				{
+					if (HitResult.PhysMaterial.Get())
+					{
+						UAOPhysicalMat* PhysicsMat = Cast<UAOPhysicalMat>(HitResult.PhysMaterial.Get());
 
-// Called every frame
-void UAOFootstepsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+						if (PhysicsMat)
+						{
+							UGameplayStatics::PlaySoundAtLocation(this, PhysicsMat->FootstepSFX, Location, 1.f);
+							UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PhysicsMat->FootstepVFX, Location);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 

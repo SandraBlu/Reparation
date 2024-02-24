@@ -15,6 +15,10 @@ public:
 
 	AAOCharacter();
 
+	//Inventory Comp
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	class UAOInventoryComponent* LootSource;
+
 protected:
 	
 	virtual void BeginPlay() override;

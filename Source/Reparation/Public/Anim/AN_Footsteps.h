@@ -14,4 +14,10 @@ class REPARATION_API UAN_Footsteps : public UAnimNotify
 {
 	GENERATED_BODY()
 	
+	public:
+
+	virtual void  Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+
+	/*UPROPERTY(EditAnywhere)
+	EFoot Foot;*/
 };

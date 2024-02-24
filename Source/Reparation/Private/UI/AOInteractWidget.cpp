@@ -3,3 +3,8 @@
 
 #include "UI/AOInteractWidget.h"
 
+void UAOInteractWidget::UpdateInteractWidget(class UAOInteractComponent* InteractComp)
+{
+	OwningInteractComp = InteractComp;
+	OnUpdateInteractWidget();
+}
