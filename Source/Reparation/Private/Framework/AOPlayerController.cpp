@@ -37,8 +37,11 @@ void AAOPlayerController::Move(const FInputActionValue& Value)
 
 	if (APawn* PawnOwner = GetPawn<APawn>())
 	{
-		PawnOwner->AddMovementInput(ForwardDirection, MovementVector.Y);
-		PawnOwner->AddMovementInput(RightDirection, MovementVector.X);
+		if (!IgnoreMoveInput)
+		{
+			PawnOwner->AddMovementInput(ForwardDirection, MovementVector.Y);
+			PawnOwner->AddMovementInput(RightDirection, MovementVector.X);
+		}
 	}
 }
 
