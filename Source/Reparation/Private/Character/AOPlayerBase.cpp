@@ -8,6 +8,7 @@
 #include "Components/AOInventoryComponent.h"
 #include "Item/AOItem.h"
 
+
 AAOPlayerBase::AAOPlayerBase()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));

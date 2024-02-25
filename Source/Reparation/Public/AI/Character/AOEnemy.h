@@ -13,5 +13,11 @@ UCLASS()
 class REPARATION_API AAOEnemy : public AAOCharacter
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	AAOEnemy();
+
+	virtual void BeginPlay() override;
+
 };

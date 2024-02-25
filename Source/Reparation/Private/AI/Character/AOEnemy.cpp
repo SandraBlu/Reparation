@@ -3,3 +3,15 @@
 
 #include "AI/Character/AOEnemy.h"
 
+AAOEnemy::AAOEnemy()
+{
+
+}
+
+void AAOEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (ASC)
+		ASC->InitAbilityActorInfo(this, this);
+}

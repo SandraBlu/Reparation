@@ -13,5 +13,9 @@ UCLASS()
 class REPARATION_API AAONPC : public AAOCharacter
 {
 	GENERATED_BODY()
+
+public:
+
+	virtual void BeginPlay() override;
 	
 };
