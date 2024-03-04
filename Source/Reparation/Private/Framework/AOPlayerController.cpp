@@ -17,8 +17,10 @@ void AAOPlayerController::BeginPlay()
 	check(PlayerMappingContext);
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-	Subsystem->AddMappingContext(PlayerMappingContext, 0);
+	if(Subsystem)
+	{
+		Subsystem->AddMappingContext(PlayerMappingContext, 0);
+	}
 }
 
 class AAOPlayerBase* AAOPlayerController::GetPawnOwner() const

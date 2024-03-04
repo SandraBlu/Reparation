@@ -2,11 +2,17 @@
 
 
 #include "AI/Character/AONPC.h"
+#include "Abilities/AOAbilitySystemComponent.h"
+#include "Attributes/AOAttributeSet.h"
+
+AAONPC::AAONPC()
+{
+	AbilitySystemComponent = CreateDefaultSubobject<UAOAbilitySystemComponent>("AbilitySystemComponent");
+	AttributeSet = CreateDefaultSubobject<UAOAttributeSet>("AttributeSet");
+}
 
 void AAONPC::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (ASC)
-		ASC->InitAbilityActorInfo(this, this);
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }

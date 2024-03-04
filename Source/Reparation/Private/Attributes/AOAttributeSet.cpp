@@ -2,49 +2,65 @@
 
 
 #include "Attributes/AOAttributeSet.h"
+#include "AbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
 
 UAOAttributeSet::UAOAttributeSet()
 {
-	InitHealth(80.f);
+	InitHealth(50.f);
 	InitMaxHealth(100.f);
-	InitStamina(70.f);
-	InitMaxStamina(70.f);
-	InitEnergy(60.f);
+	InitStamina(50.f);
+	InitMaxStamina(50.f);
+	InitEnergy(50.f);
 	InitMaxEnergy(100.f);
 
 }
 
+void UAOAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Energy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxEnergy, COND_None, REPNOTIFY_Always);
+}
+
+void UAOAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Health, OldHealth);
+}
+
+void UAOAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UAOAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStamina) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Stamina, OldStamina);
+}
+
+void UAOAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxStamina, OldMaxStamina);
+}
+
+void UAOAttributeSet::OnRep_Energy(const FGameplayAttributeData& OldEnergy) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Energy, OldEnergy);
+}
+
+void UAOAttributeSet::OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxEnergy, OldMaxEnergy);
+}
+
 void UAOAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
-	Super::PostGameplayEffectExecute(Data);
-
-	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
-	{
-	//Damage = - health
-		SetHealth(FMath::Clamp(GetHealth() - Damage.GetCurrentValue(), 0.f, GetMaxHealth()));
-		Damage = 0.f;
-	}
-	else if (Data.EvaluatedData.Attribute == GetHealingAttribute())
-	{
-		SetHealth(FMath::Clamp(GetHealth() + Healing.GetCurrentValue(), 0.f, GetMaxHealth()));
-		Healing = 0.0f;
-	}
-	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-	}
-	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
-	{
-		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
-	}
-	else if (Data.EvaluatedData.Attribute == GetEnergyAttribute())
-	{
-		SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
-	}
-	if ((GetHealth() <= 0.0f) && !bIsDead)
-	{
-		bIsDead = true;
-	}
+	
 }

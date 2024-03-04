@@ -40,6 +40,9 @@ public:
 
 	AAOPlayerBase();
 
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+
 	//Inventory Comp
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	class UAOInventoryComponent* PlayerInventory;
@@ -212,6 +215,8 @@ public:
 	void EnterAttack();
 	void UseThrowable();
 
-	
+private:
+
+	void InitAbilityActorinfo();
 	
 };

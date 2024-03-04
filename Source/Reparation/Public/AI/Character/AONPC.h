@@ -16,6 +16,8 @@ class REPARATION_API AAONPC : public AAOCharacter
 
 public:
 
+	AAONPC();
+
 	virtual void BeginPlay() override;
 	
 };

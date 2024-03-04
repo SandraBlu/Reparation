@@ -7,7 +7,9 @@
 #include "Components/AOInteractComponent.h"
 #include "Components/AOInventoryComponent.h"
 #include "Item/AOItem.h"
-
+#include "Framework/AOPlayerState.h"
+#include "Framework/AOPlayerController.h"
+#include "UI/HUD/AOHUD.h"
 
 AAOPlayerBase::AAOPlayerBase()
 {
@@ -43,6 +45,20 @@ AAOPlayerBase::AAOPlayerBase()
 
 	//GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	//GetCharacterMovement()->MaxWalkSpeed = 500.f;
+}
+
+void AAOPlayerBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	//Server
+	InitAbilityActorinfo();
+}
+
+void AAOPlayerBase::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	//Client
+	InitAbilityActorinfo();
 }
 
 void AAOPlayerBase::Tick(float DeltaTime)
@@ -242,4 +258,23 @@ void AAOPlayerBase::UseThrowable()
 			}
 		}
 	}*/
+}
+
+void AAOPlayerBase::InitAbilityActorinfo()
+{
+	AAOPlayerState* AOPlayerState = GetPlayerState<AAOPlayerState>();
+	check(AOPlayerState)
+	AOPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AOPlayerState, this);
+	AbilitySystemComponent = AOPlayerState->GetAbilitySystemComponent();
+	AttributeSet = AOPlayerState->GetAttributeSet();
+
+	if (AAOPlayerController* PC = Cast<AAOPlayerController>(GetController()))
+	{
+		if (AAOHUD* AOHUD = Cast<AAOHUD>(PC->GetHUD()))
+		{
+			{
+				AOHUD->InitOverlay(PC, AOPlayerState, AbilitySystemComponent, AttributeSet);
+			}
+		}
+	}
 }

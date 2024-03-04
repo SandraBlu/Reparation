@@ -3,3 +3,8 @@
 
 #include "UI/AOUserWidget.h"
 
+void UAOUserWidget::SetWidgetController(UObject* InWidgetController)
+{
+	WidgetController = InWidgetController;
+	WidgetControllerInit();
+}

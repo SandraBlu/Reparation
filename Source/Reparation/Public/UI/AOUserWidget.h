@@ -6,12 +6,24 @@
 #include "Blueprint/UserWidget.h"
 #include "AOUserWidget.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class REPARATION_API UAOUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetController(UObject* InWidgetController);
+
+	UPROPERTY(BlueprintReadOnly)
+	UObject* WidgetController;
+
+protected:
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void WidgetControllerInit();
+
 	
 };

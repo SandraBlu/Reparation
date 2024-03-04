@@ -23,29 +23,27 @@ public:
 
 	AAOCharacter();
 
-	// Overridden from Ability System Interface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-	UAOAttributeSet* GetAttributeSet() const { return Attributes; }
-
-	virtual void PossessedBy(AController* NewController) override;
-	virtual void InitializeAttributes();
-	virtual void GrantAbilities();
+	//virtual void InitializeAttributes();
+	//virtual void GrantAbilities();
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS", meta = (AllowPrivateAccess = "true"))
-	UAOAttributeSet* Attributes;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
+	UAttributeSet* AttributeSet;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS", meta = (AllowPrivateAccess = "true"))
-	UAbilitySystemComponent* ASC;
-	/** List of GameplayEffects to apply when the Ability System Component is initialized (typically on begin play) */
-	UPROPERTY(EditDefaultsOnly, Category = "GAS")
-	TSubclassOf<class UGameplayEffect> GrantedEffect;
+	UAbilitySystemComponent* AbilitySystemComponent;
 
-	/** List of GameplayEffects to apply when the Ability System Component is initialized (typically on begin play) */
-	UPROPERTY(EditDefaultsOnly, Category = "GAS")
-	TArray<TSubclassOf<class UGameplayAbility>> GrantedAbilities;
+	///** List of GameplayEffects to apply when the Ability System Component is initialized (typically on begin play) */
+	//UPROPERTY(EditDefaultsOnly, Category = "GAS")
+	//TSubclassOf<class UGameplayEffect> GrantedEffect;
+
+	///** List of GameplayEffects to apply when the Ability System Component is initialized (typically on begin play) */
+	//UPROPERTY(EditDefaultsOnly, Category = "GAS")
+	//TArray<TSubclassOf<class UGameplayAbility>> GrantedAbilities;
 
 	//Footsteps Component
 	UPROPERTY(BlueprintReadOnly)
