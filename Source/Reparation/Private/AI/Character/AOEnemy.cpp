@@ -16,5 +16,11 @@ AAOEnemy::AAOEnemy()
 void AAOEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	InitAbilityActorInfo();
+}
+
+void AAOEnemy::InitAbilityActorInfo()
+{
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	Cast<UAOAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 }

@@ -217,6 +217,6 @@ public:
 
 private:
 
-	void InitAbilityActorinfo();
+	virtual void InitAbilityActorInfo() override;
 	
 };

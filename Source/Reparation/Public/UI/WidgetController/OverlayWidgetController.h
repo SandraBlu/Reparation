@@ -8,14 +8,29 @@
 #include "OverlayWidgetController.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChange, float, NewHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChange, float, NewMaxHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChange, float, NewStamina);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxStaminaChange, float, NewMaxStamina);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnergyChange, float, NewEnergy);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxEnergyChange, float, NewMaxEnergy);
+USTRUCT(BlueprintType)
+struct FUIWidgetRow : public FTableRowBase
+{
+	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag MessageTag = FGameplayTag();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText Message = FText();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class UAOUserWidget> MessageWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UTexture2D* Image = nullptr;
+
+};
+
+class UAOUserWidget;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChange, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 
 UCLASS(BlueprintType, Blueprintable)
 class REPARATION_API UOverlayWidgetController : public UAOWidgetController
@@ -28,32 +43,39 @@ public:
 	virtual void BindCallbacksToDependencies() override;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnHealthChange OnHealthChange;
+	FOnAttributeChange OnHealthChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnMaxHealthChange OnMaxHealthChange;
+	FOnAttributeChange OnMaxHealthChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnHealthChange OnStaminaChange;
+	FOnAttributeChange OnStaminaChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnMaxHealthChange OnMaxStaminaChange;
+	FOnAttributeChange OnMaxStaminaChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnHealthChange OnEnergyChange;
+	FOnAttributeChange OnEnergyChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnMaxHealthChange OnMaxEnergyChange;
+	FOnAttributeChange OnMaxEnergyChange;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
+	FMessageWidgetRowSignature WidgetMessageRow;
 
 protected:
-
-	void HandleHealthChanged(const FOnAttributeChangeData& Data) const;
-	void HandleMaxHealthChanged(const FOnAttributeChangeData& Data) const;
-	void HandleStaminaChanged(const FOnAttributeChangeData& Data) const;
-	void HandleMaxStaminaChanged(const FOnAttributeChangeData& Data) const;
-	void HandleEnergyChanged(const FOnAttributeChangeData& Data) const;
-	void HandleMaxEnergyChanged(const FOnAttributeChangeData& Data) const;
-
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI Data")
+	UDataTable* DTMessageUI;
+	
+	//Handles Messages on HUD
+	template<typename T>
+	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
 };
 
+template<typename T>
+T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
+{
+	return DataTable->FindRow<T>(Tag.GetTagName(), TEXT(""));	 
+}
 

@@ -59,10 +59,10 @@ void AAOPlayerController::Look(const FInputActionValue& Value)
 
 void AAOPlayerController::StartInteract(const FInputActionValue& Value)
 {
-	if (GetPawnOwner())
+	if (AAOPlayerBase* PlayerPawn = GetPawn<AAOPlayerBase>())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Input Relay!!!"));
-		ControlledPawn->OnStartInteract();
+		PlayerPawn->OnStartInteract();
 	}
 }
 

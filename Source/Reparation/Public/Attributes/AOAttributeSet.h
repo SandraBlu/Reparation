@@ -7,6 +7,41 @@
 #include "AbilitySystemComponent.h"
 #include "AOAttributeSet.generated.h"
 
+USTRUCT(BlueprintType)
+struct FEffectProperties
+{
+	GENERATED_BODY()
+
+	FEffectProperties() {}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayEffectContextHandle ContextHandle;
+	//Source
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAbilitySystemComponent* SourceASC = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* SourceAvatarActor = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	APlayerController* SourcePC = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ACharacter* SourceCharacter = nullptr;
+
+	//Target
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAbilitySystemComponent* TargetASC = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* TargetAvatarActor = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AController* TargetController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ACharacter* TargetCharacter = nullptr;
+
+	
+};
 	// Uses macros from AttributeSet.h
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
     GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
@@ -25,6 +60,14 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+private:
+
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
+
+public:
 	//Base Attributes-----------------------
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Base Attributes")
 	FGameplayAttributeData Health;
@@ -138,8 +181,22 @@ public:
 	UFUNCTION()
 	void OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const;
 
-protected:
+	//Primary
+	UFUNCTION()
+	void OnRep_Agility(const FGameplayAttributeData& OldAgility) const;
+	UFUNCTION()
+	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
+	UFUNCTION()
+	void OnRep_Perception(const FGameplayAttributeData& OldPerception) const;
+	UFUNCTION()
+	void OnRep_Resilience(const FGameplayAttributeData& OldMaxResilience) const;
+	UFUNCTION()
+	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
+	UFUNCTION()
+	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
 
-	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+	//Secondary
+
+
 
 };

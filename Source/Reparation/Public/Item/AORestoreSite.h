@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "AORestoreSite.generated.h"
 
+class UGameplayEffect;
+class UAbilitySystemComponent;
 class UNiagaraComponent;
 class UAOInteractComponent;
 
@@ -18,7 +20,16 @@ public:
 	
 	AAORestoreSite();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
+	TSubclassOf<UGameplayEffect> EffectClass;
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass);
+
 protected:
+
+	UFUNCTION()
+	void OnInteract(class AAOPlayerBase* Character);
 
 	UPROPERTY()
 	bool bIsActive;
@@ -50,6 +61,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "VFX")
 	UNiagaraComponent* RestoreSiteVFX;
 
-	UFUNCTION()
-	void OnInteract(class AAOPlayerBase* Character);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Effects")
+	float ActorLevel = 1.f;
+
+	
 };

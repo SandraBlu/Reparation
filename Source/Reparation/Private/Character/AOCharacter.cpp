@@ -15,6 +15,12 @@ UAbilitySystemComponent* AAOCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
+
+void AAOCharacter::InitAbilityActorInfo()
+{
+
+}
+
 //void AAOCharacter::InitializeAttributes()
 //{
 //	if (AbilitySystemComponent && GrantedEffect)

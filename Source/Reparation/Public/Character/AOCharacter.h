@@ -37,6 +37,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponent* AbilitySystemComponent;
 
+	virtual void InitAbilityActorInfo();
+
 	///** List of GameplayEffects to apply when the Ability System Component is initialized (typically on begin play) */
 	//UPROPERTY(EditDefaultsOnly, Category = "GAS")
 	//TSubclassOf<class UGameplayEffect> GrantedEffect;

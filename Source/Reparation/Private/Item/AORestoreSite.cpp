@@ -9,6 +9,7 @@
 #include "AbilitySystemComponent.h"
 #include "Attributes/AOAttributeSet.h"
 #include "Character/AOPlayerBase.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 // Sets default values
 AAORestoreSite::AAORestoreSite()
@@ -29,6 +30,17 @@ AAORestoreSite::AAORestoreSite()
 
 	RespawnTime = 5.f;
 
+}
+
+void AAORestoreSite::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	if (TargetASC == nullptr) return;
+
+	FGameplayEffectContextHandle EffectContext = TargetASC->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpec = TargetASC->MakeOutgoingSpec(GameplayEffectClass, ActorLevel, EffectContext);
+	const FActiveGameplayEffectHandle ActiveEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpec.Data.Get());
 }
 
 void AAORestoreSite::IsActive()
@@ -58,11 +70,8 @@ void AAORestoreSite::SetRestoreSiteState(bool bNewIsActive)
 
 void AAORestoreSite::OnInteract(class AAOPlayerBase* Character)
 {
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(Character))
-	{
-		const UAOAttributeSet* AttributeSet  =  Cast<UAOAttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UAOAttributeSet::StaticClass()));
-		UAOAttributeSet* MutableAttrSet = const_cast<UAOAttributeSet*>(AttributeSet);
-		MutableAttrSet->SetHealth(AttributeSet->GetHealth() + 25.f);
-	}
+	
+	ApplyEffectToTarget(Character, EffectClass);
+	
 }
 

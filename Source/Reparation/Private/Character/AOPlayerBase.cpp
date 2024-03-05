@@ -10,6 +10,7 @@
 #include "Framework/AOPlayerState.h"
 #include "Framework/AOPlayerController.h"
 #include "UI/HUD/AOHUD.h"
+#include "Abilities/AOAbilitySystemComponent.h"
 
 AAOPlayerBase::AAOPlayerBase()
 {
@@ -51,14 +52,14 @@ void AAOPlayerBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	//Server
-	InitAbilityActorinfo();
+	InitAbilityActorInfo();
 }
 
 void AAOPlayerBase::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	//Client
-	InitAbilityActorinfo();
+	InitAbilityActorInfo();
 }
 
 void AAOPlayerBase::Tick(float DeltaTime)
@@ -260,11 +261,12 @@ void AAOPlayerBase::UseThrowable()
 	}*/
 }
 
-void AAOPlayerBase::InitAbilityActorinfo()
+void AAOPlayerBase::InitAbilityActorInfo()
 {
 	AAOPlayerState* AOPlayerState = GetPlayerState<AAOPlayerState>();
 	check(AOPlayerState)
 	AOPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AOPlayerState, this);
+	Cast<UAOAbilitySystemComponent>(AOPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = AOPlayerState->GetAbilitySystemComponent();
 	AttributeSet = AOPlayerState->GetAttributeSet();
 
