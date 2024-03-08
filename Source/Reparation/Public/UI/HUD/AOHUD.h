@@ -13,6 +13,7 @@ class APlayerController;
 class APlayerState;
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UAttributeMenuController;
 
 UCLASS()
 class REPARATION_API AAOHUD : public AHUD
@@ -21,21 +22,29 @@ class REPARATION_API AAOHUD : public AHUD
 
 public:
 
-	UPROPERTY()
-	UAOUserWidget* OverlayWidget;
+	
 
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
+	UAttributeMenuController* GetAttributeMenuController(const FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 private:
-	
+	UPROPERTY()
+	UAOUserWidget* OverlayWidget;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAOUserWidget> OverlayWidgetClass;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeMenuController> AttributeMenuControllerClass;
+
 	UPROPERTY()
 	UOverlayWidgetController* OverlayWidgetController;
+
+	UPROPERTY()
+	UAttributeMenuController* AttributeMenuController;
 };

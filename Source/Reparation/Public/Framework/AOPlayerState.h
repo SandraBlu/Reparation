@@ -22,9 +22,12 @@ public:
 
 	AAOPlayerState();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
-
+	
+	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
 
 protected:
 
@@ -33,5 +36,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponent* AbilitySystemComponent;
+
+private:
+	
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing= OnRep_Level)
+	int32 Level = 1;
+
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel);
 	
 };

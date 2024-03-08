@@ -8,16 +8,35 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AOGameplayTags.h"
 
 UAOAttributeSet::UAOAttributeSet()
 {
-	InitHealth(50.f);
-	InitMaxHealth(100.f);
-	InitStamina(10.f);
-	InitMaxStamina(50.f);
-	InitEnergy(50.f);
-	InitMaxEnergy(100.f);
+	const FAOGameplayTags& GameplayTags = FAOGameplayTags::Get();
 
+	//Primary Attributes
+	AttributeTagMap.Add(GameplayTags.Attributes_Primary_Agility, GetAgilityAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Primary_Perception, GetPerceptionAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Primary_Resilience, GetResilienceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Primary_Vigor, GetVigorAttribute);
+
+	//Secondary Attributes
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_BlockChance, GetBlockChanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_CriticalHitChance, GetCritHitChanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage, GetCritHitDamageAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance, GetCritHitResistanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_DodgeChance, GetDodgeChanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_Stealth, GetStealthAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_HealthRegen, GetHealthRegenAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_StaminaRegen, GetStaminaRegenAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_EnergyRegen, GetEnergyRegenAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_MaxStamina, GetMaxStaminaAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_MaxEnergy, GetMaxEnergyAttribute);
 }
 
 void UAOAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -31,13 +50,27 @@ void UAOAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Resilience, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Strength, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
+	
+	//Secondary
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, DodgeChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, CritHitChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, CritHitDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, CritHitResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Stealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxEnergy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, HealthRegen, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, StaminaRegen, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, EnergyRegen, COND_None, REPNOTIFY_Always);
+
 	//Base
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Health, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Energy, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, MaxEnergy, COND_None, REPNOTIFY_Always);
 	
 }
 
@@ -112,36 +145,21 @@ void UAOAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& 
 
 	}
 }
-
+//Base
 void UAOAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Health, OldHealth);
 }
-
-void UAOAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxHealth, OldMaxHealth);
-}
-
 void UAOAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStamina) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Stamina, OldStamina);
 }
-
-void UAOAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxStamina, OldMaxStamina);
-}
-
 void UAOAttributeSet::OnRep_Energy(const FGameplayAttributeData& OldEnergy) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Energy, OldEnergy);
 }
 
-void UAOAttributeSet::OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxEnergy, OldMaxEnergy);
-}
+//Primary
 void UAOAttributeSet::OnRep_Agility(const FGameplayAttributeData& OldAgility) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Agility, OldAgility);
@@ -165,4 +183,61 @@ void UAOAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) 
 void UAOAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Vigor, OldVigor);
+}
+//Secondary
+void UAOAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxHealth, OldMaxHealth);
+}
+void UAOAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxStamina, OldMaxStamina);
+}
+void UAOAttributeSet::OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, MaxEnergy, OldMaxEnergy);
+}
+void UAOAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Armor, OldArmor);
+}
+void UAOAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, ArmorPenetration, OldArmorPenetration);
+}
+void UAOAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, BlockChance, OldBlockChance);
+}
+void UAOAttributeSet::OnRep_DodgeChance(const FGameplayAttributeData& OldDodgeChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, DodgeChance, OldDodgeChance);
+}
+void UAOAttributeSet::OnRep_CritHitChance(const FGameplayAttributeData& OldCritHitChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, CritHitChance, OldCritHitChance);
+}
+void UAOAttributeSet::OnRep_CritHitDamage(const FGameplayAttributeData& OldCritHitDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, CritHitDamage, OldCritHitDamage);
+}
+void UAOAttributeSet::OnRep_CritHitResistance(const FGameplayAttributeData& OldCritHitResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, CritHitResistance, OldCritHitResistance);
+}
+void UAOAttributeSet::OnRep_Stealth(const FGameplayAttributeData& OldStealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, Stealth, OldStealth);
+}
+void UAOAttributeSet::OnRep_HealthRegen(const FGameplayAttributeData& OldHealthRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, HealthRegen, OldHealthRegen);
+}
+void UAOAttributeSet::OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, StaminaRegen, OldStaminaRegen);
+}
+void UAOAttributeSet::OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, EnergyRegen, OldEnergyRegen);
 }

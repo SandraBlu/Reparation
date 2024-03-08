@@ -3,8 +3,11 @@
 
 #include "Framework/AOPlayerController.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
 #include "Character/AOPlayerBase.h"
+#include "GameplayTagContainer.h"
+#include "Input/AOInputComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/AOAbilitySystemComponent.h"
 
 AAOPlayerController::AAOPlayerController()
 {
@@ -101,17 +104,44 @@ void AAOPlayerController::UseThrowable(const FInputActionValue& Value)
 void AAOPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAOPlayerController::Move);
-	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAOPlayerController::Look);
+	UAOInputComponent* AOInputComponent = CastChecked<UAOInputComponent>(InputComponent);
+	AOInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+	AOInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAOPlayerController::Move);
+	AOInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAOPlayerController::Look);
 
 	//Interact
-	EnhancedInputComponent->BindAction(InterAction, ETriggerEvent::Started, this, &AAOPlayerController::StartInteract);
-	EnhancedInputComponent->BindAction(InterAction, ETriggerEvent::Completed, this, &AAOPlayerController::CompleteInteract);
+	AOInputComponent->BindAction(InterAction, ETriggerEvent::Started, this, &AAOPlayerController::StartInteract);
+	AOInputComponent->BindAction(InterAction, ETriggerEvent::Completed, this, &AAOPlayerController::CompleteInteract);
 
 	//Weapon
-	EnhancedInputComponent->BindAction(DrawWeaponAction, ETriggerEvent::Started, this, &AAOPlayerController::DrawWeapon);
-	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AAOPlayerController::PrimaryAttack);
-	EnhancedInputComponent->BindAction(ThrowAction, ETriggerEvent::Started, this, &AAOPlayerController::UseThrowable);
+	AOInputComponent->BindAction(DrawWeaponAction, ETriggerEvent::Started, this, &AAOPlayerController::DrawWeapon);
+	AOInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AAOPlayerController::PrimaryAttack);
+	AOInputComponent->BindAction(ThrowAction, ETriggerEvent::Started, this, &AAOPlayerController::UseThrowable);
 	
+}
+
+void AAOPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+}
+
+void AAOPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if(GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagReleased(InputTag);
+}
+
+void AAOPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagHeld(InputTag);
+}
+
+UAOAbilitySystemComponent* AAOPlayerController::GetASC()
+{
+	if (!AOAbilityComp)
+	{
+		AOAbilityComp = Cast<UAOAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
+	return AOAbilityComp;
 }

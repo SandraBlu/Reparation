@@ -4,11 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "GameplayTagContainer.h"
 #include "AOPlayerController.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class UAOInputConfig;
+class UAOAbilitySystemComponent;
 
 //Event handler for re Spawning Character
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPawnChanged, APawn*, NewPawn);
@@ -83,5 +86,21 @@ protected:
 
 	//Called to bind functionality to input
 	virtual void SetupInputComponent() override;
+
+private:
+
+	//Custom Input
+
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UAOInputConfig* InputConfig;
 	
+	UPROPERTY()
+	UAOAbilitySystemComponent* AOAbilityComp;
+
+	UAOAbilitySystemComponent* GetASC();
+
 };

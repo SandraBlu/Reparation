@@ -7,6 +7,15 @@
 #include "AbilitySystemComponent.h"
 #include "AOAttributeSet.generated.h"
 
+
+	// Uses macros from AttributeSet.h
+#define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
+    GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
+    GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
+    GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
+    GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
+
+
 USTRUCT(BlueprintType)
 struct FEffectProperties
 {
@@ -42,12 +51,10 @@ struct FEffectProperties
 
 	
 };
-	// Uses macros from AttributeSet.h
-#define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
-    GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
-    GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
-    GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
-    GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
+
+//typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+template<class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
 UCLASS()
 class REPARATION_API UAOAttributeSet : public UAttributeSet
@@ -62,6 +69,10 @@ public:
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+	
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> AttributeTagMap;
+
 
 private:
 
@@ -168,19 +179,14 @@ public:
 	ATTRIBUTE_ACCESSORS(UAOAttributeSet, EnergyRegen)
 
 	//---------------------OnRep
+	//Base
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
 	UFUNCTION()
-	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
-	UFUNCTION()
 	void OnRep_Stamina(const FGameplayAttributeData& OldStamina) const;
 	UFUNCTION()
-	void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) const;
-	UFUNCTION()
 	void OnRep_Energy(const FGameplayAttributeData& OldEnergy) const;
-	UFUNCTION()
-	void OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const;
-
+	
 	//Primary
 	UFUNCTION()
 	void OnRep_Agility(const FGameplayAttributeData& OldAgility) const;
@@ -189,7 +195,7 @@ public:
 	UFUNCTION()
 	void OnRep_Perception(const FGameplayAttributeData& OldPerception) const;
 	UFUNCTION()
-	void OnRep_Resilience(const FGameplayAttributeData& OldMaxResilience) const;
+	void OnRep_Resilience(const FGameplayAttributeData& OldResilience) const;
 	UFUNCTION()
 	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
 	UFUNCTION()
@@ -197,6 +203,33 @@ public:
 
 	//Secondary
 
-
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
+	UFUNCTION()
+	void OnRep_DodgeChance(const FGameplayAttributeData& OldDodgeChance) const;
+	UFUNCTION()
+	void OnRep_CritHitChance(const FGameplayAttributeData& OldCritHitChance) const;
+	UFUNCTION()
+	void OnRep_CritHitDamage(const FGameplayAttributeData& OldCritHitDamage) const;
+	UFUNCTION()
+	void OnRep_CritHitResistance(const FGameplayAttributeData& OldCritHitResistance) const;
+	UFUNCTION()
+	void OnRep_Stealth(const FGameplayAttributeData& OldStealth) const;
+	UFUNCTION()
+	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
+	UFUNCTION()
+	void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) const;
+	UFUNCTION()
+	void OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const;
+	UFUNCTION()
+	void OnRep_HealthRegen(const FGameplayAttributeData& OldHealthRegen) const;
+	UFUNCTION()
+	void OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen) const;
+	UFUNCTION()
+	void OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRegen) const;
 
 };

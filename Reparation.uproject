@@ -13,8 +13,9 @@
 				"CoreUObject",
 				"UMG",
 				"PhysicsCore",
-				"GameplayAbilities", 
-				"AIModule"
+				"GameplayAbilities",
+				"AIModule",
+				"EnhancedInput"
 			]
 		}
 	],
@@ -57,6 +58,10 @@
 			"Name": "DragonIKPlugin",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/3f3985e9eb40414aaabf645791fa4916"
+		},
+		{
+			"Name": "MotionWarping",
+			"Enabled": true
 		}
 	]
 }

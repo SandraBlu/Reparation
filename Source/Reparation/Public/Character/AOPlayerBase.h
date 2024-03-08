@@ -119,8 +119,11 @@ public:
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	class AAOWeapon* EquippedWeapon;
+	//CombatInterface
+	virtual int32 GetPlayerLevel() override;
+
+	/*UPROPERTY(EditAnywhere, Category = "Weapon")
+	class AAOWeapon* EquippedWeapon;*/
 
 	////Interacting---------------------------------------
 	UPROPERTY()

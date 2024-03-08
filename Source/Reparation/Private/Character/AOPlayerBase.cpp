@@ -53,6 +53,7 @@ void AAOPlayerBase::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	//Server
 	InitAbilityActorInfo();
+	GrantAbilities();
 }
 
 void AAOPlayerBase::OnRep_PlayerState()
@@ -66,6 +67,34 @@ void AAOPlayerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	PerformInteractCheck();
+}
+
+void AAOPlayerBase::InitAbilityActorInfo()
+{
+	AAOPlayerState* AOPlayerState = GetPlayerState<AAOPlayerState>();
+	check(AOPlayerState)
+	AOPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AOPlayerState, this);
+	Cast<UAOAbilitySystemComponent>(AOPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
+	AbilitySystemComponent = AOPlayerState->GetAbilitySystemComponent();
+	AttributeSet = AOPlayerState->GetAttributeSet();
+
+	if (AAOPlayerController* PC = Cast<AAOPlayerController>(GetController()))
+	{
+		if (AAOHUD* AOHUD = Cast<AAOHUD>(PC->GetHUD()))
+		{
+			{
+				AOHUD->InitOverlay(PC, AOPlayerState, AbilitySystemComponent, AttributeSet);
+			}
+		}
+	}
+	InitializeAttributes();
+}
+
+int32 AAOPlayerBase::GetPlayerLevel()
+{
+	const AAOPlayerState* AOPlayerState = GetPlayerState<AAOPlayerState>();
+	check(AOPlayerState)
+	return AOPlayerState->GetPlayerLevel();
 }
 
 void AAOPlayerBase::PerformInteractCheck()
@@ -261,22 +290,4 @@ void AAOPlayerBase::UseThrowable()
 	}*/
 }
 
-void AAOPlayerBase::InitAbilityActorInfo()
-{
-	AAOPlayerState* AOPlayerState = GetPlayerState<AAOPlayerState>();
-	check(AOPlayerState)
-	AOPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AOPlayerState, this);
-	Cast<UAOAbilitySystemComponent>(AOPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
-	AbilitySystemComponent = AOPlayerState->GetAbilitySystemComponent();
-	AttributeSet = AOPlayerState->GetAttributeSet();
 
-	if (AAOPlayerController* PC = Cast<AAOPlayerController>(GetController()))
-	{
-		if (AAOHUD* AOHUD = Cast<AAOHUD>(PC->GetHUD()))
-		{
-			{
-				AOHUD->InitOverlay(PC, AOPlayerState, AbilitySystemComponent, AttributeSet);
-			}
-		}
-	}
-}

@@ -7,15 +7,18 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "Attributes/AOAttributeSet.h"
+#include "Interfaces/CombatInterface.h"
 #include "AOCharacter.generated.h"
+
 
 
 class UAOAbilitySystemComponent;
 class UAOAttributeSet;
 class UAOFootstepsComponent;
+class AAOWeapon;
 
 UCLASS()
-class REPARATION_API AAOCharacter : public ACharacter, public IAbilitySystemInterface
+class REPARATION_API AAOCharacter : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -26,10 +29,13 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-	//virtual void InitializeAttributes();
-	//virtual void GrantAbilities();
+	
+	void GrantAbilities();
 
 protected:
+
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const;
+	void InitializeAttributes()const ;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	UAttributeSet* AttributeSet;
@@ -39,13 +45,39 @@ protected:
 
 	virtual void InitAbilityActorInfo();
 
-	///** List of GameplayEffects to apply when the Ability System Component is initialized (typically on begin play) */
-	//UPROPERTY(EditDefaultsOnly, Category = "GAS")
-	//TSubclassOf<class UGameplayEffect> GrantedEffect;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<class UGameplayEffect> BaseAttributes;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	TSubclassOf<class UGameplayEffect> PrimaryAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<class UGameplayEffect> SecondaryAttributes;
 
 	///** List of GameplayEffects to apply when the Ability System Component is initialized (typically on begin play) */
-	//UPROPERTY(EditDefaultsOnly, Category = "GAS")
-	//TArray<TSubclassOf<class UGameplayAbility>> GrantedAbilities;
+	UPROPERTY(EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayAbility>> GrantedAbilities;
+
+	//Combat
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	AAOWeapon* EquippedWeapon;
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE AAOWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+
+	virtual FVector GetCombatSocketLocation() override;
+
+	UPROPERTY(EditAnywhere, Category = "ProjectileSocket")
+	FName HandSocketName;
+
+	/**Combat Interface*/
+	/*FORCEINLINE int32 GetLevel() override { return Level; }*/
+	/**End Combat Interface*/
+
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XP")
+	//int32 CharacterLevel = 1;
+
+
 
 	//Footsteps Component
 	UPROPERTY(BlueprintReadOnly)

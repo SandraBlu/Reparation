@@ -11,6 +11,14 @@ AAOEnemy::AAOEnemy()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	AttributeSet = CreateDefaultSubobject<UAOAttributeSet>("AttributeSet");
+
+	// Enabled on mesh to react to incoming projectiles
+	GetMesh()->SetGenerateOverlapEvents(true);
+}
+
+int32 AAOEnemy::GetPlayerLevel()
+{
+	return Level;
 }
 
 void AAOEnemy::BeginPlay()
