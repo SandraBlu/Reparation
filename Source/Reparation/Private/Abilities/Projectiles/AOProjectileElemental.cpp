@@ -5,7 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Actor/AOProjectile.h"
 #include <Interfaces/CombatInterface.h>
-#include "GameFramework/Character.h"
+#include "Character/AOPlayerBase.h"
 
 UAOProjectileElemental::UAOProjectileElemental()
 {
@@ -19,7 +19,7 @@ void UAOProjectileElemental::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	
 }
 
-void UAOProjectileElemental::SpawnProjectile(ACharacter* InstigatorCharacter)
+void UAOProjectileElemental::SpawnProjectile(AAOPlayerBase* InstigatorCharacter)
 {
 
 	if (ensureAlways(ProjectileClass))
@@ -27,7 +27,7 @@ void UAOProjectileElemental::SpawnProjectile(ACharacter* InstigatorCharacter)
 		ICombatInterface* iCombat = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 		if (iCombat)
 		{
-			const FVector SocketLocation = iCombat->GetCombatSocketLocation();
+			const FVector SocketLocation = iCombat->GetRHandSocketLocation();
 
 			// We trace against the environment first to find whats under the player crosshair.
 			// We use the hit location to adjust the projectile launch direction so it will hit what is under the crosshair rather than shoot straight forward from the player hands.

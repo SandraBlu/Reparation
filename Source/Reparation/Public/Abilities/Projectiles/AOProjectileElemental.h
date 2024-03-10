@@ -32,23 +32,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Targeting")
 	float SweepDistanceFallback;
 
-	UPROPERTY(EditAnywhere, Category = "ProjectileSocket")
-	FName HandSocketName;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAOProjectile> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TObjectPtr<UAnimMontage> AttackAnim;
-
-	/* Particle System played during attack animation */
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TObjectPtr<UParticleSystem> CastingEffect;
-
-	/* Sound Effect to play (Can be Wave or Cue) */
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TObjectPtr<USoundBase> CastingSound;
-
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
-	void SpawnProjectile(ACharacter* InstigatorCharacter);
+	void SpawnProjectile(AAOPlayerBase* InstigatorCharacter);
 };

@@ -12,18 +12,8 @@ UTargetData* UTargetData::CreateTargetData(UGameplayAbility* OwningAbility)
 
 void UTargetData::Activate()
 {
-	/*FVector ViewObject = Ability->GetCurrentActorInfo()->PlayerController->GetPawn()->GetPawnViewLocation();
+	APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
+	FHitResult MissileTarget;
 
-	FHitResult Hit;
-
-	FGameplayAbilityTargetDataHandle DataHandle;
-	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();
-	Data->HitResult = Hit;
-	DataHandle.Add(Data);
-
-	if (ShouldBroadcastAbilityTaskDelegates())
-	{
-		ViewData.Broadcast(DataHandle);
-	}*/
 }
 

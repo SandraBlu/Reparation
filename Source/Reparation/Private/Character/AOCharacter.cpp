@@ -10,9 +10,9 @@
 
 AAOCharacter::AAOCharacter()
 {
-	HandSocketName = "hand_rSocket";
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	
 }
 
 UAbilitySystemComponent* AAOCharacter::GetAbilitySystemComponent() const
@@ -51,7 +51,12 @@ void AAOCharacter::InitAbilityActorInfo()
 
 }
 
-FVector AAOCharacter::GetCombatSocketLocation()
+FVector AAOCharacter::GetRHandSocketLocation()
 {
-	return GetMesh()->GetSocketLocation(HandSocketName);
+	return GetMesh()->GetSocketLocation(RHandProjectile);
+}
+
+FVector AAOCharacter::GetLHandSocketLocation()
+{
+	return GetMesh()->GetSocketLocation(LHandProjectile);
 }

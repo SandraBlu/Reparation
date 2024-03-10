@@ -2,12 +2,12 @@
 
 
 #include "Actor/AOProjectile.h"
+#include "Reparation/Reparation.h"
 #include "NiagaraComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
-#include "Sound/SoundCue.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Attributes/AOAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,12 +17,12 @@ AAOProjectile::AAOProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
+	SphereComp->SetCollisionObjectType(ECC_Projectile);
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SphereComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 	SphereComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	SphereComp->SetCollisionProfileName("Projectile");
 	RootComponent = SphereComp;
 
 	EffectComp = CreateDefaultSubobject<UNiagaraComponent>("EffectComp");
@@ -32,27 +32,43 @@ AAOProjectile::AAOProjectile()
 	MovementComp->InitialSpeed = 1000.f;
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
-	MovementComp->ProjectileGravityScale = 0.0f;
 
-	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
-	AudioComp->SetupAttachment(RootComponent);
-
-	ImpactShakeInnerRadius = 0.0f;
-	ImpactShakeOuterRadius = 1500.0f;
-
+	LaunchSFX = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	LaunchSFX->SetupAttachment(RootComponent);
 }
 
 void AAOProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SetLifeSpan(Lifespan);
 }
 
-void AAOProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AAOProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactVFX, GetActorLocation());
-	Destroy();
+	Explode();
 }
 
+void AAOProjectile::Explode_Implementation()
+{
+	// Check to make sure we aren't already being 'destroyed'
+		// Adding ensure to see if we encounter this situation at all
+	if (IsValid(this))
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactVFX, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX, GetActorLocation());
+
+		Destroy();
+	}
+}
+
+void AAOProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	//SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+
+	// More consistent to bind here compared to Constructor which may fail to bind if Blueprint was created before adding this binding (or when using hotreload)
+	// PostInitializeComponent is the preferred way of binding any events.
+	SphereComp->OnComponentHit.AddDynamic(this, &AAOProjectile::OnActorHit);
+}
 

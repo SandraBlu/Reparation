@@ -35,7 +35,7 @@ public:
 protected:
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const;
-	void InitializeAttributes()const ;
+	virtual void InitializeAttributes() const ;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	UAttributeSet* AttributeSet;
@@ -59,16 +59,20 @@ protected:
 	TArray<TSubclassOf<class UGameplayAbility>> GrantedAbilities;
 
 	//Combat
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	AAOWeapon* EquippedWeapon;
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE AAOWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 
-	virtual FVector GetCombatSocketLocation() override;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName RHandProjectile;
 
-	UPROPERTY(EditAnywhere, Category = "ProjectileSocket")
-	FName HandSocketName;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName LHandProjectile;
+
+	virtual FVector GetRHandSocketLocation() override;
+	virtual FVector GetLHandSocketLocation() override;
 
 	/**Combat Interface*/
 	/*FORCEINLINE int32 GetLevel() override { return Level; }*/

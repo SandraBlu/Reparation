@@ -6,7 +6,7 @@
 #include "Abilities/Tasks/AbilityTask.h"
 #include "TargetData.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPawnViewLocation, const FGameplayAbilityTargetDataHandle&, DataHandle);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnProjectileHit, const FHitResult&, DataHandle);
 
 UCLASS()
 class REPARATION_API UTargetData : public UAbilityTask
@@ -19,7 +19,7 @@ public:
 	static UTargetData* CreateTargetData(UGameplayAbility* OwningAbility);
 
 	UPROPERTY(BlueprintAssignable)
-	FPawnViewLocation ViewData;
+	FOnProjectileHit HitData;
 
 private:
 

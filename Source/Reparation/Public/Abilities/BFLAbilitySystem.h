@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Data/CharacterClassInfo.h"
 #include "BFLAbilitySystem.generated.h"
+
 
 class UOverlayWidgetController;
 class UAttributeMenuController;
+class UAbilitySystemComponent;
 
 /**
  * 
@@ -24,4 +27,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "AOBFL")
 	static UAttributeMenuController* GetAttributeMenuController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "AOBFL")
+	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
 };

@@ -24,5 +24,6 @@ class REPARATION_API ICombatInterface
 public:
 
 	virtual int32 GetPlayerLevel();
-	virtual FVector GetCombatSocketLocation();
+	virtual FVector GetRHandSocketLocation();
+	virtual FVector GetLHandSocketLocation();
 };
