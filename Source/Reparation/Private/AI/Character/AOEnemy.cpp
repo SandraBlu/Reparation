@@ -23,6 +23,10 @@ AAOEnemy::AAOEnemy()
 	// Enabled on mesh to react to incoming projectiles
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
+
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
+	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
+	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 int32 AAOEnemy::GetPlayerLevel()
@@ -35,8 +39,6 @@ void AAOEnemy::BeginPlay()
 	Super::BeginPlay();
 	InitAbilityActorInfo();
 
-
-	
 	
 	//Set widget controller for enemy health bar
 	if (UAOUserWidget* EnemyUI = Cast<UAOUserWidget>(Health->GetUserWidgetObject()))
