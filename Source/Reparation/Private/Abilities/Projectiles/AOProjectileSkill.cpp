@@ -6,7 +6,8 @@
 #include "Actor/AOMagicMissile.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "../../../../../../../Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemComponent.h"
+#include "AbilitySystemComponent.h"
+#include "AOGameplayTags.h"
 
 
 UAOProjectileSkill::UAOProjectileSkill()
@@ -65,6 +66,11 @@ void UAOProjectileSkill::SpawnProjectile(ACharacter* InstigatorCharacter)
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+
+		const FAOGameplayTags GameplayTags = FAOGameplayTags::Get();
+		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
 		Missile->DamageEffectSpecHandle = SpecHandle;
 
 		Missile->FinishSpawning(SpawnTransform);

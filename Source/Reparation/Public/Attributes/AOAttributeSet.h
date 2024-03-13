@@ -92,6 +92,14 @@ public:
 	FGameplayAttributeData Energy;
 	ATTRIBUTE_ACCESSORS(UAOAttributeSet, Energy)
 
+	/*
+	 * Meta Attributes
+	 */
+
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData Damage;
+	ATTRIBUTE_ACCESSORS(UAOAttributeSet, Damage);
+
 	//RPG Attributes-----------------------------
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")

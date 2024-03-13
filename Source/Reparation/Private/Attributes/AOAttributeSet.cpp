@@ -112,6 +112,18 @@ void UAOAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	{
 		SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
 	}
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetDamage();
+		SetDamage(0.f);
+		if (LocalIncomingDamage > 0.f)
+		{
+			const float NewHealth = GetHealth() - LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			const bool bFatal = NewHealth <= 0.f;
+		}
+	}
 }
 
 void UAOAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
