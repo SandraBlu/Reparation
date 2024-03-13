@@ -8,10 +8,24 @@
 #include "Input/AOInputComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/AOAbilitySystemComponent.h"
+#include "GameFramework/Character.h"
+#include "UI/DamageTextComponent.h"
 
 AAOPlayerController::AAOPlayerController()
 {
 
+}
+
+void AAOPlayerController::ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter)
+{
+	if (IsValid(TargetCharacter) && DamageTextComponentClass)
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(DamageAmount);
+	}
 }
 
 void AAOPlayerController::BeginPlay()

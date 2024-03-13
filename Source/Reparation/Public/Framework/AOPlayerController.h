@@ -12,6 +12,7 @@ class UInputAction;
 struct FInputActionValue;
 class UAOInputConfig;
 class UAOAbilitySystemComponent;
+class UDamageTextComponent;
 
 //Event handler for re Spawning Character
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPawnChanged, APawn*, NewPawn);
@@ -25,6 +26,9 @@ class REPARATION_API AAOPlayerController : public APlayerController
 public:
 
 	AAOPlayerController();
+
+	UFUNCTION()
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
 
 protected:
 
@@ -102,5 +106,8 @@ private:
 	UAOAbilitySystemComponent* AOAbilityComp;
 
 	UAOAbilitySystemComponent* GetASC();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 
 };

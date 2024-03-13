@@ -10,6 +10,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AOGameplayTags.h"
 #include "Interfaces/CombatInterface.h"
+#include "Framework/AOPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 UAOAttributeSet::UAOAttributeSet()
 {
@@ -137,6 +139,7 @@ void UAOAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 				TagContainer.AddTag(FAOGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
+			ShowFloatingText(Props, LocalIncomingDamage);
 		}
 	}
 }
@@ -159,7 +162,7 @@ void UAOAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& 
 		}
 		if (Props.SourcePC)
 		{
-			ACharacter* SourceCharacter = Cast<ACharacter>(Props.SourcePC->GetPawn());
+			Props.SourceCharacter = Cast<ACharacter>(Props.SourcePC->GetPawn());
 		}
 	}
 	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
@@ -171,6 +174,18 @@ void UAOAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& 
 
 	}
 }
+
+void UAOAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageText) const
+{
+	if (Props.SourceCharacter != Props.TargetCharacter)
+	{
+		if (AAOPlayerController* PC = Cast<AAOPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		{
+			PC->ShowDamageNumber(DamageText, Props.TargetCharacter);
+		}
+	}
+}
+
 //Base
 void UAOAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
