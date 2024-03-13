@@ -8,6 +8,8 @@
 #include "Components/WidgetComponent.h"
 #include "UI/AOUserWidget.h"
 #include <Abilities/BFLAbilitySystem.h>
+#include "AOGameplayTags.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #
 
 AAOEnemy::AAOEnemy()
@@ -34,9 +36,12 @@ int32 AAOEnemy::GetPlayerLevel()
 	return Level;
 }
 
+
+
 void AAOEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
 
 	
@@ -61,10 +66,18 @@ void AAOEnemy::BeginPlay()
 				OnMaxHealthChange.Broadcast(Data.NewValue);
 			}
 		);
+
+		AbilitySystemComponent->RegisterGameplayTagEvent(FAOGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this,&AAOEnemy::HitReactTagChanged);
 		//Set Initial values for attributes
 		OnHealthChange.Broadcast(AS->GetHealth());
 		OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
 	}
+}
+
+void AAOEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
 void AAOEnemy::InitAbilityActorInfo()

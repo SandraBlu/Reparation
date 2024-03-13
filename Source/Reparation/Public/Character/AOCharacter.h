@@ -16,6 +16,7 @@ class UAOAbilitySystemComponent;
 class UAOAttributeSet;
 class UAOFootstepsComponent;
 class AAOWeapon;
+class UAnimMontage;
 
 UCLASS()
 class REPARATION_API AAOCharacter : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -29,8 +30,9 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-	
 	void GrantAbilities();
+
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 
 protected:
 
@@ -81,7 +83,8 @@ protected:
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "XP")
 	//int32 CharacterLevel = 1;
 
-
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage* HitReactMontage;
 
 	//Footsteps Component
 	UPROPERTY(BlueprintReadOnly)

@@ -48,6 +48,9 @@ public:
 	//Damage
 	FGameplayTag Damage;
 
+	//Effects
+	FGameplayTag Effects_HitReact;
+
 private:
 
 	static FAOGameplayTags GameplayTags;

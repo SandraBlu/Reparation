@@ -27,6 +27,11 @@ void AAOCharacter::GrantAbilities()
 	AOASC->AddGrantedAbilities(GrantedAbilities);
 }
 
+UAnimMontage* AAOCharacter::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
 void AAOCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const
 {
 	if (GetAbilitySystemComponent() && EffectClass)
