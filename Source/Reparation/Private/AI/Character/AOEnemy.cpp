@@ -90,6 +90,8 @@ void AAOEnemy::Die()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	
 	Super::Die();
+
+	StartDissolve();
 }
 
 void AAOEnemy::InitAbilityActorInfo()

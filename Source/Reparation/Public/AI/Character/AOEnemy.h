@@ -44,7 +44,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
 
-	
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolve();
 
 protected:
 
