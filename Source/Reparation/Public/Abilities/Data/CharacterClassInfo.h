@@ -7,6 +7,7 @@
 #include "CharacterClassInfo.generated.h"
 
 class UGameplayEffect;
+class UGameplayAbility;
 
 UENUM(BlueprintType)
 enum class ECharacterClass : uint8
@@ -42,8 +43,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TSubclassOf<UGameplayEffect> SecondaryAttributes;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	UPROPERTY(EditDefaultsOnly, Category = "Shared Class Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
 	
 	FCharacterDefaultInfo GetClassDefaultInfo(ECharacterClass CharacterClass);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> SharedAbilities;
 };

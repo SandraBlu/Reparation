@@ -43,7 +43,7 @@ void AAOEnemy::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
-
+	UBFLAbilitySystem::GiveStartupAbilities(this, AbilitySystemComponent);
 	
 	//Set widget controller for enemy health bar
 	if (UAOUserWidget* EnemyUI = Cast<UAOUserWidget>(Health->GetUserWidgetObject()))
