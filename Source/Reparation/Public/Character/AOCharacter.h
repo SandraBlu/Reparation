@@ -33,6 +33,7 @@ public:
 	void GrantAbilities();
 
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual void Die() override;
 
 protected:
 

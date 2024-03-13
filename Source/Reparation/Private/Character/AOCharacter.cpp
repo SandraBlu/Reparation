@@ -27,6 +27,16 @@ void AAOCharacter::GrantAbilities()
 	AOASC->AddGrantedAbilities(GrantedAbilities);
 }
 
+void AAOCharacter::Die()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 UAnimMontage* AAOCharacter::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;

@@ -80,6 +80,18 @@ void AAOEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
+void AAOEnemy::Die()
+{
+	SetLifeSpan(LifeSpan);
+	
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	
+	Super::Die();
+}
+
 void AAOEnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
