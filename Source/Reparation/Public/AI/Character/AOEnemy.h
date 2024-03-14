@@ -9,6 +9,8 @@
 #include "AOEnemy.generated.h"
 
 class UWidgetComponent;
+class UBehaviorTree;
+class AAOAIController;
 
 /**
  * 
@@ -21,6 +23,7 @@ class REPARATION_API AAOEnemy : public AAOCharacter
 public:
 
 	AAOEnemy();
+	virtual void PossessedBy(AController* NewController) override;
 
 	//Combat Interface
 	virtual int32 GetPlayerLevel() override;
@@ -63,7 +66,13 @@ protected:
 	UWidgetComponent* Health;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	TObjectPtr<USkeletalMeshComponent> Weapon;
+	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	UBehaviorTree* BTree;
+
+	UPROPERTY()
+	AAOAIController* AIC;
 
 
 };

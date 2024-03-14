@@ -10,10 +10,14 @@
 #include <Abilities/BFLAbilitySystem.h>
 #include "AOGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#
+#include "AI/AOAIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 AAOEnemy::AAOEnemy()
 {
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 	AbilitySystemComponent = CreateDefaultSubobject<UAOAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
@@ -29,6 +33,14 @@ AAOEnemy::AAOEnemy()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AAOEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	AIC = Cast<AAOAIController>(NewController);
+	AIC->GetBlackboardComponent()->InitializeBlackboard(*BTree->BlackboardAsset);
+	AIC->RunBehaviorTree(BTree);
 }
 
 int32 AAOEnemy::GetPlayerLevel()
