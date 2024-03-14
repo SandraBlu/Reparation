@@ -45,8 +45,26 @@ public:
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
 
+	//Resistances
+	FGameplayTag Attributes_Resistance_Physical;
+	FGameplayTag Attributes_Resistance_Poison;
+	FGameplayTag Attributes_Resistance_Dark;
+	FGameplayTag Attributes_Resistance_Electric;
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Ice;
+	
+
 	//Damage
 	FGameplayTag Damage;
+
+	FGameplayTag Damage_Physical;
+	FGameplayTag Damage_Poison;
+	FGameplayTag Damage_Elemental_Dark;
+	FGameplayTag Damage_Elemental_Electric;
+	FGameplayTag Damage_Elemental_Fire;
+	FGameplayTag Damage_Elemental_Ice;
+
+	TMap<FGameplayTag, FGameplayTag> DamageTypeToResist;
 
 	//Effects
 	FGameplayTag Effects_HitReact;

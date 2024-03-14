@@ -68,7 +68,12 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	//-----------------------------------------------------------------------------------
 
 	// Get Damage //Set by Caller Magnitude
-	float Damage = Spec.GetSetByCallerMagnitude(FAOGameplayTags::Get().Damage);
+	float Damage = 0.f;
+	for (auto& Pair : FAOGameplayTags::Get().DamageTypeToResist)
+	{
+		const float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key);
+		Damage += DamageTypeValue;
+	}
 
 	// BlockChance //on Target, and determine if there was a successful Block
 	float TargetBlockChance = 0.f;

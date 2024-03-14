@@ -187,6 +187,32 @@ public:
 	FGameplayAttributeData EnergyRegen;
 	ATTRIBUTE_ACCESSORS(UAOAttributeSet, EnergyRegen)
 
+	//Resistances
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(UAOAttributeSet, PhysicalResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PoisonResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData PoisonResistance;
+	ATTRIBUTE_ACCESSORS(UAOAttributeSet, PoisonResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DarkResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData DarkResistance;
+	ATTRIBUTE_ACCESSORS(UAOAttributeSet, DarkResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ElectricResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData ElectricResistance;
+	ATTRIBUTE_ACCESSORS(UAOAttributeSet, ElectricResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(UAOAttributeSet, FireResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IceResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData IceResistance;
+	ATTRIBUTE_ACCESSORS(UAOAttributeSet, IceResistance);
+
+	
 	//---------------------OnRep
 	//Base
 	UFUNCTION()
@@ -240,5 +266,23 @@ public:
 	void OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen) const;
 	UFUNCTION()
 	void OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRegen) const;
+
+
+	//Resistance
+
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+	UFUNCTION()
+	void OnRep_PoisonResistance(const FGameplayAttributeData& OldPoisonResistance) const;
+	UFUNCTION()
+	void OnRep_DarkResistance(const FGameplayAttributeData& OldDarkResistance) const;
+	UFUNCTION()
+	void OnRep_ElectricResistance(const FGameplayAttributeData& OldElectricResistance) const;
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+	UFUNCTION()
+	void OnRep_IceResistance(const FGameplayAttributeData& OldIceResistance) const;
+
+	
 
 };

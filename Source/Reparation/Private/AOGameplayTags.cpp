@@ -42,6 +42,30 @@ void FAOGameplayTags::InitializeNativeGameplayTags()
 
 	//Damage Meta Att
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"),FString("Damage"));
+	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Physical"), FString("Physical Damage"));
+	GameplayTags.Damage_Poison = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Poison"), FString("Poison Damage"));
+	GameplayTags.Damage_Elemental_Dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Elemental.Dark"), FString("Dark Damage"));
+	GameplayTags.Damage_Elemental_Electric = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Elemental.Electric"), FString("Electric Damage"));
+	GameplayTags.Damage_Elemental_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Elemental.Fire"), FString("Fire Damage"));
+	GameplayTags.Damage_Elemental_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Elemental.Ice"), FString("Ice Damage"));
+
+	//Resistance Tags
+	GameplayTags.Attributes_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Physical"),FString("Resistance to Physical damage"));
+	GameplayTags.Attributes_Resistance_Poison = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Poison"), FString("Resistance to Poison damage"));
+	GameplayTags.Attributes_Resistance_Dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Dark"), FString("Resistance to Dark damage"));
+	GameplayTags.Attributes_Resistance_Electric = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Electric"), FString("Resistance to Electric damage"));
+	GameplayTags.Attributes_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Fire"), FString("Resistance to Fire damage"));
+	GameplayTags.Attributes_Resistance_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Ice"), FString("Resistance to Cold damage"));
+
+	/*
+	 * Map of Damage Types to Resistances
+	 */
+	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
+	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Poison, GameplayTags.Attributes_Resistance_Poison);
+	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Dark, GameplayTags.Attributes_Resistance_Dark);
+	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Electric, GameplayTags.Attributes_Resistance_Electric);
+	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Fire, GameplayTags.Attributes_Resistance_Fire);
+	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Ice, GameplayTags.Attributes_Resistance_Ice);
 
 	//Effects
 	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"), FString("Hit React Tag"));

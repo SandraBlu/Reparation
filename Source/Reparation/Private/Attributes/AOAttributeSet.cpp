@@ -41,6 +41,13 @@ UAOAttributeSet::UAOAttributeSet()
 	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
 	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_MaxStamina, GetMaxStaminaAttribute);
 	AttributeTagMap.Add(GameplayTags.Attributes_Secondary_MaxEnergy, GetMaxEnergyAttribute);
+
+	AttributeTagMap.Add(GameplayTags.Attributes_Resistance_Dark, GetDarkResistanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Resistance_Electric, GetElectricResistanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Resistance_Fire, GetFireResistanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Resistance_Ice, GetIceResistanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Resistance_Physical, GetPhysicalResistanceAttribute);
+	AttributeTagMap.Add(GameplayTags.Attributes_Resistance_Poison, GetPoisonResistanceAttribute);
 }
 
 void UAOAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -70,6 +77,13 @@ void UAOAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, HealthRegen, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, StaminaRegen, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, EnergyRegen, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, PoisonResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, DarkResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, ElectricResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, IceResistance, COND_None, REPNOTIFY_Always);
 
 	//Base
 	DOREPLIFETIME_CONDITION_NOTIFY(UAOAttributeSet, Health, COND_None, REPNOTIFY_Always);
@@ -284,4 +298,34 @@ void UAOAttributeSet::OnRep_StaminaRegen(const FGameplayAttributeData& OldStamin
 void UAOAttributeSet::OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRegen) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, EnergyRegen, OldEnergyRegen);
+}
+
+void UAOAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, PhysicalResistance, OldPhysicalResistance);
+}
+
+void UAOAttributeSet::OnRep_PoisonResistance(const FGameplayAttributeData& OldPoisonResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, PoisonResistance, OldPoisonResistance);
+}
+
+void UAOAttributeSet::OnRep_DarkResistance(const FGameplayAttributeData& OldDarkResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, DarkResistance, OldDarkResistance);
+}
+
+void UAOAttributeSet::OnRep_ElectricResistance(const FGameplayAttributeData& OldElectricResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, ElectricResistance, OldElectricResistance);
+}
+
+void UAOAttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet,FireResistance, OldFireResistance);
+}
+
+void UAOAttributeSet::OnRep_IceResistance(const FGameplayAttributeData& OldIceResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAOAttributeSet, IceResistance, OldIceResistance);
 }

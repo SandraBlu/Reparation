@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/AOGameplayAbility.h"
+#include "Abilities/AODamageAbility.h"
 #include "AOProjectileSkill.generated.h"
 
 class AAOMagicMissile;
@@ -13,7 +13,7 @@ class UGameplayEffect;
  * 
  */
 UCLASS()
-class REPARATION_API UAOProjectileSkill : public UAOGameplayAbility
+class REPARATION_API UAOProjectileSkill : public UAODamageAbility
 {
 	GENERATED_BODY()
 
@@ -38,7 +38,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAOMagicMissile> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
 };
