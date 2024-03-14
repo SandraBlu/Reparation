@@ -16,7 +16,7 @@ AAOPlayerController::AAOPlayerController()
 
 }
 
-void AAOPlayerController::ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter)
+void AAOPlayerController::ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass)
 	{
@@ -24,7 +24,7 @@ void AAOPlayerController::ShowDamageNumber(float DamageAmount, ACharacter* Targe
 		DamageText->RegisterComponent();
 		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		DamageText->SetDamageText(DamageAmount);
+		DamageText->SetDamageText(DamageAmount, bBlockedHit, bCriticalHit);
 	}
 }
 
