@@ -16,6 +16,8 @@ AAOEffectActor::AAOEffectActor()
 
 void AAOEffectActor::ApplyEffectToTarget(AActor* TargetActor, const FEffectType& Effect)
 {
+	if (TargetActor->ActorHasTag(FName("enemy")) && !bApplyEffectToEnemy) return;
+
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	if (TargetASC == nullptr) return;
 
@@ -32,7 +34,7 @@ void AAOEffectActor::ApplyEffectToTarget(AActor* TargetActor, const FEffectType&
 			ActiveEffectHandles.Add(ActiveEffectHandle, TargetASC);
 		}
 	}
-	if (bDestroyOnEffectRemoval)
+	if (bDestroyOnEffectApplication)
 	{
 		Destroy();
 	}
@@ -40,6 +42,8 @@ void AAOEffectActor::ApplyEffectToTarget(AActor* TargetActor, const FEffectType&
 
 void AAOEffectActor::OnOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag(FName("enemy")) && !bApplyEffectToEnemy) return;
+
 	for (const FEffectType& Effect : Effects)
 	{
 		if (Effect.ApplicationPolicy == EApplyEffectPolicy::ApplyOnOverlap)
@@ -51,6 +55,8 @@ void AAOEffectActor::OnOverlap(AActor* TargetActor)
 
 void AAOEffectActor::OnEndOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag(FName("enemy")) && !bApplyEffectToEnemy) return;
+
 	for (const FEffectType& Effect : Effects)
 	{
 		if (Effect.ApplicationPolicy == EApplyEffectPolicy::ApplyOnEndOverlap)

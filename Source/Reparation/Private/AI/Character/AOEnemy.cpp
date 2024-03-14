@@ -33,6 +33,11 @@ AAOEnemy::AAOEnemy()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
 
 void AAOEnemy::PossessedBy(AController* NewController)

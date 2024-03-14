@@ -59,7 +59,10 @@ public:
 	void OnEndOverlap(AActor* TargetActor);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
-	bool bDestroyOnEffectRemoval = false;
+	bool bDestroyOnEffectApplication = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	bool bApplyEffectToEnemy = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
 	EApplyEffectPolicy ApplyInfiniteEffect = EApplyEffectPolicy::DoNotApply;
