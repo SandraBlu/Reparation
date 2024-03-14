@@ -8,6 +8,7 @@
 #include "UI/WidgetController/AOWidgetController.h"
 #include "Framework/AOGameModeBase.h"
 #include "AbilitySystemComponent.h"
+#include "AOAbilityTypes.h"
 
 UOverlayWidgetController* UBFLAbilitySystem::GetOverlayController(const UObject* WorldContextObject)
 {
@@ -43,11 +44,8 @@ UAttributeMenuController* UBFLAbilitySystem::GetAttributeMenuController(const UO
 
 void UBFLAbilitySystem::InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
-	AAOGameModeBase* AOGM = Cast<AAOGameModeBase>( UGameplayStatics::GetGameMode(WorldContextObject));
-	if (AOGM == nullptr) return;
-
 	AActor* AvatarActor = ASC->GetAvatarActor();
-	UCharacterClassInfo* CharacterClassInfo = AOGM->CharacterClassInfo;
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	FCharacterDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 
 	//Add Source Objects(ASC) and Effect Context and Outgoing Spec for AI Attributes Data Asset: CharacterClassInfo
@@ -72,10 +70,51 @@ void UBFLAbilitySystem::GiveStartupAbilities(const UObject* WorldContextObject, 
 	AAOGameModeBase* AuraGameMode = Cast<AAOGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (AuraGameMode == nullptr) return;
 
-	UCharacterClassInfo* CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	for (TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->SharedAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		ASC->GiveAbility(AbilitySpec);
+	}
+}
+
+UCharacterClassInfo* UBFLAbilitySystem::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	AAOGameModeBase* AOGameMode = Cast<AAOGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (AOGameMode == nullptr) return nullptr;
+	return AOGameMode->CharacterClassInfo;
+}
+
+bool UBFLAbilitySystem::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAOGameplayEffectContext* AOEffectContext = static_cast<const FAOGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return AOEffectContext->IsBlockedHit();
+	}
+	return false;
+}
+
+bool UBFLAbilitySystem::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAOGameplayEffectContext* AOEffectContext = static_cast<const FAOGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return AOEffectContext->IsCriticalHit();
+	}
+	return false;
+}
+
+void UBFLAbilitySystem::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit)
+{
+	if (FAOGameplayEffectContext* AOEffectContext = static_cast<FAOGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		AOEffectContext->SetIsBlockedHit(bInIsBlockedHit);
+	}
+}
+
+void UBFLAbilitySystem::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit)
+{
+	if (FAOGameplayEffectContext* AOEffectContext = static_cast<FAOGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		AOEffectContext->SetIsCriticalHit(bInIsCriticalHit);
 	}
 }

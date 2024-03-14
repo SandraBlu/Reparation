@@ -12,6 +12,7 @@
 #include "Interfaces/CombatInterface.h"
 #include "Framework/AOPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include <Abilities/BFLAbilitySystem.h>
 
 UAOAttributeSet::UAOAttributeSet()
 {
@@ -139,7 +140,9 @@ void UAOAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 				TagContainer.AddTag(FAOGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
-			ShowFloatingText(Props, LocalIncomingDamage);
+			const bool bBlock = UBFLAbilitySystem::IsBlockedHit(Props.ContextHandle);
+			const bool bCriticalHit = UBFLAbilitySystem::IsCriticalHit(Props.ContextHandle);
+			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
 		}
 	}
 }
@@ -175,7 +178,7 @@ void UAOAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& 
 	}
 }
 
-void UAOAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageText) const
+void UAOAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageText, bool bBlockedHit, bool bCriticalHit) const
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{

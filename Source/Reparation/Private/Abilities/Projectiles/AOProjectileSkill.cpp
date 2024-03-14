@@ -65,6 +65,15 @@ void UAOProjectileSkill::SpawnProjectile(ACharacter* InstigatorCharacter)
 			Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+		EffectContextHandle.SetAbility(this);
+		EffectContextHandle.AddSourceObject(Missile);
+		TArray<TWeakObjectPtr<AActor>> Actors;
+		Actors.Add(Missile);
+		EffectContextHandle.AddActors(Actors);
+		FHitResult HitResult;
+		HitResult = Hit;
+		EffectContextHandle.AddHitResult(HitResult);
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
 
 		const FAOGameplayTags GameplayTags = FAOGameplayTags::Get();
