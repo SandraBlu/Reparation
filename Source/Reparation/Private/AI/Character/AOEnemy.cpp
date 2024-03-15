@@ -46,6 +46,8 @@ void AAOEnemy::PossessedBy(AController* NewController)
 	AIC = Cast<AAOAIController>(NewController);
 	AIC->GetBlackboardComponent()->InitializeBlackboard(*BTree->BlackboardAsset);
 	AIC->RunBehaviorTree(BTree);
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
 int32 AAOEnemy::GetPlayerLevel()
@@ -95,6 +97,7 @@ void AAOEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
 void AAOEnemy::Die()
