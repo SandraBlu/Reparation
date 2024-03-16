@@ -63,6 +63,16 @@ void AAOPlayerBase::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+AActor* AAOPlayerBase::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
+void AAOPlayerBase::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
 void AAOPlayerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

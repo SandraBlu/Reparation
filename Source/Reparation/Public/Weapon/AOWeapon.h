@@ -28,8 +28,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponSocket")
 	FName InactiveWeaponSocket;
 
-	/*UPROPERTY(EditAnywhere, Category = "FiringSocket")
-	FName FiringSocket;*/
+	UPROPERTY(EditAnywhere, Category = "FiringSocket")
+	FName FiringSocket;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* EquipAnim;

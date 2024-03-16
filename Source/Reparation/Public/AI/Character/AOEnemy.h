@@ -50,11 +50,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartDissolve();
 
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() const override;
+
 protected:
 
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeAttributes() const override;
+
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Default Settings")
 	int32 Level = 1;
@@ -67,6 +72,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponSocket;
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	UBehaviorTree* BTree;

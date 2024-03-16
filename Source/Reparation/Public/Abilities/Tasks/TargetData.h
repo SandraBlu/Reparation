@@ -16,7 +16,7 @@ class REPARATION_API UTargetData : public UAbilityTask
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "true"))
-	static UTargetData* CreateTargetData(UGameplayAbility* OwningAbility);
+	static UTargetData* GetProjectileTargetData(UGameplayAbility* OwningAbility);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnProjectileHit HitData;

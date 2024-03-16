@@ -199,6 +199,11 @@ void UAOAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Dam
 		if (AAOPlayerController* PC = Cast<AAOPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
 		{
 			PC->ShowDamageNumber(DamageText, Props.TargetCharacter, bBlockedHit, bCriticalHit);
+			return;
+		}
+		if (AAOPlayerController* PC = Cast<AAOPlayerController>(UGameplayStatics::GetPlayerController(Props.TargetCharacter, 0)))
+		{
+			PC->ShowDamageNumber(DamageText, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
 }

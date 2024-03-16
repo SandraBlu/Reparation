@@ -33,11 +33,6 @@ AAOEnemy::AAOEnemy()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
 
 void AAOEnemy::PossessedBy(AController* NewController)
@@ -62,7 +57,7 @@ void AAOEnemy::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
-	UBFLAbilitySystem::GiveStartupAbilities(this, AbilitySystemComponent);
+	UBFLAbilitySystem::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
 	
 	//Set widget controller for enemy health bar
 	if (UAOUserWidget* EnemyUI = Cast<UAOUserWidget>(Health->GetUserWidgetObject()))
@@ -100,6 +95,16 @@ void AAOEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
+AActor* AAOEnemy::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
+void AAOEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
 void AAOEnemy::Die()
 {
 	SetLifeSpan(LifeSpan);
@@ -125,4 +130,23 @@ void AAOEnemy::InitAbilityActorInfo()
 void AAOEnemy::InitializeAttributes() const
 {
 	UBFLAbilitySystem::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
+}
+
+FVector AAOEnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
+{
+
+	const FAOGameplayTags& GameplayTags = FAOGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponSocket);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LHand))
+	{
+		return GetMesh()->GetSocketLocation(LHand);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RHand))
+	{
+		return GetMesh()->GetSocketLocation(RHand);
+	}
+	return FVector();
 }

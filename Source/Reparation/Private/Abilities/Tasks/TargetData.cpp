@@ -4,7 +4,7 @@
 #include "Abilities/Tasks/TargetData.h"
 #include "GameFramework/Character.h"
 
-UTargetData* UTargetData::CreateTargetData(UGameplayAbility* OwningAbility)
+UTargetData* UTargetData::GetProjectileTargetData(UGameplayAbility* OwningAbility)
 {
 	UTargetData* MyObj = NewAbilityTask<UTargetData>(OwningAbility);
 	return MyObj;
@@ -12,8 +12,10 @@ UTargetData* UTargetData::CreateTargetData(UGameplayAbility* OwningAbility)
 
 void UTargetData::Activate()
 {
+	const APawn* Instigator = Cast<APawn>("Pawn");
+	FVector TraceStart = Instigator->GetPawnViewLocation();
 	APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
-	FHitResult MissileTarget;
-
+	FRotator TraceDirection = PC->GetControlRotation();
+	PC->GetPlayerViewPoint(TraceStart, TraceDirection);
 }
 

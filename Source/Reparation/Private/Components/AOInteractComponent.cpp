@@ -114,8 +114,6 @@ float UAOInteractComponent::GetInteractPercentage(class AAOPlayerBase* Character
 		{
 			if (IsValid(Character))
 			{
-				/*AAOPlayerController* PC = Cast<AAOPlayerController>(Character->GetController());*/
-
 				if (Interactor && Interactor->IsInteracting())
 				{
 					return 1.f - FMath::Abs(Interactor->GetRemainingInteractTime() / InteractTime);

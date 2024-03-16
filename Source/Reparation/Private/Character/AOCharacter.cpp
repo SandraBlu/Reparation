@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Weapon/AOWeapon.h"
 #include "Components/CapsuleComponent.h"
+#include "AOGameplayTags.h"
 
 
 AAOCharacter::AAOCharacter()
@@ -35,6 +36,25 @@ void AAOCharacter::Die()
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bDead = true;
+}
+
+FVector AAOCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
+{
+	const FAOGameplayTags& GameplayTags = FAOGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon) && IsValid(EquippedWeapon))
+	{
+		return EquippedWeapon->GetWeaponMesh()->GetSocketLocation(EquippedWeapon->FiringSocket);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LHand))
+	{
+		return GetMesh()->GetSocketLocation(LHand);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RHand))
+	{
+		return GetMesh()->GetSocketLocation(RHand);
+	}
+	return FVector();
 }
 
 UAnimMontage* AAOCharacter::GetHitReactMontage_Implementation()
@@ -66,12 +86,17 @@ void AAOCharacter::InitAbilityActorInfo()
 
 }
 
-FVector AAOCharacter::GetRHandSocketLocation()
+TArray<FTaggedMontage> AAOCharacter::GetAttackMontages_Implementation()
 {
-	return GetMesh()->GetSocketLocation(RHandProjectile);
+	return AttackMontages;
 }
 
-FVector AAOCharacter::GetLHandSocketLocation()
+bool AAOCharacter::IsDead_Implementation() const
 {
-	return GetMesh()->GetSocketLocation(LHandProjectile);
+	return bDead;
+}
+
+AActor* AAOCharacter::GetAvatar_Implementation()
+{
+	return this;
 }

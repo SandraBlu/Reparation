@@ -56,6 +56,15 @@ void FAOGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attributes_Resistance_Electric = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Electric"), FString("Resistance to Electric damage"));
 	GameplayTags.Attributes_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Fire"), FString("Resistance to Fire damage"));
 	GameplayTags.Attributes_Resistance_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Ice"), FString("Resistance to Cold damage"));
+	
+	//Ability
+	GameplayTags.Ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Melee"), FString("Melee Attack"));
+
+	//Montage
+	GameplayTags.Montage_Attack_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.Weapon"), FString("Weapon"));
+	GameplayTags.Montage_Attack_RHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.RHand"), FString("RHand"));
+	GameplayTags.Montage_Attack_LHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.LHand"), FString("LHand"));
+
 
 	/*
 	 * Map of Damage Types to Resistances

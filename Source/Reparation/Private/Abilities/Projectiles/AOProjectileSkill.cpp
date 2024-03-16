@@ -25,11 +25,12 @@ void UAOProjectileSkill::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 void UAOProjectileSkill::SpawnProjectile(ACharacter* InstigatorCharacter)
 {
 	
-	ICombatInterface* iCombat = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	/*ICombatInterface* iCombat = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	if (iCombat)
-	{
-		const FVector SocketLocation = iCombat->GetLHandSocketLocation();
-		
+	{*/
+		//const FVector SocketLocation = ICombatInterface->GetLHandSocketLocation();
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAOGameplayTags::Get().Montage_Attack_LHand);
+
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParams.Instigator = InstigatorCharacter;
@@ -52,7 +53,9 @@ void UAOProjectileSkill::SpawnProjectile(ACharacter* InstigatorCharacter)
 		if (GetWorld()->SweepSingleByChannel(Hit, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, Shape, Params))
 		{
 			// Overwrite trace end with impact point in world
+			GetHit(TraceEnd);
 			TraceEnd = Hit.ImpactPoint;
+			
 		}
 		// find new direction/rotation from Hand pointing to impact point in world.
 		FRotator ProjRotation = (TraceEnd - SocketLocation).Rotation();
@@ -87,5 +90,5 @@ void UAOProjectileSkill::SpawnProjectile(ACharacter* InstigatorCharacter)
 		Missile->DamageEffectSpecHandle = SpecHandle;
 
 		Missile->FinishSpawning(SpawnTransform);
-	}
+	//}
 }

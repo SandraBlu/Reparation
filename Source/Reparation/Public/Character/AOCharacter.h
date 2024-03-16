@@ -10,8 +10,6 @@
 #include "Interfaces/CombatInterface.h"
 #include "AOCharacter.generated.h"
 
-
-
 class UAOAbilitySystemComponent;
 class UAOAttributeSet;
 class UAOFootstepsComponent;
@@ -32,9 +30,21 @@ public:
 
 	void GrantAbilities();
 
+
+	//iCombat overrides
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void Die() override;
 
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
+	/*virtual FVector GetRHandSocketLocation() override;
+	virtual FVector GetLHandSocketLocation() override;*/
+	virtual AActor* GetAvatar_Implementation() override;
+	virtual bool IsDead_Implementation() const override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FTaggedMontage> AttackMontages;
+	
 protected:
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const;
@@ -69,13 +79,15 @@ protected:
 	FORCEINLINE AAOWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	FName RHandProjectile;
+	FName RHand;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	FName LHandProjectile;
+	FName LHand;
 
-	virtual FVector GetRHandSocketLocation() override;
-	virtual FVector GetLHandSocketLocation() override;
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	AActor* CombatTarget;
+
+	bool bDead = false;
 
 	/**Combat Interface*/
 	/*FORCEINLINE int32 GetLevel() override { return Level; }*/

@@ -65,7 +65,6 @@ void AAOProjectile::Explode_Implementation()
 void AAOProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	//SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
 
 	// More consistent to bind here compared to Constructor which may fail to bind if Blueprint was created before adding this binding (or when using hotreload)
 	// PostInitializeComponent is the preferred way of binding any events.

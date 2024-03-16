@@ -71,6 +71,8 @@ public:
 	
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	//UInteractComponent* PlayerLootInteract;
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() const override;
 
 	protected:
 	

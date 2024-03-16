@@ -66,6 +66,13 @@ public:
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypeToResist;
 
+	//Abilities
+	FGameplayTag Ability_Melee;
+
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_RHand;
+	FGameplayTag Montage_Attack_LHand;
+
 	//Effects
 	FGameplayTag Effects_HitReact;
 

@@ -38,4 +38,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAOMagicMissile> ProjectileClass;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GetHit(const FVector& Location);
+
 };

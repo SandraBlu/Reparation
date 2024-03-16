@@ -16,7 +16,7 @@ class UNiagaraSystem;
 class USoundBase;
 
 
-UCLASS()
+UCLASS(ABSTRACT)
 class REPARATION_API AAOProjectile : public AActor
 {
 	GENERATED_BODY()
