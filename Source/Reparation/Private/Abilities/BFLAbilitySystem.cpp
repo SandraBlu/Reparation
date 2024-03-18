@@ -145,3 +145,9 @@ void UBFLAbilitySystem::GetTargetsWithinRadius(const UObject* WorldContextObject
 		}
 	}
 }
+
+bool UBFLAbilitySystem::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
+{ 
+	const bool bFriends = FirstActor->ActorHasTag(FName("player")) && SecondActor->ActorHasTag(FName("player")) || FirstActor->ActorHasTag(FName("enemy")) && SecondActor->ActorHasTag(FName("enemy"));
+	return !bFriends;
+}

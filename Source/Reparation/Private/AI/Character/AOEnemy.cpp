@@ -2,14 +2,14 @@
 
 
 #include "AI/Character/AOEnemy.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/AOAbilitySystemComponent.h"
 #include "Attributes/AOAttributeSet.h"
-#include "Reparation/Reparation.h"
 #include "Components/WidgetComponent.h"
 #include "UI/AOUserWidget.h"
 #include <Abilities/BFLAbilitySystem.h>
 #include "AOGameplayTags.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "AI/AOAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -26,8 +26,7 @@ AAOEnemy::AAOEnemy()
 	Health = CreateDefaultSubobject<UWidgetComponent>("Health Bar");
 	Health->SetupAttachment(GetRootComponent());
 
-	// Enabled on mesh to react to incoming projectiles
-	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
