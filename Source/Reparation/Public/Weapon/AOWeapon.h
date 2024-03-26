@@ -44,9 +44,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Components)
 	USkeletalMeshComponent* SKMesh;
 
-	////The weapon item in the players inventory
-	//UPROPERTY(BlueprintReadOnly)
-	//class UAOWeaponItem* Item;
+	//The weapon item in the players inventory
+	UPROPERTY(BlueprintReadOnly)
+	class UAOWeaponItem* Item;
 
 	UFUNCTION(BlueprintCallable)
 	void PlayEquipMontage(const FName SectionName);

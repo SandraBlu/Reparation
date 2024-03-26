@@ -4,14 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Character/ActionStates.h"
 #include "AOFootstepsComponent.generated.h"
-
-UENUM(BlueprintType)
-enum class EFoot : uint8
-{
-	Left UMETA(DisplayName = "Left"), 
-	Right UMETA(DisplayName = "Right")
-};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class REPARATION_API UAOFootstepsComponent : public UActorComponent

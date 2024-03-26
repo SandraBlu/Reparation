@@ -2,6 +2,7 @@
 
 
 #include "AI/Character/AOEnemy.h"
+#include "Reparation/Reparation.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/AOAbilitySystemComponent.h"
@@ -13,6 +14,7 @@
 #include "AI/AOAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
+
 
 AAOEnemy::AAOEnemy()
 {
@@ -27,6 +29,10 @@ AAOEnemy::AAOEnemy()
 	Health->SetupAttachment(GetRootComponent());
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");

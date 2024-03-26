@@ -74,8 +74,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item", meta =(ClampMin = 2, EditCondition = bStackable))
 	int32 MaxStackSize;
 
-	/*UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
-	TSubclassOf<class UAOItemTooltip> ItemTooltip;*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
+	TSubclassOf<class UAOItemTooltip> ItemTooltip;
 
 	UPROPERTY(EditAnywhere, Category = "Item", meta = (UIMin =1, EditCondition = bStackable))
 	int32 Quantity;

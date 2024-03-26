@@ -40,7 +40,6 @@ void AAOPickup::InitializePickup(const TSubclassOf<class UAOItem> ItemClass, con
 	}
 }
 
-// Called when the game starts or when spawned
 void AAOPickup::BeginPlay()
 {
 	Super::BeginPlay();
@@ -54,7 +53,6 @@ void AAOPickup::BeginPlay()
 	{
 		AlignWithGround();
 	}
-	
 }
 
 void AAOPickup::UpdateItemSpecs()

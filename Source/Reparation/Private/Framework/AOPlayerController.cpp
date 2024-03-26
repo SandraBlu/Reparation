@@ -103,7 +103,7 @@ void AAOPlayerController::PrimaryAttack(const FInputActionValue& Value)
 {
 	if (AAOPlayerBase* PlayerPawn = GetPawn<AAOPlayerBase>())
 	{
-		PlayerPawn->EnterAttack();
+		PlayerPawn->Attack();
 	}
 }
 
@@ -136,7 +136,7 @@ void AAOPlayerController::SetupInputComponent()
 
 void AAOPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
 }
 
 void AAOPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)

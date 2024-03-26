@@ -30,20 +30,36 @@ public:
 
 	void GrantAbilities();
 
+	//Inventory Comp
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	class UAOInventoryComponent* PlayerInventory;
+
 
 	//iCombat overrides
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void Die() override;
 
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
-	/*virtual FVector GetRHandSocketLocation() override;
-	virtual FVector GetLHandSocketLocation() override;*/
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual bool IsDead_Implementation() const override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation();
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
+
+	//Footsteps Comp getter-----------------
+	UAOFootstepsComponent* GetFootstepsComp() const;
+
+	
+	UFUNCTION(BlueprintCallable)
+	void SetLootSource(class UAOInventoryComponent* NewLootSource);
+
+	
+ 	UFUNCTION(BlueprintPure, Category = "Loot")
+	bool IsLooting() const;
+
+ 	UFUNCTION(BlueprintCallable, Category = "Loot")
+	void LootItem(class UAOItem* ItemToGive);
 	
 protected:
 
@@ -103,9 +119,19 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UAOFootstepsComponent* FootstepsComp;
 
-	//Inventory Comp
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	class UAOInventoryComponent* LootSource;
+	
+	//Looting--------------------------------------------
+	
+	UFUNCTION()
+ 	void BeginLootingNPC(class AAOCharacter* Character);
 
-
+	//Inventory we are currently looting from
+	UPROPERTY(BlueprintReadOnly)
+	UAOInventoryComponent* LootSource;
+	
+ 	UFUNCTION()
+ 	void OnLootSourceDestroyed(AActor* DestroyedActor);
+ 	
+ 	UFUNCTION()
+ 	void ShowHideLootMenu();
 };

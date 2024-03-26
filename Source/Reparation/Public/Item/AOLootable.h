@@ -12,15 +12,30 @@ class REPARATION_API AAOLootable : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	
 	AAOLootable();
 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category  = "Components")
+	class UStaticMeshComponent* LootContainerMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category  = "Components")
+	class UAOInteractComponent* LootInteract;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category  = "Components")
+	class UAOInventoryComponent* Inventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category  = "Components")
+	class UDataTable* LootTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category  = "Components")
+	FIntPoint LootRolls;
+
 protected:
-	// Called when the game starts or when spawned
+	
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION()
+	void OnInteract(class AAOPlayerBase* Character);
 
 };

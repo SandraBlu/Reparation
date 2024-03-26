@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Character/AOCharacter.h"
+#include "Character/ActionStates.h"
 #include "AOPlayerBase.generated.h"
+
+class UAOEquipItem;
 
 USTRUCT()
 struct FInteractData
@@ -28,7 +31,7 @@ struct FInteractData
 	bool bInteractHeld;
 };
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquippedItemsChanged, const EEquipSlot, Slot, const UAOEquipItem*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquippedItemsChanged, const EEquipSlot, Slot, const UAOEquipItem*, Item);
 
 
 UCLASS()
@@ -43,17 +46,13 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	//Inventory Comp
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	class UAOInventoryComponent* PlayerInventory;
-
 	//Add default meshes in case we do not have clothing item
-	/*UPROPERTY(BlueprintReadOnly, Category = Mesh)
-	TMap<EEquipSlot, USkeletalMesh*>  NakedMeshes;*/
+	UPROPERTY(BlueprintReadOnly, Category = Mesh)
+	TMap<EEquipSlot, USkeletalMesh*>  NakedMeshes;
 	
 	// Equip Map links slots to PlayerMeshes
-	/*UPROPERTY(BlueprintReadOnly, Category = Mesh)
-	TMap<EEquipSlot, USkeletalMeshComponent*> PlayerMeshes;*/
+	UPROPERTY(BlueprintReadOnly, Category = Mesh)
+	TMap<EEquipSlot, USkeletalMeshComponent*> PlayerMeshes;
 	
 	//Player Meshes
 	UPROPERTY(EditAnywhere, Category = "Components")
@@ -77,7 +76,6 @@ public:
 	protected:
 	
 	virtual void Tick(float DeltaTime) override;
-	//virtual void Restart() override;
 
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* CameraBoom;
@@ -85,10 +83,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	class UCameraComponent* FollowCam;
 
-	/*EEquipState EquipState = EEquipState::EES_Unequipped;
+	EEquipState EquipState = EEquipState::EES_Unequipped;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	EActionState ActionState = EActionState::EAS_Idle;*/
+	EActionState ActionState = EActionState::EAS_Idle;
 
 	//UFUNCTION(BlueprintCallable)
 	//bool CanAttack();
@@ -109,8 +107,8 @@ public:
 	//void FinishEquipping();
 
 	////GameplayTags---------------
-	//UPROPERTY(EditDefaultsOnly)
-	//FGameplayTag AttackEventTag;
+	/*UPROPERTY(EditDefaultsOnly)
+	FGameplayTag AttackEventTag;*/
 
 	////GameplayTags---------------
 	//UPROPERTY(EditDefaultsOnly)
@@ -123,9 +121,6 @@ public:
 
 	//CombatInterface
 	virtual int32 GetPlayerLevel() override;
-
-	/*UPROPERTY(EditAnywhere, Category = "Weapon")
-	class AAOWeapon* EquippedWeapon;*/
 
 	////Interacting---------------------------------------
 	UPROPERTY()
@@ -150,26 +145,26 @@ public:
 
  	//-------------------------------------------
  	//Equipment Map holding current Equipped Items
- 	/*UPROPERTY(VisibleAnywhere, Category = "Items")
- 	TMap<EEquipSlot, UAOEquipItem*> EquippedItems;*/
+	UPROPERTY(VisibleAnywhere, Category = "Items")
+	TMap<EEquipSlot, UAOEquipItem*> EquippedItems;
 
 
 	//Weapon--------------------
-	/*UFUNCTION()
+	UFUNCTION()
 	void OnWeaponEquipped();
 
 	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);*/
+	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);
 
 	//called when falling off cliff
 	//void UntimelyDeath(struct FDamageEvent const& DamageEvent, const AActor* DamageCauser);
 
 	//Throwable--------------------------------
 	UFUNCTION()
-	/*void PlayTossFX(class UAnimMontage* TossMontage);
-	class UThrowableItem* GetThrowable() const;
+	void PlayTossFX(class UAnimMontage* TossMontage);
+	class UAOThrowItem* GetThrowable() const;
 	void SpawnThrowable();
-	bool CanUseThrowable() const;*/
+	bool CanUseThrowable() const;
 
 	////Timed Interact helpers----------
 	bool IsInteracting() const;
@@ -179,45 +174,42 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Items")
 	void UseItem(class UAOItem* Item);
 
-	/*UFUNCTION(BlueprintCallable, Category = "Items")
-	void DropItem(class UAOItem* Item, const int32 Quantity);*/
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void DropItem(class UAOItem* Item, const int32 Quantity);
 
 
  	UPROPERTY(EditDefaultsOnly, Category = "Item")
  	TSubclassOf<class AAOPickup> PickupClass;
 
  	//Equipment
- 	/*bool EquipItem(class UAOEquipItem* Item);
- 	bool UnequipItem(class UAOEquipItem* Item);*/
+ 	bool EquipItem(class UAOEquipItem* Item);
+ 	bool UnequipItem(class UAOEquipItem* Item);
  
- 	/*void EquipGear(class UAOGearItem* Gear);
+ 	void EquipGear(class UAOGearItem* Gear);
  	void UnequipGear(const EEquipSlot Slot);
  
  	void EquipWeapon(class UAOWeaponItem* WeaponItem);
- 	void UnequipWeapon();*/
+ 	void UnequipWeapon();
 
  	//Equip Delegate
- //	UPROPERTY(BlueprintAssignable, Category = "Item")
- //	FOnEquippedItemsChanged OnEquippedItemsChanged;
+ 	UPROPERTY(BlueprintAssignable, Category = "Item")
+ 	FOnEquippedItemsChanged OnEquippedItemsChanged;
 
- //	//Equipment; BP Access SK Mesh Comp Slot
- //	UFUNCTION(BlueprintPure)
- //	class USkeletalMeshComponent* GetSlotSkeletalMeshComponent(const EEquipSlot Slot);
- //
- //	UFUNCTION(BlueprintPure)
- //	FORCEINLINE TMap<EEquipSlot, UAOEquipItem*> GetEquippedItems() const { return EquippedItems; }
+ 	//Equipment; BP Access SK Mesh Comp Slot
+	UFUNCTION(BlueprintPure)
+	class USkeletalMeshComponent* GetSlotSkeletalMeshComponent(const EEquipSlot Slot);
+ 
+ 	UFUNCTION(BlueprintPure)
+ 	FORCEINLINE TMap<EEquipSlot, UAOEquipItem*> GetEquippedItems() const { return EquippedItems; }
 
-	//UFUNCTION(BlueprintPure)
-	//FORCEINLINE class AAOWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE EEquipState GetEquipState() const { return EquipState; }
 
-	//UFUNCTION(BlueprintPure)
-	//FORCEINLINE EEquipState GetEquipState() const { return EquipState; }
-
-	//UFUNCTION(BlueprintPure)
-	//FORCEINLINE EActionState GetActionState() const { return ActionState; }
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 
 	void DrawWeapon();
-	void EnterAttack();
+	void Attack();
 	void UseThrowable();
 
 private:

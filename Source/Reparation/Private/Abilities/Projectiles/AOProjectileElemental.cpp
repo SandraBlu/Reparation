@@ -28,6 +28,7 @@ void UAOProjectileElemental::SpawnProjectile(AAOPlayerBase* InstigatorCharacter)
 		if (iCombat)
 		{
 			const FVector SocketLocation = iCombat->GetRHandSocketLocation();
+			//const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(),SocketTag);
 
 			// We trace against the environment first to find whats under the player crosshair.
 			// We use the hit location to adjust the projectile launch direction so it will hit what is under the crosshair rather than shoot straight forward from the player hands.

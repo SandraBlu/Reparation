@@ -30,6 +30,24 @@ public:
 	UFUNCTION()
 	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit);
 
+	//Inventory
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowInGameUI();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowNotification(const FText& Message);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowDeathScreen(class AAOCharacter* Killer);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ShowLootMenu(const class UAOInventoryComponent* LootSource);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void HideLootMenu();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHitPlayer();
 protected:
 
 	virtual void BeginPlay() override;
@@ -90,6 +108,8 @@ protected:
 
 	//Called to bind functionality to input
 	virtual void SetupInputComponent() override;
+
+	
 
 private:
 

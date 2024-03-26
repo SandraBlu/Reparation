@@ -8,6 +8,10 @@
 #include "Components/CapsuleComponent.h"
 #include "AOGameplayTags.h"
 #include "Reparation/Reparation.h"
+#include "Framework/AOPlayerController.h"
+#include "Components/AOInventoryComponent.h"
+#include "Components/AOFootstepsComponent.h"
+#include "Item/AOItem.h"
 
 
 AAOCharacter::AAOCharacter()
@@ -40,6 +44,57 @@ void AAOCharacter::Die()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bDead = true;
+}
+
+UAOFootstepsComponent* AAOCharacter::GetFootstepsComp() const
+{
+	return FootstepsComp;
+}
+
+void AAOCharacter::SetLootSource(class UAOInventoryComponent* NewLootSource)
+{
+	//if item is destroyed; stop looting
+	if (NewLootSource && NewLootSource->GetOwner())
+	{
+		NewLootSource->GetOwner()->OnDestroyed.AddUniqueDynamic(this, &AAOCharacter::OnLootSourceDestroyed);
+	}
+	LootSource = NewLootSource;
+	ShowHideLootMenu();
+	UE_LOG(LogTemp, Warning, TEXT("set  new loot source"));
+
+	//for AI
+	if (NewLootSource)
+	{
+		if (AAOCharacter* Character = Cast<AAOCharacter>(NewLootSource->GetOwner()))
+		{
+			Character->SetLifeSpan(120.f);
+		}
+	}
+}
+
+bool AAOCharacter::IsLooting() const
+{
+	return LootSource != nullptr;
+}
+
+void AAOCharacter::LootItem(class UAOItem* ItemToGive)
+{
+	if (PlayerInventory && LootSource && ItemToGive && LootSource->HasItem(ItemToGive->GetClass(), ItemToGive->GetQuantity()))
+	{
+		const FItemAddResult AddResult = PlayerInventory->TryAddItem(ItemToGive);
+		PlayerInventory->OnInventoryUpdated.Broadcast();
+		if (AddResult.ActualAmountGiven > 0)
+		{
+			LootSource->ConsumeItem(ItemToGive, AddResult.ActualAmountGiven);
+		}
+		else
+		{
+			if (AAOPlayerController* PC = Cast<AAOPlayerController>(GetController()))
+			{
+				PC->ShowNotification(AddResult.ErrorText);
+			}
+		}
+	}
 }
 
 FVector AAOCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
@@ -87,6 +142,41 @@ void AAOCharacter::InitializeAttributes() const
 void AAOCharacter::InitAbilityActorInfo()
 {
 
+}
+
+void AAOCharacter::BeginLootingNPC(class AAOCharacter* Character)
+{
+	if (Character)
+	{
+		Character->SetLootSource(PlayerInventory);
+	}
+}
+
+void AAOCharacter::OnLootSourceDestroyed(AActor* DestroyedActor)
+{
+	if (LootSource && DestroyedActor == LootSource->GetOwner())
+	{
+		SetLootSource(nullptr);
+	}
+}
+
+void AAOCharacter::ShowHideLootMenu()
+{
+	if (AAOPlayerController* PC = Cast<AAOPlayerController>(GetController()))
+	{
+		if (PC)
+		{
+			if (LootSource)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("On Rep!!!!!!!! new loot source"));
+				PC->ShowLootMenu(LootSource);
+			}
+			else
+			{
+				PC->HideLootMenu();
+			}
+		}
+	}
 }
 
 TArray<FTaggedMontage> AAOCharacter::GetAttackMontages_Implementation()

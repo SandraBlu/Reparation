@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include <Abilities/BFLAbilitySystem.h>
 
 AAOMagicMissile::AAOMagicMissile()
 {
@@ -13,10 +14,15 @@ AAOMagicMissile::AAOMagicMissile()
 
 void AAOMagicMissile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	
 	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Apply Gameplay EffectSpec"));
 		TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+	}
+	if (!UBFLAbilitySystem::IsNotFriend(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
+	{
+		return;
 	}
 
 	Explode();
