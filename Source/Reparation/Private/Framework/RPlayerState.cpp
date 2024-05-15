@@ -3,3 +3,51 @@
 
 #include "Framework/RPlayerState.h"
 
+ARPlayerState::ARPlayerState()
+{
+	//AbilitySystemComponent = CreateDefaultSubobject<UAOAbilityComp>("ASC");
+	//AttributeSet = CreateDefaultSubobject<UAOAttributeSet>("Attributes");
+
+	NetUpdateFrequency = 100.f;
+}
+
+UAbilitySystemComponent* ARPlayerState::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void ARPlayerState::AddToXP(int32 InXP)
+{
+	XP += InXP;
+	OnXPChangeDelegate.Broadcast(XP);
+}
+
+void ARPlayerState::SetXP(int32 InXP)
+{
+	XP = InXP;
+	OnXPChangeDelegate.Broadcast(XP);
+}
+
+void ARPlayerState::AddToLevel(int32 InLevel)
+{
+	Level += InLevel;
+	OnLevelChangeDelegate.Broadcast(Level);
+}
+
+void ARPlayerState::SetLevel(int32 InLevel)
+{
+	Level = InLevel;
+	OnLevelChangeDelegate.Broadcast(Level);
+}
+
+void ARPlayerState::AddToAttributePts(int32 InAttributePts)
+{
+	AttributePts += InAttributePts;
+	OnAttributePtsChangeDelegate.Broadcast(AttributePts);
+}
+
+void ARPlayerState::AddToAbilityPts(int32 InAbilityPts)
+{
+	AbilityPts += InAbilityPts;
+	OnAbilityPtsChangeDelegate.Broadcast(AbilityPts);
+}

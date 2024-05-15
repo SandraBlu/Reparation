@@ -2,33 +2,56 @@
 
 
 #include "Character/RCharacter.h"
+#include "AbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ARCharacter::ARCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = false;
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	//GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 
 }
 
-// Called when the game starts or when spawned
-void ARCharacter::BeginPlay()
+UAbilitySystemComponent* ARCharacter::GetAbilitySystemComponent() const
 {
-	Super::BeginPlay();
-	
+	return AbilitySystemComponent;
 }
 
-// Called every frame
-void ARCharacter::Tick(float DeltaTime)
+void ARCharacter::InitAbilityActorInfo()
 {
-	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
-void ARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ARCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (GetAbilitySystemComponent() && EffectClass)
+	{
+		FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(EffectClass, Level, EffectContext);
 
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+	}
 }
 
+void ARCharacter::InitializeAttributes() const
+{
+	ApplyEffectToSelf(PrimaryAttributes, 1.f);
+	ApplyEffectToSelf(SecondaryAttributes, 1.f);
+	ApplyEffectToSelf(BaseAttributes, 1.f);
+	ApplyEffectToSelf(ResistanceAttributes, 1.f);
+}
+
+void ARCharacter::GrantAbilities()
+{
+
+}

@@ -6,6 +6,11 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "NiagaraComponent.h"
+#include "Framework/RPlayerState.h"
+#include "AbilitySystemComponent.h"
+#include "Framework/RPlayerController.h"
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
 
@@ -18,6 +23,39 @@ ARPlayer::ARPlayer()
 
 	FollowCam = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCam"));
 	FollowCam->SetupAttachment(CameraBoom);
+
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+
+	LevelUpFX = CreateDefaultSubobject<UNiagaraComponent>("LevelUpComp");
+	LevelUpFX->SetupAttachment(GetRootComponent());
+	LevelUpFX->bAutoActivate = false;
+}
+
+void ARPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilityActorInfo();
+	GrantAbilities();
+}
+
+void ARPlayer::InitAbilityActorInfo()
+{
+	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
+	check(RPlayerState)
+		RPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(RPlayerState, this);
+	//Cast<UAOAbilityComp>(AOPlayerState->GetAbilitySystemComponent())->AbilityActorInfoInit();
+	AbilitySystemComponent = RPlayerState->GetAbilitySystemComponent();
+	//AttributeSet = RPlayerState->GetAttributeSet();
+	if (ARPlayerController* AOPC = Cast<ARPlayerController>(GetController()))
+	{
+// 		if (AAOHUD* Hud = Cast<AAOHUD>(AOPC->GetHUD()))
+// 		{
+// 			Hud->InitOverlay(AOPC, RPlayerState, AbilitySystemComponent, AttributeSet);
+// 		}
+	}
+	InitializeAttributes();
 }
 
 void ARPlayer::BeginPlay()

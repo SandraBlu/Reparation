@@ -22,16 +22,22 @@ class REPARATION_API ARPlayer : public ARCharacter
 
 		ARPlayer();
 
+		virtual void PossessedBy(AController* NewController) override;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		class UNiagaraComponent* LevelUpFX;
+
 	protected:
 
-		UPROPERTY(VisibleAnywhere)
+		virtual void InitAbilityActorInfo() override;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		class USpringArmComponent* CameraBoom;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		class UCameraComponent* FollowCam;
 
 		virtual void BeginPlay() override;
-		//virtual void Tick(float DeltaTime) override;
 
 		//Input 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
