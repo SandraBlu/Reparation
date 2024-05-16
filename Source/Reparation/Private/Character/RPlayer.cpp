@@ -10,7 +10,9 @@
 #include "NiagaraComponent.h"
 #include "Framework/RPlayerState.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/RAbilitySystemComponent.h"
 #include "Framework/RPlayerController.h"
+
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
 
@@ -34,20 +36,49 @@ ARPlayer::ARPlayer()
 
 void ARPlayer::PossessedBy(AController* NewController)
 {
+	//server
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
 	GrantAbilities();
 }
 
+void ARPlayer::OnRep_PlayerState()
+{
+	//client
+	InitAbilityActorInfo();
+}
+
+int32 ARPlayer::GetAttributePoints_Implementation() const
+{
+	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
+	check(RPlayerState)
+	return 	RPlayerState->GetAttributePts();
+}
+
+void ARPlayer::AddToAttributePoints_Implementation(int32 InAttributePoints)
+{
+	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
+	check(RPlayerState)
+	return 	RPlayerState->AddToAttributePts(InAttributePoints);
+}
+
+
+//int32 ARPlayer::GetAttributePointsReward_Implementation(int32 Level) const
+//{
+//	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
+//	check(RPlayerState)
+//		return 	RPlayerState->XPInfo->LevelUpInfo[Level].AttributePointsRewarded;
+//}
+
 void ARPlayer::InitAbilityActorInfo()
 {
 	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
 	check(RPlayerState)
-		RPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(RPlayerState, this);
-	//Cast<UAOAbilityComp>(AOPlayerState->GetAbilitySystemComponent())->AbilityActorInfoInit();
+	RPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(RPlayerState, this);
+	Cast<URAbilitySystemComponent>(RPlayerState->GetAbilitySystemComponent())->AbilityActorInfoInit();
 	AbilitySystemComponent = RPlayerState->GetAbilitySystemComponent();
-	//AttributeSet = RPlayerState->GetAttributeSet();
+	AttributeSet = RPlayerState->GetAttributeSet();
 	if (ARPlayerController* AOPC = Cast<ARPlayerController>(GetController()))
 	{
 // 		if (AAOHUD* Hud = Cast<AAOHUD>(AOPC->GetHUD()))

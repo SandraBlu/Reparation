@@ -3,8 +3,11 @@
 
 #include "Character/RCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/RAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include <Kismet/GameplayStatics.h>
+#include "RGameplayTags.h"
 
 // Sets default values
 ARCharacter::ARCharacter()
@@ -24,6 +27,11 @@ ARCharacter::ARCharacter()
 UAbilitySystemComponent* ARCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+URFootstepsComponent* ARCharacter::GetFootstepsComp() const
+{
+	return FootstepsComp;
 }
 
 void ARCharacter::InitAbilityActorInfo()
@@ -53,5 +61,89 @@ void ARCharacter::InitializeAttributes() const
 
 void ARCharacter::GrantAbilities()
 {
+	//GetASC()->AddGrantedAbilities(GrantedAbilities);
+	//GetASC()->AddPassiveAbilities(PassiveAbilities);
+}
 
+TArray<FTaggedMontage> ARCharacter::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
+AActor* ARCharacter::GetAvatar_Implementation()
+{
+	return this;
+}
+
+UAnimMontage* ARCharacter::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
+FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
+{
+	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
+	//if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(EquippedWeapon))
+	//{
+	//	return EquippedWeapon->GetWeaponMesh()->GetSocketLocation(EquippedWeapon->FiringSocket);
+	//}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
+	{
+		return GetMesh()->GetSocketLocation(LHand);
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handR))
+	{
+		return GetMesh()->GetSocketLocation(RHand);
+	}
+	return FVector();
+}
+
+ENPCClass ARCharacter::GetNPCClass_Implementation()
+{
+	return NPCClass;
+}
+
+UNiagaraSystem* ARCharacter::GetBloodEffect_Implementation()
+{
+	return BloodEffect;
+}
+
+FTaggedMontage ARCharacter::GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag)
+{
+	for (FTaggedMontage TaggedMontage : AttackMontages)
+	{
+		if (TaggedMontage.MontageTag == MontageTag)
+		{
+			return TaggedMontage;
+		}
+	}
+	return FTaggedMontage();
+}
+
+void ARCharacter::Die()
+{
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSFX, GetActorLocation(), GetActorRotation());
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bDead = true;
+	OnDeath.Broadcast(this);
+}
+
+FOnDeath ARCharacter::GetOnDeathDelegate()
+{
+	return OnDeath;
+}
+
+bool ARCharacter::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+class URAbilitySystemComponent* ARCharacter::GetASC()
+{
+	return RASC;
 }

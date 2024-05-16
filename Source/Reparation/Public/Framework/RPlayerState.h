@@ -8,7 +8,7 @@
 #include "RPlayerState.generated.h"
 
 class UAbilitySystemComponent;
-//class UAttributeSet;
+class UAttributeSet;
 //class UXPInfo;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/)
@@ -25,7 +25,7 @@ class REPARATION_API ARPlayerState : public APlayerState, public IAbilitySystemI
 	ARPlayerState();
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	//UAttributeSet* GetAttributeSet() { return AttributeSet; }
+	UAttributeSet* GetAttributeSet() { return AttributeSet; }
 
 	//UPROPERTY(EditDefaultsOnly)
 	//UXPInfo* XPInfo;
@@ -51,8 +51,8 @@ class REPARATION_API ARPlayerState : public APlayerState, public IAbilitySystemI
 
 protected:
 
-	//UPROPERTY()
-	//UAttributeSet* AttributeSet;
+	UPROPERTY()
+	UAttributeSet* AttributeSet;
 
 	UPROPERTY(VisibleAnywhere)
 	UAbilitySystemComponent* AbilitySystemComponent;

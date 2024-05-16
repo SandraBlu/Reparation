@@ -2,11 +2,16 @@
 
 
 #include "Framework/RPlayerState.h"
+#include "AbilitySystem/RAbilitySystemComponent.h"
+#include "AbilitySystem/RAttributeSet.h"
 
 ARPlayerState::ARPlayerState()
 {
-	//AbilitySystemComponent = CreateDefaultSubobject<UAOAbilityComp>("ASC");
-	//AttributeSet = CreateDefaultSubobject<UAOAttributeSet>("Attributes");
+	AbilitySystemComponent = CreateDefaultSubobject<URAbilitySystemComponent>("ASC");
+	AbilitySystemComponent ->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	AttributeSet = CreateDefaultSubobject<URAttributeSet>("Attributes");
 
 	NetUpdateFrequency = 100.f;
 }
