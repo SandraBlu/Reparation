@@ -19,7 +19,6 @@
 
 URAttributeSet::URAttributeSet()
 {
-	InitHealth(100.f);
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 
 	//Primary Attributes
@@ -113,6 +112,8 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Health from GetHealth(): %f"), GetHealth());
+		UE_LOG(LogTemp, Warning, TEXT("Magnitude: %f"), Data.EvaluatedData.Magnitude);
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
 	}
 	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
@@ -127,10 +128,10 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	{
 		//HandleDamage(Props);
 	}
-	if (Data.EvaluatedData.Attribute == GetXPAttribute())
+	/*if (Data.EvaluatedData.Attribute == GetXPAttribute())
 	{
 		HandleXP(Props);
-	}
+	}*/
 }
 
 void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)

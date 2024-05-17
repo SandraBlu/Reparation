@@ -12,6 +12,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/RAbilitySystemComponent.h"
 #include "Framework/RPlayerController.h"
+#include <UI/RHUD.h>
 
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
@@ -81,10 +82,10 @@ void ARPlayer::InitAbilityActorInfo()
 	AttributeSet = RPlayerState->GetAttributeSet();
 	if (ARPlayerController* AOPC = Cast<ARPlayerController>(GetController()))
 	{
-// 		if (AAOHUD* Hud = Cast<AAOHUD>(AOPC->GetHUD()))
-// 		{
-// 			Hud->InitOverlay(AOPC, RPlayerState, AbilitySystemComponent, AttributeSet);
-// 		}
+ 		if (ARHUD* Hud = Cast<ARHUD>(AOPC->GetHUD()))
+ 		{
+ 			Hud->InitOverlay(AOPC, RPlayerState, AbilitySystemComponent, AttributeSet);
+ 		}
 	}
 	InitializeAttributes();
 }

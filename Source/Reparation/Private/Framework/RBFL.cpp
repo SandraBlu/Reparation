@@ -12,36 +12,37 @@
 //#include "AOGameplayEffectTypes.h"
 #include "RGameplayTags.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include <UI/RHUD.h>
 
-//bool URBFL::MakeWidgetControllerParama(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, AAOHUD*& OutAOHUD)
-//{
-//	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
-//	{
-//		OutAOHUD = Cast<AAOHUD>(PC->GetHUD());
-//		if (OutAOHUD)
-//		{
-//			AAOPlayerState* PS = PC->GetPlayerState<AAOPlayerState>();
-//			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-//			UAttributeSet* AS = PS->GetAttributeSet();
-//			OutWCParams.PlayerController = PC;
-//			OutWCParams.PlayerState = PS;
-//			OutWCParams.AbilitySystemComponent = ASC;
-//			OutWCParams.AttributeSet = AS;
-//			return true;
-//		}
-//	}
-//	return false;
-//}
+bool URBFL::MakeWidgetControllerParama(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutAOHUD)
+{
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	{
+		OutAOHUD = Cast<ARHUD>(PC->GetHUD());
+		if (OutAOHUD)
+		{
+			ARPlayerState* PS = PC->GetPlayerState<ARPlayerState>();
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			UAttributeSet* AS = PS->GetAttributeSet();
+			OutWCParams.PlayerController = PC;
+			OutWCParams.PlayerState = PS;
+			OutWCParams.AbilitySystemComponent = ASC;
+			OutWCParams.AttributeSet = AS;
+			return true;
+		}
+	}
+	return false;
+}
 
 URHUDController* URBFL::GetOverlayController(const UObject* WorldContextObject)
 {
 	FWidgetControllerParams WCParams;
-	//AAOHUD* AOHUD = nullptr;
+	ARHUD* RHUD = nullptr;
 
-	//if (MakeWidgetControllerParama(WorldContextObject, WCParams, AOHUD))
-	//{
-	//	return AOHUD->GetOverlayController(WCParams);
-	//}
+	if (MakeWidgetControllerParama(WorldContextObject, WCParams, RHUD))
+	{
+		return RHUD->GetOverlayController(WCParams);
+	}
 	return nullptr;
 }
 

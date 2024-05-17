@@ -40,12 +40,12 @@ void URHUDController::BindCallbacksToDependencies()
 		{
 			BroadcastAbilityInfo();
 		}
-		else
+		/*else
 		{
 			GetRASC()->AbilityGivenDelegate.AddUObject(this, &URHUDController::BroadcastAbilityInfo);
-		}
+		}*/
 
-		GetRASC()->EffectTags.AddLambda(
+		/*GetRASC()->EffectTags.AddLambda(
 			[this](const FGameplayTagContainer& AssetTags)
 			{
 				for (const FGameplayTag& Tag : AssetTags)
@@ -58,7 +58,7 @@ void URHUDController::BindCallbacksToDependencies()
 					}
 				}
 			}
-		);
+		);*/
 	}
 }
 

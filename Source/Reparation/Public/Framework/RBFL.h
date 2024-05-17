@@ -15,6 +15,7 @@ struct FWidgetControllerParams;
 class URAbilityInfo;
 struct FGameplayEffectContextHandle;
 struct FGameplayTag;
+class ARHUD;
 
 /**
  * 
@@ -26,8 +27,8 @@ class REPARATION_API URBFL : public UBlueprintFunctionLibrary
 
 	public:
 
-	//UFUNCTION(BlueprintPure, Category = "AOBFL|Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
-	//static bool MakeWidgetControllerParama(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, AAOHUD*& OutAOHUD);
+	UFUNCTION(BlueprintPure, Category = "AOBFL|Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
+	static bool MakeWidgetControllerParama(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutAOHUD);
 	
 	UFUNCTION(BlueprintPure, Category = "RBFL|Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
 	static URHUDController* GetOverlayController(const UObject* WorldContextObject);
