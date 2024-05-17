@@ -15,7 +15,17 @@ void URAbilitySystemComponent::AbilityActorInfoInit()
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &URAbilitySystemComponent::EffectApplied);
 }
 
-void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+void URAbilitySystemComponent::AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities)
+{
+	for (TSubclassOf<UGameplayAbility> AbilityClass : GrantedAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		//GiveAbility(AbilitySpec);
+		GiveAbilityAndActivateOnce(AbilitySpec);
+	}
+}
+
+void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag) const
 {
 	if (GetAvatarActor()->Implements<URPlayerInterface>())
 	{
@@ -32,23 +42,6 @@ void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag
 	}
 }
 
-//void URAbilitySystemComponent::AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities)
-//{
-//	for (const TSubclassOf<UGameplayAbility> AbilityClass : GrantedAbilities)
-//	{
-//		//if ability is an AOGameplayAbility, look for ability input tag and add it to dynamic ability tags
-//		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-//		if (const URGameplayAbility* RAbility = Cast<URGameplayAbility>(AbilitySpec.Ability))
-//		{
-//			//AbilitySpec.DynamicAbilityTags.AddTag(RAbility->AbilityInputTag);
-//			//AbilitySpec.DynamicAbilityTags.AddTag(FRGameplayTags::Get().ability_status_active);
-//			GiveAbility(AbilitySpec);
-//		}
-//	}
-//	bAbilityGranted = true;
-//	AbilityGivenDelegate.Broadcast();
-//}
-//
 //void URAbilitySystemComponent::AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities)
 //{
 //	for (const TSubclassOf<UGameplayAbility> AbilityClass : PassiveAbilities)
@@ -59,12 +52,10 @@ void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag
 //	}
 //}
 
-void URAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle)
+void URAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle) const
 {
-	
 	FGameplayTagContainer TagContainer;
 	EffectSpec.GetAllAssetTags(TagContainer);
 	EffectTags.Broadcast(TagContainer);
-	
 }
 

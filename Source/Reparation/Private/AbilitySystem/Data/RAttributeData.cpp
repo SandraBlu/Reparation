@@ -14,7 +14,7 @@ FAttributeData URAttributeData::FindAttributeInfoForTag(const FGameplayTag& Attr
 	}
 	if (bLogNotFound)
 	{
-		//UE_LOG(LogAO, Error, TEXT("Can't find AttributeData [%s] for AttributeTag [%s]."), *AttributeTag.ToString(), *GetNameSafe(this));
+		UE_LOG(LogTemp, Error, TEXT("Can't find AttributeData [%s] for AttributeTag [%s]."), *AttributeTag.ToString(), *GetNameSafe(this));
 	}
 	return FAttributeData();
 }

@@ -28,13 +28,13 @@ public:
 	void AbilityActorInfoInit();
 
 	FEffectAssetTags EffectTags;
-	FAbilityGiven AbilityGivenDelegate;
-	FAbilityStatusChange AbilityStatusChange;
-	FAbilityActivated AbilityActivated;
+	//FAbilityGiven AbilityGivenDelegate;
+	//FAbilityStatusChange AbilityStatusChange;
+	//FAbilityActivated AbilityActivated;
 
-	bool bAbilityGranted = false;
+	//bool bAbilityGranted = false;
 
-	//void AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities);
+	void AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities);
 	//void AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
 //	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 //	void AbilityInputTagReleased(const FGameplayTag& InputTag);
@@ -48,7 +48,7 @@ public:
 //
 //	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 //
-	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+	void UpgradeAttribute(const FGameplayTag& AttributeTag) const;
 //
 //	void UpdateAbilityStatus(int32 Level);
 //
@@ -66,7 +66,7 @@ public:
 //
 protected:
 
-	void EffectApplied(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle);
+	void EffectApplied(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle) const;
 
 	//void AbilityStatusUpdate(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel);
 	

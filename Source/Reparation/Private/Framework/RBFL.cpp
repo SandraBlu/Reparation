@@ -14,12 +14,12 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include <UI/RHUD.h>
 
-bool URBFL::MakeWidgetControllerParama(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutAOHUD)
+bool URBFL::MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD)
 {
 	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
 	{
-		OutAOHUD = Cast<ARHUD>(PC->GetHUD());
-		if (OutAOHUD)
+		OutRHUD = Cast<ARHUD>(PC->GetHUD());
+		if (OutRHUD)
 		{
 			ARPlayerState* PS = PC->GetPlayerState<ARPlayerState>();
 			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
@@ -39,7 +39,7 @@ URHUDController* URBFL::GetOverlayController(const UObject* WorldContextObject)
 	FWidgetControllerParams WCParams;
 	ARHUD* RHUD = nullptr;
 
-	if (MakeWidgetControllerParama(WorldContextObject, WCParams, RHUD))
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, RHUD))
 	{
 		return RHUD->GetOverlayController(WCParams);
 	}
@@ -48,13 +48,13 @@ URHUDController* URBFL::GetOverlayController(const UObject* WorldContextObject)
 
 URAttributeMenuController* URBFL::GetAttributeMenuController(const UObject* WorldContextObject)
 {
-	/*FWidgetControllerParams WCParams;
-	AAOHUD* AOHUD = nullptr;
+	FWidgetControllerParams WCParams;
+	ARHUD* RHUD = nullptr;
 
-	if (MakeWidgetControllerParama(WorldContextObject, WCParams, AOHUD))
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, RHUD))
 	{
-		return AOHUD->GetAttributeMenuController(WCParams);
-	}*/
+		return RHUD->GetAttributeMenuController(WCParams);
+	}
 	return nullptr;
 }
 
@@ -107,9 +107,9 @@ URNPCData* URBFL::GetCharacterClassInfo(const UObject* WorldContextObject)
 
 URAbilityInfo* URBFL::GetAbilityInfo(const UObject* WorldContextObject)
 {
-	ARGameMode* AOGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (AOGameMode == nullptr) return nullptr;
-	return AOGameMode->AbilityInfo;
+	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (RGameMode == nullptr) return nullptr;
+	return RGameMode->AbilityInfo;
 }
 
 void URBFL::GiveNPCAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ENPCClass CharacterClass)

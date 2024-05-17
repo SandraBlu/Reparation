@@ -27,8 +27,8 @@ class REPARATION_API URBFL : public UBlueprintFunctionLibrary
 
 	public:
 
-	UFUNCTION(BlueprintPure, Category = "AOBFL|Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
-	static bool MakeWidgetControllerParama(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutAOHUD);
+	UFUNCTION(BlueprintPure, Category = "RBFL|Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
+	static bool MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD);
 	
 	UFUNCTION(BlueprintPure, Category = "RBFL|Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
 	static URHUDController* GetOverlayController(const UObject* WorldContextObject);
@@ -89,7 +89,7 @@ class REPARATION_API URBFL : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayMechanics")
 	static void GetTargetsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 
-	UFUNCTION(BlueprintPure, Category = "AOBFL|GameplayMechanics")
+	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayMechanics")
 	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
 
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ENPCClass CharacterClass, int32 CharacterLevel);

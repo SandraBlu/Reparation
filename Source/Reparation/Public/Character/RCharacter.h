@@ -15,6 +15,7 @@
 
 class UAbilitySystemComponent;
 class URFootstepsComponent;
+class UGameplayAbility;
 
 UCLASS()
 class REPARATION_API ARCharacter : public ACharacter, public IAbilitySystemInterface, public IRCombatInterface
@@ -52,12 +53,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<class UGameplayEffect> ResistanceAttributes;
-
-	UPROPERTY(EditAnywhere, Category = "Abilities")
-	TArray<TSubclassOf<class UGameplayAbility>> GrantedAbilities;
-
-	UPROPERTY(EditAnywhere, Category = "Abilities")
-	TArray<TSubclassOf<class UGameplayAbility>> PassiveAbilities;
 
 	//Combat Interface
 	virtual ENPCClass GetNPCClass_Implementation() override;
@@ -112,12 +107,21 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	USoundBase* DeathSFX;
-
+	
+	UPROPERTY()
 	class URAbilitySystemComponent* RASC;
-
+	
 	class URAbilitySystemComponent* GetASC();
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage* HitReactMontage;
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
+
+	//UPROPERTY(EditAnywhere, Category = "Abilities")
+	//TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities;
 
 };

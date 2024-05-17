@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "RHUD.generated.h"
 
+class URAbilityMenuController;
+class URAttributeMenuController;
 class URUserWidget;
 struct FWidgetControllerParams;
 class UAbilitySystemComponent;
@@ -25,6 +27,8 @@ public:
 	
 
 	URHUDController* GetOverlayController(const FWidgetControllerParams& WCParams);
+	URAttributeMenuController* GetAttributeMenuController(const FWidgetControllerParams& WCParams);
+	//URAbilityMenuController* GetAbilityMenuController(const FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
@@ -41,4 +45,16 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URHUDController> HUDControllerClass;
+
+	UPROPERTY()
+	URAttributeMenuController* AttributeMenuController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URAttributeMenuController> AttributeMenuControllerClass;
+
+	UPROPERTY()
+	URAbilityMenuController* AbilityMenuController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URAbilityMenuController> AbilityMenuControllerClass;
 };

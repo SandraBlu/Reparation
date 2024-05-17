@@ -2,6 +2,7 @@
 
 
 #include "UI/Controller/RAttributeMenuController.h"
+#include "RGameplayTags.h"
 #include "AbilitySystem/RAttributeSet.h"
 #include "AbilitySystem/Data/RAttributeData.h"
 #include "Framework/RPlayerState.h"
@@ -29,12 +30,10 @@ void URAttributeMenuController::BindCallbacksToDependencies()
 void URAttributeMenuController::BroadcastInitialValues()
 {
 	check(AttributeInfo)
-		for (auto& Pair : GetRAS()->AttributeTagMap)
-		{
-			BroadcastAttributeInfo(Pair.Key, Pair.Value());
-
-		}
-
+	for (auto& Pair : GetRAS()->AttributeTagMap)
+	{
+		BroadcastAttributeInfo(Pair.Key, Pair.Value());
+	}
 	AttributePtsChangeDelegate.Broadcast(GetRPS()->GetAttributePts());
 }
 

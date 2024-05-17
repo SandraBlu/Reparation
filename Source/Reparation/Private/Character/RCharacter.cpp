@@ -61,7 +61,9 @@ void ARCharacter::InitializeAttributes() const
 
 void ARCharacter::GrantAbilities()
 {
-	//GetASC()->AddGrantedAbilities(GrantedAbilities);
+	URAbilitySystemComponent* RASComp = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
+	if (!HasAuthority()) return;
+	RASComp->AddGrantedAbilities(GrantedAbilities);
 	//GetASC()->AddPassiveAbilities(PassiveAbilities);
 }
 

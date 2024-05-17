@@ -32,9 +32,9 @@ class REPARATION_API URAttributeData : public UDataAsset
 {
 	GENERATED_BODY()
 
-	public:
+public:
 
-		FAttributeData FindAttributeInfoForTag(const FGameplayTag& AttributeTag, bool bLogNotFound = false) const;
+	FAttributeData FindAttributeInfoForTag(const FGameplayTag& AttributeTag, bool bLogNotFound = false) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FAttributeData> AttributeData;
