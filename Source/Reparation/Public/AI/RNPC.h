@@ -57,26 +57,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	AActor* CombatTarget;
 
-private:
-
-	//Montage
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-	UAnimMontage* HitReact;
-
-	UPROPERTY(EditAnywhere, Category = "SFX")
-	USoundBase* HitSound;
-
-	UPROPERTY(EditAnywhere, Category = "VFX")
-	class UNiagaraSystem* HitParticles;
-
 protected:
 	
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeAttributes() const override;
-
-	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Default Settings")
 	int32 Level = 1;
@@ -99,5 +85,16 @@ protected:
 
 	//Montage
 	void PlayHitReactMontage(const FName& SectionName);
+	
+private:
 
+	//Montage
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* HitReact;
+
+	UPROPERTY(EditAnywhere, Category = "SFX")
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	class UNiagaraSystem* HitParticles;
 };

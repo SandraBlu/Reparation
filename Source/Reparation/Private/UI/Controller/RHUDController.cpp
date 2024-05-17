@@ -32,34 +32,20 @@ void URHUDController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetMaxStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data) {OnMaxStaminaChange.Broadcast(Data.NewValue); });
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetEnergyAttribute()).AddLambda([this](const FOnAttributeChangeData& Data) {OnEnergyChange.Broadcast(Data.NewValue); });
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetMaxEnergyAttribute()).AddLambda([this](const FOnAttributeChangeData& Data) {OnMaxEnergyChange.Broadcast(Data.NewValue); });
-
-	if (GetRASC())
-	{
-		GetRASC()->AbilityActivated.AddUObject(this, &URHUDController::OnAbilityActivated);
-		if (GetRASC()->bAbilityGranted)
+	
+	GetRASC()->EffectTags.AddLambda([this](const FGameplayTagContainer& AssetTags)
 		{
-			BroadcastAbilityInfo();
-		}
-		/*else
-		{
-			GetRASC()->AbilityGivenDelegate.AddUObject(this, &URHUDController::BroadcastAbilityInfo);
-		}*/
-
-		/*GetRASC()->EffectTags.AddLambda(
-			[this](const FGameplayTagContainer& AssetTags)
+			for (const FGameplayTag& Tag : AssetTags)
 			{
-				for (const FGameplayTag& Tag : AssetTags)
+				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("message"));
+				if(Tag.MatchesTag(MessageTag))
 				{
-					FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("message"));
-					if (Tag.MatchesTag(MessageTag))
-					{
-						const FHUDTableRow* Row = GetDataTableRowByTag<FHUDTableRow>(DTWidgetMessages, Tag);
-						UIMessageRowDelegate.Broadcast(*Row);
-					}
+					const FMessageTableRow* Row = GetDataTableRowByTag<FMessageTableRow>(DTEffectMessages, Tag);
+					MessageRowDelegate.Broadcast(*Row);	
 				}
 			}
-		);*/
-	}
+		}
+	);
 }
 
 void URHUDController::OnAbilityActivated(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PrevSlot) const

@@ -23,7 +23,8 @@ class REPARATION_API ARPlayerState : public APlayerState, public IAbilitySystemI
 	public:
 
 	ARPlayerState();
-	
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() { return AttributeSet; }
 
@@ -60,8 +61,11 @@ protected:
 	
 private:
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
 	int32 Level = 1;
+
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel);
 	
 	UPROPERTY(VisibleAnywhere)
 	int32 XP = 1;

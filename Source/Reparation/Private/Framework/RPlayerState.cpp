@@ -4,6 +4,7 @@
 #include "Framework/RPlayerState.h"
 #include "AbilitySystem/RAbilitySystemComponent.h"
 #include "AbilitySystem/RAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 ARPlayerState::ARPlayerState()
 {
@@ -14,6 +15,13 @@ ARPlayerState::ARPlayerState()
 	AttributeSet = CreateDefaultSubobject<URAttributeSet>("Attributes");
 
 	NetUpdateFrequency = 100.f;
+}
+
+void ARPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARPlayerState, Level);
 }
 
 UAbilitySystemComponent* ARPlayerState::GetAbilitySystemComponent() const
@@ -31,6 +39,11 @@ void ARPlayerState::SetXP(int32 InXP)
 {
 	XP = InXP;
 	OnXPChangeDelegate.Broadcast(XP);
+}
+
+void ARPlayerState::OnRep_Level(int32 OldLevel)
+{
+	
 }
 
 void ARPlayerState::AddToLevel(int32 InLevel)

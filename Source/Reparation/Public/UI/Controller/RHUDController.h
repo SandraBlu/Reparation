@@ -8,7 +8,7 @@
 #include "RHUDController.generated.h"
 
 USTRUCT(BlueprintType)
-struct FHUDTableRow : public FTableRowBase
+struct FMessageTableRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -23,14 +23,13 @@ struct FHUDTableRow : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UTexture2D* Image = nullptr;
-
 };
 
 struct FOnAttributeChangeData;
 //class UAbilityInfo;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChange, float, NewValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUIMessageRowSignature, FHUDTableRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUIMessageRowSignature, FMessageTableRow, Row);
 
 /**
  * 
@@ -64,7 +63,7 @@ class REPARATION_API URHUDController : public URWidgetController
 	FOnAttributeChange OnMaxEnergyChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
-	FUIMessageRowSignature UIMessageRowDelegate;
+	FUIMessageRowSignature MessageRowDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|XP")
 	FOnAttributeChange OnXPPercentChangeDelegate;
@@ -74,8 +73,8 @@ class REPARATION_API URHUDController : public URWidgetController
 
 protected:
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
-	UDataTable* DTWidgetMessages;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI Data")
+	UDataTable* DTEffectMessages;
 
 	//void OnXPChange(int32 NewXP);
 

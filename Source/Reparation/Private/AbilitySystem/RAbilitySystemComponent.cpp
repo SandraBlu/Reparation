@@ -61,12 +61,10 @@ void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag
 
 void URAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle)
 {
-	GEngine->AddOnScreenDebugMessage(1, 8.f, FColor::Magenta, FString("Effect Applied!"));
+	
 	FGameplayTagContainer TagContainer;
 	EffectSpec.GetAllAssetTags(TagContainer);
-	for (const auto Tag : TagContainer)
-	{
-		EffectTags.Broadcast(TagContainer);
-	}
+	EffectTags.Broadcast(TagContainer);
+	
 }
 

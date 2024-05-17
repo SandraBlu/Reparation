@@ -112,8 +112,7 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Health from GetHealth(): %f"), GetHealth());
-		UE_LOG(LogTemp, Warning, TEXT("Magnitude: %f"), Data.EvaluatedData.Magnitude);
+		//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, FString::Printf(TEXT("Health: %f"), GetHealth()));
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
 	}
 	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
@@ -141,17 +140,14 @@ void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, fl
 	if (Attribute == GetMaxHealthAttribute() && bRefillHealth)
 	{
 		SetHealth(GetMaxHealth());
-		//bRefillHealth = false;
 	}
 	if (Attribute == GetMaxStaminaAttribute() && bRefillStamina)
 	{
 		SetStamina(GetMaxStamina());
-		//bRefillStamina = false;
 	}
 	if (Attribute == GetMaxEnergyAttribute() && bRefillEnergy)
 	{
 		SetEnergy(GetMaxEnergy());
-		//bRefillEnergy = false;
 	}
 }
 

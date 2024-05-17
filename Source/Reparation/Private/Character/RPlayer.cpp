@@ -57,6 +57,13 @@ int32 ARPlayer::GetAttributePoints_Implementation() const
 	return 	RPlayerState->GetAttributePts();
 }
 
+int32 ARPlayer::GetCharacterLevel_Implementation()
+{
+	const ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
+	check(RPlayerState)
+	return RPlayerState->GetCharacterLevel();
+}
+
 void ARPlayer::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
 	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();

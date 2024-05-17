@@ -60,7 +60,8 @@ class REPARATION_API ARPlayer : public ARCharacter, public IRPlayerInterface
 	//UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	//EActionState ActionState = EActionState::EAS_Idle;
 
-	//Player Interface
+	//combat/ Player Interface
+	virtual int32 GetCharacterLevel_Implementation() override;
 	//virtual void AddToXP_Implementation(int32 InXP) override;
 	//virtual void LevelUp_Implementation() override;
 	//virtual int32 GetXP_Implementation() const override;
