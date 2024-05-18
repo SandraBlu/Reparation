@@ -12,6 +12,8 @@
 #include "AbilitySystem/RAbilitySystemComponent.h"
 #include "Framework/RPlayerController.h"
 #include <UI/RHUD.h>
+#include "GameplayTagContainer.h"
+#include "Input/RInputComponent.h"
 
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
@@ -109,9 +111,33 @@ void ARPlayer::BeginPlay()
 	}
 }
 
+void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+}
+
+void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagReleased(InputTag);
+}
+
+void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagHeld(InputTag);
+}
+
 void ARPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (URInputComponent* RInputComp = CastChecked<URInputComponent>(InputComponent))
+	{
+		RInputComp->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+		//RInputComp->BindAction(DrawWeapon, ETriggerEvent::Triggered, this, &ARPlayer::DrawWeapon);
+	}
+	
 }
 
 #undef LOCTEXT_NAMESPACE

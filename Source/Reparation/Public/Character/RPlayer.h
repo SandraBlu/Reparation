@@ -9,6 +9,7 @@
 #include "RPlayer.generated.h"
 
 
+class URInputConfig;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -20,7 +21,7 @@ class REPARATION_API ARPlayer : public ARCharacter, public IRPlayerInterface
 {
 	GENERATED_BODY()
 
-	public:
+public:
 
 	ARPlayer();
 
@@ -74,7 +75,7 @@ class REPARATION_API ARPlayer : public ARCharacter, public IRPlayerInterface
 	virtual int32 GetAttributePoints_Implementation() const override;
 	//virtual int32 GetAbilityPoints_Implementation() const override;
 
-	protected:
+protected:
 
 		virtual void InitAbilityActorInfo() override;
 
@@ -107,9 +108,17 @@ class REPARATION_API ARPlayer : public ARCharacter, public IRPlayerInterface
 		//void DrawWeapon(const FInputActionValue& Value);
 		//void PrimaryAttack(const FInputActionValue& Value);
 
-	public:
+public:
 
 		// Called to bind functionality to input
 		virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+private:
+    	
+    	UPROPERTY(EditDefaultsOnly, Category = Input)
+    	URInputConfig* InputConfig;
+    
+    	void AbilityInputTagPressed(FGameplayTag InputTag);
+    	void AbilityInputTagReleased(FGameplayTag InputTag);
+    	void AbilityInputTagHeld(FGameplayTag InputTag);
 };

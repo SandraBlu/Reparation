@@ -36,8 +36,8 @@ public:
 
 	void AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities);
 	//void AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
-//	void AbilityInputTagHeld(const FGameplayTag& InputTag);
-//	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+	void AbilityInputTagHeld(const FGameplayTag& InputTag);
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 //	void CheckForAbility(const FCheckForAbility& Delegate);
 //
 //	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
@@ -65,8 +65,9 @@ public:
 //	static bool AbilityHasInputSlot(FGameplayAbilitySpec* Spec, const FGameplayTag& Slot);
 //
 protected:
-
-	void EffectApplied(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle) const;
+	
+	UFUNCTION(Client, Reliable)
+	void ClientEffectApplied(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle) const;
 
 	//void AbilityStatusUpdate(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel);
 	

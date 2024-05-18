@@ -54,6 +54,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<class UGameplayEffect> ResistanceAttributes;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	ARWeapon* EquippedWeapon;
+	
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE ARWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+	
 	//Combat Interface
 	virtual ENPCClass GetNPCClass_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
@@ -108,9 +114,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	USoundBase* DeathSFX;
 	
-	UPROPERTY()
 	class URAbilitySystemComponent* RASC;
-	
+
 	class URAbilitySystemComponent* GetASC();
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
