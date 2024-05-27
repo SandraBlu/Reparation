@@ -12,22 +12,15 @@
   <component name="ChangeListManager">
     <list default="true" id="9c72c529-1c1b-426e-b26d-177f8e645926" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultInput.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultInput.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AnimNotifies/AN_MontageEvent.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AnimNotifies/AN_MontageEvent.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Framework/BP_PC.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Framework/BP_PC.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/GA_Melee.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_Test.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Katana.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Katana.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Staff.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Staff.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_WeaponBase.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/Gear/Pants.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/Weapons/Staff.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Inventory/Weapons/Staff.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Phelan/Meshes/NakedPhelan.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Phelan/Meshes/NakedPhelan.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Phelan/UE5Phelan/PhelanBlue_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Phelan/UE5Phelan/PhelanBlue_Skeleton.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Reparation.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Reparation.uproject" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/AbilitySystem/RAbilitySystemComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/AbilitySystem/RAbilitySystemComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Character/RCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Character/RCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Character/RPlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Character/RPlayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/AbilitySystem/Ability/RGameplayAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/AbilitySystem/Ability/RGameplayAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/AbilitySystem/RAbilitySystemComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/AbilitySystem/RAbilitySystemComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Character/RCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Character/RCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Character/RPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Character/RPlayer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Weapon/RWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Weapon/RWeapon.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Reparation.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Reparation.Build.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,8 +44,6 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Private/AbilitySystem/Abilities/MissileAbility.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Private/Interfaces/CombatInterface.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Private/UI/AOHUD.cpp" root0="SKIP_HIGHLIGHTING" />
@@ -63,6 +54,7 @@
     <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Public/Weapons/AOWeapon.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Intermediate/Build/Win64/UnrealEditor/Inc/Reparation/UHT/RProjectile.gen.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Intermediate/Build/Win64/UnrealEditor/Inc/Reparation/UHT/RWeapon.gen.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Plugins/NarrativeInventory/Intermediate/Build/Win64/UnrealEditor/Inc/NarrativeEquipment/UHT/EquipmentComponent.generated.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Reparation/Private/AbilitySystem/Ability/RMagicMissile.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../Unreal Projects/GameplayAbilitySystem_Aura/Source/Aura/Private/Character/AuraCharacterBase.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../Unreal Projects/GameplayAbilitySystem_Aura/Source/Aura/Public/Character/AuraCharacterBase.h" root0="SKIP_HIGHLIGHTING" />
@@ -226,6 +218,7 @@
       <option name="presentableId" value="Default" />
       <updated>1715907365852</updated>
       <workItem from="1715907367578" duration="36582000" />
+      <workItem from="1716055997118" duration="821000" />
     </task>
     <servers />
   </component>

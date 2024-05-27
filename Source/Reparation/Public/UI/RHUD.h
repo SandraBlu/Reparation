@@ -45,16 +45,4 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URHUDController> HUDControllerClass;
-
-	UPROPERTY()
-	URAttributeMenuController* AttributeMenuController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<URAttributeMenuController> AttributeMenuControllerClass;
-
-	UPROPERTY()
-	URAbilityMenuController* AbilityMenuController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<URAbilityMenuController> AbilityMenuControllerClass;
 };

@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "GameplayTagContainer.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystem/Data/RNPCData.h"
 #include "RCombatInterface.generated.h"
 
 class UNiagaraSystem;
@@ -87,9 +85,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FTaggedMontage GetTaggedMontageByTag(const FGameplayTag& MontageTag);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	ENPCClass GetNPCClass();
 
 	virtual FOnDeath GetOnDeathDelegate() = 0;
 };

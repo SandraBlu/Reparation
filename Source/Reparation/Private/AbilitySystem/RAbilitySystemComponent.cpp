@@ -7,8 +7,8 @@
 //#include "AlphaOmega/AOLogChannel.h"
 #include "Interface/RPlayerInterface.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include <Framework/RBFL.h>
-#include <AbilitySystem/Data/RAbilityInfo.h>
+//#include <Framework/RBFL.h>
+
 
 void URAbilitySystemComponent::AbilityActorInfoInit()
 {

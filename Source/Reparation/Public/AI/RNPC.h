@@ -62,7 +62,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAbilityActorInfo() override;
-	virtual void InitializeAttributes() const override;
+	//virtual void InitializeAttributes() const override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Default Settings")
 	int32 Level = 1;

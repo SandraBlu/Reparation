@@ -7,7 +7,6 @@
 #include "GameplayEffectTypes.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/Data/RNPCData.h"
 #include "Interface/RCombatInterface.h"
 #include "GameplayTagContainer.h"
 #include "RCharacter.generated.h"
@@ -53,15 +52,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<class UGameplayEffect> ResistanceAttributes;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	ARWeapon* EquippedWeapon;
-	
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE ARWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 	
 	//Combat Interface
-	virtual ENPCClass GetNPCClass_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual AActor* GetAvatar_Implementation() override;
@@ -93,9 +85,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName LHand;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Default Settings")
-	ENPCClass NPCClass = ENPCClass::Warrior;
 
 	//UPROPERTY(VisibleAnywhere, Category = "Combat")
 	//UDebuffNiagaraComp* NiagaraDebuffComp;

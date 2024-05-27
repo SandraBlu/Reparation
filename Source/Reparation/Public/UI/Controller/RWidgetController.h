@@ -7,7 +7,6 @@
 #include "RWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangeSignature, int32, NewValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAbilityData&, Info);
 
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -54,16 +53,9 @@ class REPARATION_API URWidgetController : public UObject
 	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues();
 	virtual void BindCallbacksToDependencies();
-
-	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
-	FAbilityInfoSignature AbilityInfoDelegate;
-
 	void BroadcastAbilityInfo();
 	
 protected:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
-	URAbilityInfo* AbilityInfo;
 
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	APlayerController* PlayerController;

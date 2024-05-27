@@ -8,7 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Kismet/GameplayStatics.h>
 #include "RGameplayTags.h"
-#include "Weapon/RWeapon.h"
+
 
 // Sets default values
 ARCharacter::ARCharacter()
@@ -96,10 +96,10 @@ UAnimMontage* ARCharacter::GetHitReactMontage_Implementation()
 FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
-	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(EquippedWeapon))
-	{
-		return EquippedWeapon->GetWeaponMesh()->GetSocketLocation(EquippedWeapon->FiringSocket);
-	}
+	//if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(EquippedWeapon))
+	//{
+//		return EquippedWeapon->GetWeaponMesh()->GetSocketLocation(EquippedWeapon->FiringSocket);
+//	}
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
 	{
 		return GetMesh()->GetSocketLocation(LHand);
@@ -109,11 +109,6 @@ FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& 
 		return GetMesh()->GetSocketLocation(RHand);
 	}
 	return FVector();
-}
-
-ENPCClass ARCharacter::GetNPCClass_Implementation()
-{
-	return NPCClass;
 }
 
 UNiagaraSystem* ARCharacter::GetBloodEffect_Implementation()

@@ -18,11 +18,5 @@ class REPARATION_API ARGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 	public:
-
-	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
-	URNPCData* CharacterClassInfo;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
-	URAbilityInfo* AbilityInfo;
 	
 };

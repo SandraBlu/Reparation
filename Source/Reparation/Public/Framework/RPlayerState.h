@@ -9,6 +9,7 @@
 
 class UAbilitySystemComponent;
 class UAttributeSet;
+class URInventoryComponent;
 //class UXPInfo;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /*StatValue*/)
@@ -28,8 +29,8 @@ class REPARATION_API ARPlayerState : public APlayerState, public IAbilitySystemI
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() { return AttributeSet; }
 
-	//UPROPERTY(EditDefaultsOnly)
-	//UXPInfo* XPInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	URInventoryComponent* PlayerInventory;
 
 	FOnPlayerStatChanged OnXPChangeDelegate;
 	FOnPlayerStatChanged OnLevelChangeDelegate;

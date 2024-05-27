@@ -13,8 +13,7 @@
 				"UMG",
 				"CoreUObject",
 				"GameplayAbilities",
-				"EnhancedInput",
-				"NarrativeEquipment"
+				"EnhancedInput"
 			]
 		}
 	],
@@ -25,6 +24,15 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "ComboGraph",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/0211d0b7c514480c8e6ef338999d63c2"
 		},
 		{
 			"Name": "Narrative",
@@ -42,18 +50,9 @@
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/46d407c1917d4575bfc2a8bb1cb5185d"
 		},
 		{
-			"Name": "NarrativeInventory",
+			"Name": "NarrativeNavigator",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/46d407c1917d4575bfc2a8bb1cb5185d"
-		},
-		{
-			"Name": "GameplayAbilities",
-			"Enabled": true
-		},
-		{
-			"Name": "ComboGraph",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/0211d0b7c514480c8e6ef338999d63c2"
 		}
 	]
 }

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "AbilitySystem/Data/RNPCData.h"
 #include "RBFL.generated.h"
 
 class URHUDController;
@@ -33,25 +32,7 @@ class REPARATION_API URBFL : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintPure, Category = "RBFL|Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
 	static URHUDController* GetOverlayController(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintPure, Category = "RBFL| Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
-	static URAttributeMenuController* GetAttributeMenuController(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintPure, Category = "RBFL| Widget Controller", meta = (DefaultToSelf = "WorldContextObject"))
-	static URAbilityMenuController* GetAbilityMenuController(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category = "RBFL|NPCClassDefaults")
-	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ENPCClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
-
-	UFUNCTION(BlueprintCallable, Category="RBFL|NPCClassDefaults")
-	static URNPCData* GetCharacterClassInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="RBFL|NPCClassDefaults")
-	static URAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="RBFL|NPCClassDefaults")
-	static void GiveNPCAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ENPCClass CharacterClass);
-
-	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
+	/*UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
 	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
@@ -90,23 +71,6 @@ class REPARATION_API URBFL : public UBlueprintFunctionLibrary
 	static void GetTargetsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayMechanics")
-	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
-
-	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ENPCClass CharacterClass, int32 CharacterLevel);
-
-	/*UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
-	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
-
-	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
-	static float GetDebuffDamage(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
-	static float GetDebuffDuration(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
-	static float GetDebuffFrequency(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
-	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle);*/
+	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);*/
 	
 };

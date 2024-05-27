@@ -157,7 +157,6 @@ void ARNPC::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
-	URBFL::GiveNPCAbilities(this, AbilitySystemComponent, NPCClass);
 
 
 	//Set widget controller for enemy health bar
@@ -208,11 +207,6 @@ void ARNPC::InitAbilityActorInfo()
 	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoInit();
 
 	InitializeAttributes();
-}
-
-void ARNPC::InitializeAttributes() const
-{
-	URBFL::InitializeDefaultAttributes(this, NPCClass, Level, AbilitySystemComponent);
 }
 
 void ARNPC::PlayHitReactMontage(const FName& SectionName)

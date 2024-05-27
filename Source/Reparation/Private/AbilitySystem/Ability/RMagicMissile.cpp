@@ -18,6 +18,8 @@ URMagicMissile::URMagicMissile()
 void URMagicMissile::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	const bool bIsServer = HasAuthority(&ActivationInfo);
+	if (!bIsServer) return;
 
 	//UKismetSystemLibrary::PrintString(this, FString("ActivateAbility (c++"), true, true, FLinearColor::Yellow, 3);
 }
