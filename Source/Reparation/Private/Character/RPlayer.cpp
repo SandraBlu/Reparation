@@ -11,8 +11,6 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/RAbilitySystemComponent.h"
 #include "Framework/RPlayerController.h"
-#include <UI/RHUD.h>
-#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayTagContainer.h"
 #include "Components/REquipmentComponent.h"
 #include "Input/RInputComponent.h"
@@ -31,10 +29,6 @@ ARPlayer::ARPlayer()
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
-
-	LevelUpFX = CreateDefaultSubobject<UNiagaraComponent>("LevelUpComp");
-	LevelUpFX->SetupAttachment(GetRootComponent());
-	LevelUpFX->bAutoActivate = false;
 	
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
 	
@@ -55,52 +49,29 @@ void ARPlayer::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
-int32 ARPlayer::GetAttributePoints_Implementation() const
-{
-	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
-	check(RPlayerState)
-	return 	RPlayerState->GetAttributePts();
-}
-
-int32 ARPlayer::GetCharacterLevel_Implementation()
-{
-	const ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
-	check(RPlayerState)
-	return RPlayerState->GetCharacterLevel();
-}
-
-void ARPlayer::AddToAttributePoints_Implementation(int32 InAttributePoints)
-{
-	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
-	check(RPlayerState)
-	return 	RPlayerState->AddToAttributePts(InAttributePoints);
-}
-
-
-//int32 ARPlayer::GetAttributePointsReward_Implementation(int32 Level) const
-//{
-//	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
-//	check(RPlayerState)
-//		return 	RPlayerState->XPInfo->LevelUpInfo[Level].AttributePointsRewarded;
-//}
-
 void ARPlayer::InitAbilityActorInfo()
 {
 	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
 	check(RPlayerState)
 	RPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(RPlayerState, this);
-	Cast<URAbilitySystemComponent>(RPlayerState->GetAbilitySystemComponent())->AbilityActorInfoInit();
+	//Cast<URAbilitySystemComponent>(RPlayerState->GetAbilitySystemComponent())->AbilityActorInfoInit();
 	AbilitySystemComponent = RPlayerState->GetAbilitySystemComponent();
 	AttributeSet = RPlayerState->GetAttributeSet();
 	if (ARPlayerController* AOPC = Cast<ARPlayerController>(GetController()))
 	{
- 		if (ARHUD* Hud = Cast<ARHUD>(AOPC->GetHUD()))
+ 		/*if (ARHUD* Hud = Cast<ARHUD>(AOPC->GetHUD()))
  		{
  			Hud->InitOverlay(AOPC, RPlayerState, AbilitySystemComponent, AttributeSet);
- 		}
+ 		}*/
 	}
-	InitializeAttributes();
+	//InitializeAttributes();
 }
+	int32 ARPlayer::GetCharacterLevel_Implementation()
+ {
+ 	const ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
+ 	check(RPlayerState)
+ 	return RPlayerState->GetCharacterLevel();
+ }
 
 void ARPlayer::BeginPlay()
 {

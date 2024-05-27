@@ -73,20 +73,6 @@ public:
 	//Attribute Map
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> AttributeTagMap;
 
-private:
-
-	//void HandleDamage(const FEffectProperties& Props);
-	void HandleXP(const FEffectProperties& Props);
-	void HandleDebuff(const FEffectProperties& Props);
-	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
-	void ShowFloatingText(const FEffectProperties& Props, float DamageAmount, bool bBlockedHit, bool bCriticalHit) const;
-	void SendXPEvent(const FEffectProperties& Props);
-	bool bRefillHealth = false;
-	bool bRefillStamina = false;
-	bool bRefillEnergy = false;
-	
-
-
 public:
 
 	//Base Attributes-----------------------

@@ -12,13 +12,18 @@
 #include "RGameplayTags.h"
 #include "Interface/RCombatInterface.h"
 #include "Interface/RPlayerInterface.h"
-#include "Framework/RBFL.h"
 #include "Net/UnrealNetwork.h"
 //#include "AOGameplayEffectTypes.h"
 //#include "AlphaOmega/AOLogChannel.h"
 
 URAttributeSet::URAttributeSet()
 {
+	InitHealth(80.f);
+	InitMaxHealth(100.f);
+	InitStamina(60.f);
+	InitMaxStamina(70.f);
+	InitEnergy(10.f);
+	InitMaxEnergy(40.f);
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 
 	//Primary Attributes
@@ -106,9 +111,8 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	Super::PostGameplayEffectExecute(Data);
 
 	FEffectProperties Props;
-	SetEffectProperties(Data, Props);
 
-	if (Props.TargetCharacter->Implements<URCombatInterface>() && IRCombatInterface::Execute_IsDead(Props.TargetCharacter)) return;
+//if (Props.TargetCharacter->Implements<URCombatInterface>() && IRCombatInterface::Execute_IsDead(Props.TargetCharacter)) return;
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -123,82 +127,25 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	{
 		SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
 	}
-	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
-	{
-		//HandleDamage(Props);
-	}
-	/*if (Data.EvaluatedData.Attribute == GetXPAttribute())
-	{
-		HandleXP(Props);
-	}*/
+	
 }
 
 void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 
-	if (Attribute == GetMaxHealthAttribute() && bRefillHealth)
+	if (Attribute == GetMaxHealthAttribute())
 	{
 		SetHealth(GetMaxHealth());
 	}
-	if (Attribute == GetMaxStaminaAttribute() && bRefillStamina)
+	if (Attribute == GetMaxStaminaAttribute())
 	{
 		SetStamina(GetMaxStamina());
 	}
-	if (Attribute == GetMaxEnergyAttribute() && bRefillEnergy)
+	if (Attribute == GetMaxEnergyAttribute())
 	{
 		SetEnergy(GetMaxEnergy());
 	}
-}
-
-void URAttributeSet::HandleXP(const FEffectProperties& Props)
-{
-
-}
-
-void URAttributeSet::HandleDebuff(const FEffectProperties& Props)
-{
-
-}
-
-void URAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
-{
-	Props.ContextHandle = Data.EffectSpec.GetContext();
-	Props.SourceASC = Props.ContextHandle.GetOriginalInstigatorAbilitySystemComponent();
-
-	if (IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
-	{
-		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
-		Props.SourcePC = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
-		if (Props.SourcePC == nullptr && Props.SourceAvatarActor != nullptr)
-		{
-			if (const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
-			{
-				APlayerController* PC = Cast<APlayerController>(Pawn->GetController());
-			}
-		}
-		if (Props.SourcePC)
-		{
-			Props.SourceCharacter = Cast<ACharacter>(Props.SourcePC->GetPawn());
-		}
-	}
-	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
-	{
-		Props.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
-		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
-		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
-		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
-	}
-}
-
-void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageAmount, bool bBlockedHit, bool bCriticalHit) const
-{
-
-}
-
-void URAttributeSet::SendXPEvent(const FEffectProperties& Props)
-{
-
 }
 
 void URAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const

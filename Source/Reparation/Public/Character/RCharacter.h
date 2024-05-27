@@ -27,7 +27,7 @@ public:
 	ARCharacter();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() { return AttributeSet; }
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;

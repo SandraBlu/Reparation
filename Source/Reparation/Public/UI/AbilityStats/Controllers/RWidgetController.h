@@ -6,15 +6,8 @@
 #include "UObject/NoExportTypes.h"
 #include "RWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangeSignature, int32, NewValue);
-
 class UAbilitySystemComponent;
 class UAttributeSet;
-class ARPlayerController;
-class ARPlayerState;
-class URAbilitySystemComponent;
-class URAttributeSet;
-class URAbilityInfo;
 
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
@@ -45,16 +38,14 @@ class REPARATION_API URWidgetController : public UObject
 {
 	GENERATED_BODY()
 
-	public:
-
+public:
 	UFUNCTION(BlueprintCallable)
-	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
+	void SetWidgetControllerParams (const FWidgetControllerParams& WCParams);
 
-	UFUNCTION(BlueprintCallable)
+	
 	virtual void BroadcastInitialValues();
 	virtual void BindCallbacksToDependencies();
-	void BroadcastAbilityInfo();
-	
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
@@ -69,21 +60,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	UAttributeSet* AttributeSet;
 
-	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
-	ARPlayerController* RPlayerController;
-
-	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
-	ARPlayerState* RPlayerState;
-
-	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
-	URAbilitySystemComponent* RAbilitySystemComponent;
-
-	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
-	URAttributeSet* RAttributeSet;
-
-	ARPlayerController* GetRPC();
-	ARPlayerState* GetRPS();
-	URAbilitySystemComponent* GetRASC();
-	URAttributeSet* GetRAS();
 	
 };

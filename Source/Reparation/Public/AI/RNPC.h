@@ -7,7 +7,6 @@
 #include "Interface/RCombatInterface.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "UI/Controller/RHUDController.h"
 #include "RNPC.generated.h"
 
 class UWidgetComponent;
@@ -34,11 +33,6 @@ public:
 	virtual FVector GetCombatSocketLocation_Implementation() override;
 	//Combat Interface
 
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChange OnHealthChange;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChange OnMaxHealthChange;
 	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 

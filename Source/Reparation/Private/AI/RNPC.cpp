@@ -9,9 +9,7 @@
 #include "AbilitySystem/RAbilitySystemComponent.h"
 #include "AbilitySystem//RAttributeSet.h"
 #include "Components/WidgetComponent.h"
-#include "UI/RUserWidget.h"
 #include "RGameplayTags.h"
-#include "Framework/RBFL.h"
 #include "Kismet/GameplayStatics.h"
 
 ARNPC::ARNPC()
@@ -21,6 +19,7 @@ ARNPC::ARNPC()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	AttributeSet = CreateDefaultSubobject<URAttributeSet>("Attributes");
+	
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	Health = CreateDefaultSubobject<UWidgetComponent>("Health");
@@ -42,6 +41,62 @@ ARNPC::ARNPC()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void ARNPC::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	/*AIC = Cast<AAOAIController>(NewController);
+	AIC->GetBlackboardComponent()->InitializeBlackboard(*BTree->BlackboardAsset);
+	AIC->RunBehaviorTree(BTree);
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);*/
+}
+
+void ARNPC::InitAbilityActorInfo()
+{
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	//Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoInit();
+
+	//InitializeAttributes();
+}
+
+void ARNPC::BeginPlay()
+{
+	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	InitAbilityActorInfo();
+
+
+	////Set widget controller for enemy health bar
+	//if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(Health->GetUserWidgetObject()))
+	//{
+	//	EnemyHealthUI->SetWidgetController(this);
+	//}
+	////Set up binding value changes (lambdas) for Progress bar
+	//if (const URAttributeSet* AS = Cast<URAttributeSet>(AttributeSet))
+	//{
+	//	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
+	//		[this](const FOnAttributeChangeData& Data)
+	//		{
+	//			OnHealthChange.Broadcast(Data.NewValue);
+	//		}
+	//	);
+
+	//	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
+	//		[this](const FOnAttributeChangeData& Data)
+	//		{
+	//			OnMaxHealthChange.Broadcast(Data.NewValue);
+	//		}
+	//	);
+	//	//Hit react Event Tag to GE_HitReact
+	//	AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ARNPC::HitReactTagChanged);
+
+
+	//	//Set Initial values for attributes
+	//	OnHealthChange.Broadcast(AS->GetHealth());
+	//	OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
+	//}
+}
 void ARNPC::Die()
 {
 	SetLifeSpan(LifeSpan);
@@ -103,24 +158,6 @@ void ARNPC::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	//AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
-/*FVector ARNPC::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
-{
-	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
-	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Weapon))
-	{
-		return Weapon->GetSocketLocation(DamageSocket);
-	}
-	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
-	{
-		return GetMesh()->GetSocketLocation(LHand);
-	}
-	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handR))
-	{
-		return GetMesh()->GetSocketLocation(RHand);
-	}
-	return FVector();
-}*/
-
 AActor* ARNPC::GetCombatTarget_Implementation() const
 {
 	return CombatTarget;
@@ -157,62 +194,9 @@ int32 ARNPC::GetCharacterLevel_Implementation()
 	return Level;
 }
 
-void ARNPC::BeginPlay()
-{
-	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	InitAbilityActorInfo();
 
 
-	//Set widget controller for enemy health bar
-	if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(Health->GetUserWidgetObject()))
-	{
-		EnemyHealthUI->SetWidgetController(this);
-	}
-	//Set up binding value changes (lambdas) for Progress bar
-	if (const URAttributeSet* AS = Cast<URAttributeSet>(AttributeSet))
-	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnHealthChange.Broadcast(Data.NewValue);
-			}
-		);
 
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxHealthChange.Broadcast(Data.NewValue);
-			}
-		);
-		//Hit react Event Tag to GE_HitReact
-		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ARNPC::HitReactTagChanged);
-
-
-		//Set Initial values for attributes
-		OnHealthChange.Broadcast(AS->GetHealth());
-		OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
-	}
-}
-
-void ARNPC::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	/*AIC = Cast<AAOAIController>(NewController);
-	AIC->GetBlackboardComponent()->InitializeBlackboard(*BTree->BlackboardAsset);
-	AIC->RunBehaviorTree(BTree);
-	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
-	AIC->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);*/
-}
-
-void ARNPC::InitAbilityActorInfo()
-{
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoInit();
-
-	InitializeAttributes();
-}
 
 void ARNPC::PlayHitReactMontage(const FName& SectionName)
 {

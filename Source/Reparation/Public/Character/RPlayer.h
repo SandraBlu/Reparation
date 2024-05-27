@@ -28,8 +28,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UNiagaraComponent* LevelUpFX;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	//class UNiagaraComponent* LevelUpFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* DrawAnim;
@@ -67,9 +67,9 @@ public:
 	//virtual int32 GetAttributePointsReward_Implementation(int32 Level) const override;
 	//virtual int32 GetAbilityPointsReward_Implementation(int32 Level) const override;
 	//virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
-	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
+	//virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
 	//virtual void AddToAbilityPoints_Implementation(int32 InAbilityPoints) override;
-	virtual int32 GetAttributePoints_Implementation() const override;
+	//virtual int32 GetAttributePoints_Implementation() const override;
 	//virtual int32 GetAbilityPoints_Implementation() const override;
 
 protected:

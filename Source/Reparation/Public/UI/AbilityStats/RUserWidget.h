@@ -14,7 +14,7 @@ class REPARATION_API URUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-	public:
+public:
 
 	UPROPERTY(BlueprintReadOnly)
 	UObject* WidgetController;
@@ -25,6 +25,6 @@ class REPARATION_API URUserWidget : public UUserWidget
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void WidgetControllerInit();
+	void InitializeWidgetController();
 	
 };
