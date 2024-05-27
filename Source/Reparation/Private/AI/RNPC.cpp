@@ -103,7 +103,7 @@ void ARNPC::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	//AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
-FVector ARNPC::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
+/*FVector ARNPC::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Weapon))
@@ -119,11 +119,16 @@ FVector ARNPC::GetCombatSocketLocation_Implementation(const FGameplayTag& Combat
 		return GetMesh()->GetSocketLocation(RHand);
 	}
 	return FVector();
-}
+}*/
 
 AActor* ARNPC::GetCombatTarget_Implementation() const
 {
 	return CombatTarget;
+}
+
+FVector ARNPC::GetCombatSocketLocation_Implementation()
+{
+	return Weapon->GetSocketLocation(DamageSocket);
 }
 
 void ARNPC::SetCombatTarget_Implementation(AActor* InCombatTarget)

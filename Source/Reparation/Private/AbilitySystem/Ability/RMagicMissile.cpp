@@ -26,7 +26,7 @@ void URMagicMissile::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 
 void URMagicMissile::SpawnProjectile(ACharacter* InstigatorCharacter)
 {
-	const FVector SocketLocation = IRCombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FRGameplayTags::Get().combatSocket_weapon);
+	const FVector SocketLocation = IRCombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo());
 
 	// Ignore Player
 	FCollisionQueryParams Params;
@@ -56,7 +56,7 @@ void URMagicMissile::SpawnProjectile(ACharacter* InstigatorCharacter)
     
 	ARProjectile* Missile = GetWorld()->SpawnActorDeferred<ARProjectile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
 	ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+	//const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
     		
 	//Missile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
     

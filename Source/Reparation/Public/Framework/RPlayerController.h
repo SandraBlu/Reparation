@@ -13,5 +13,7 @@ UCLASS()
 class REPARATION_API ARPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+public:
+	ARPlayerController();
 };

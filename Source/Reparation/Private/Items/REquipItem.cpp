@@ -204,3 +204,5 @@ void UREquipItem_Weapon::HandleEquip_Implementation()
 		}
 	}
 }
+
+#undef LOCTEXT_NAMESPACE

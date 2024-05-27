@@ -12,9 +12,10 @@
 #include "AbilitySystem/RAbilitySystemComponent.h"
 #include "Framework/RPlayerController.h"
 #include <UI/RHUD.h>
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayTagContainer.h"
+#include "Components/REquipmentComponent.h"
 #include "Input/RInputComponent.h"
-
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
 
@@ -34,6 +35,9 @@ ARPlayer::ARPlayer()
 	LevelUpFX = CreateDefaultSubobject<UNiagaraComponent>("LevelUpComp");
 	LevelUpFX->SetupAttachment(GetRootComponent());
 	LevelUpFX->bAutoActivate = false;
+	
+	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
+	
 }
 
 void ARPlayer::PossessedBy(AController* NewController)

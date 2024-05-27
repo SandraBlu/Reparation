@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
+#include "GameplayTagContainer.h"
 #include "RInputConfig.generated.h"
 
 USTRUCT(BlueprintType)

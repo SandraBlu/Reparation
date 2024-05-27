@@ -107,7 +107,7 @@ void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	//AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
-FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
+/*FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Weapon))
@@ -123,11 +123,16 @@ FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& Comb
 		return GetMesh()->GetSocketLocation(RHand);
 	}
 	return FVector();
-}
+}*/
 
 AActor* AREnemy::GetCombatTarget_Implementation() const
 {
 	return CombatTarget;
+}
+
+FVector AREnemy::GetCombatSocketLocation_Implementation()
+{
+	return Weapon->GetSocketLocation(DamageSocket);
 }
 
 void AREnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)

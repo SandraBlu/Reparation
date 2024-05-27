@@ -35,9 +35,6 @@ public:
 	UAnimMontage* DrawAnim;
 
 	//UFUNCTION(BlueprintCallable)
-	//void OnWeaponEquipped();
-
-	//UFUNCTION(BlueprintCallable)
 	//bool CanAttack();
 	////Set Attack States/Called In Attack Anim Montage-Use PrimaryAttack to set ATtack
 
@@ -100,13 +97,10 @@ protected:
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 		UInputAction* AttackAction;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-		UInputAction* InterAction;
-
 		//Input Binding Functions
 
 		//void DrawWeapon(const FInputActionValue& Value);
-		//void PrimaryAttack(const FInputActionValue& Value);
+	
 
 public:
 
@@ -121,4 +115,5 @@ private:
     	void AbilityInputTagPressed(FGameplayTag InputTag);
     	void AbilityInputTagReleased(FGameplayTag InputTag);
     	void AbilityInputTagHeld(FGameplayTag InputTag);
+	
 };

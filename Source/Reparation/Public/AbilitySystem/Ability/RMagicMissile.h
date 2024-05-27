@@ -36,4 +36,7 @@ protected:
 	
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	void SpawnProjectile(ACharacter* InstigatorCharacter);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GetHit(const FVector& Location);
 };

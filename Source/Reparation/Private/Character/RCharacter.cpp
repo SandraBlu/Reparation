@@ -8,6 +8,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Kismet/GameplayStatics.h>
 #include "RGameplayTags.h"
+#include "Actors/Weapon/RWeapon.h"
+#include "Components/REquipmentComponent.h"
 
 
 // Sets default values
@@ -37,11 +39,11 @@ URFootstepsComponent* ARCharacter::GetFootstepsComp() const
 
 URAbilitySystemComponent* ARCharacter::GetASC()
 {
-	if (RASC == nullptr)
+	if (RAbilitySystemComponent == nullptr)
 	{
-		RASC = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
+		RAbilitySystemComponent = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
 	}
-	return RASC;
+	return RAbilitySystemComponent;
 }
 
 void ARCharacter::InitAbilityActorInfo()
@@ -71,11 +73,11 @@ void ARCharacter::InitializeAttributes() const
 
 void ARCharacter::GrantAbilities()
 {
-	//URAbilitySystemComponent* RASComp = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
+	
 	if (!HasAuthority()) return;
-	//RASComp->AddGrantedAbilities(GrantedAbilities);
+	
 	GetASC()->AddGrantedAbilities(GrantedAbilities);
-	//GetASC()->AddPassiveAbilities(PassiveAbilities);
+	
 }
 
 TArray<FTaggedMontage> ARCharacter::GetAttackMontages_Implementation()
@@ -88,18 +90,23 @@ AActor* ARCharacter::GetAvatar_Implementation()
 	return this;
 }
 
+FVector ARCharacter::GetCombatSocketLocation_Implementation()
+{
+	return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
+}
+
 UAnimMontage* ARCharacter::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;
 }
 
-FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
+/*FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
-	//if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(EquippedWeapon))
-	//{
-//		return EquippedWeapon->GetWeaponMesh()->GetSocketLocation(EquippedWeapon->FiringSocket);
-//	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Gear->EquippedWeapon))
+	{
+		return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
+	}
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
 	{
 		return GetMesh()->GetSocketLocation(LHand);
@@ -109,7 +116,7 @@ FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& 
 		return GetMesh()->GetSocketLocation(RHand);
 	}
 	return FVector();
-}
+}*/
 
 UNiagaraSystem* ARCharacter::GetBloodEffect_Implementation()
 {

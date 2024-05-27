@@ -15,6 +15,7 @@
 class UAbilitySystemComponent;
 class URFootstepsComponent;
 class UGameplayAbility;
+class UREquipmentComponent;
 
 UCLASS()
 class REPARATION_API ARCharacter : public ACharacter, public IAbilitySystemInterface, public IRCombatInterface
@@ -27,7 +28,10 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() { return AttributeSet; }
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UREquipmentComponent* Gear;
+	
 protected:
 
 	virtual void InitAbilityActorInfo();
@@ -54,7 +58,7 @@ protected:
 	TSubclassOf<class UGameplayEffect> ResistanceAttributes;
 	
 	//Combat Interface
-	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
+	virtual FVector GetCombatSocketLocation_Implementation() override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation();
@@ -72,13 +76,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
-
-	//Combat
-	/*UPROPERTY(EditAnywhere, Category = "Combat")
-	AAOWeapon* EquippedWeapon;
-	 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE AAOWeapon* GetEquippedWeapon() const { return EquippedWeapon; }*/
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName RHand;
@@ -103,7 +100,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	USoundBase* DeathSFX;
 	
-	class URAbilitySystemComponent* RASC;
+	class URAbilitySystemComponent* RAbilitySystemComponent;
 
 	class URAbilitySystemComponent* GetASC();
 

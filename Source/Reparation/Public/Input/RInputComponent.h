@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EnhancedInputComponent.h"
-#include "RInputConfig.h"
+#include "Input/RInputConfig.h"
 #include "RInputComponent.generated.h"
 
 /**
@@ -47,5 +47,3 @@ void URInputComponent::BindAbilityActions(const URInputConfig* InputConfig, User
 		}
 	}
 }
-	
-

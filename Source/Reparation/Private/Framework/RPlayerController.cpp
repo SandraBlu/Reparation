@@ -3,3 +3,7 @@
 
 #include "Framework/RPlayerController.h"
 
+ARPlayerController::ARPlayerController()
+{
+	bReplicates = true;
+}

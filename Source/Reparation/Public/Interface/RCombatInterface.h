@@ -52,11 +52,11 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	int32 GetCharacterLevel();
-
-
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	FVector GetCombatSocketLocation(const FGameplayTag& CombatSocketTag);
-
+	FVector GetCombatSocketLocation();
+	//FVector GetCombatSocketLocation(const FGameplayTag& CombatSocketTag);
+	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void FaceTarget(const FVector& Target);
 

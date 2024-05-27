@@ -3,10 +3,14 @@
 
 #include "Actors/RProjectile.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 class UNiagaraSystem;
 class UNiagaraComponent;
@@ -38,18 +42,21 @@ ARProjectile::ARProjectile()
 
 }
 
-
-void ARProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	
-}
-
 void ARProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
+	//AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
+	//if  (SourceAvatarActor == OtherActor) return;
+	//if (!UAOBFL::IsNotFriend(SourceAvatarActor, OtherActor)) return;
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactVFX, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+
+	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+	{
+		//DamageEffectParams.TargetASC = TargetASC;
+	//	UAOBFL::ApplyDamageEffect(DamageEffectParams);
+	}
+	Destroy();
 }
 
 void ARProjectile::PostInitializeComponents()
