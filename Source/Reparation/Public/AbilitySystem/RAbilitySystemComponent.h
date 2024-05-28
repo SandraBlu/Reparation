@@ -22,7 +22,7 @@ public:
 
 	void AbilityActorInfoSet();
 
-	FEffectAssetTags EffectTags;
+	FEffectAssetTags EffectAssetTags;
 
 	void AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities);
 	

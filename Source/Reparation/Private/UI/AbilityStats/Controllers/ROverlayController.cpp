@@ -3,6 +3,7 @@
 
 #include "UI/AbilityStats/Controllers/ROverlayController.h"
 
+#include "AbilitySystem/RAbilitySystemComponent.h"
 #include "AbilitySystem/RAttributeSet.h"
 
 void UROverlayController::BroadcastInitialValues()
@@ -22,6 +23,17 @@ void UROverlayController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(RAttributeSet->GetMaxHealthAttribute()).AddUObject(this, &UROverlayController::MaxHealthChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(RAttributeSet->GetStaminaAttribute()).AddUObject(this, &UROverlayController::StaminaChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(RAttributeSet->GetMaxStaminaAttribute()).AddUObject(this, &UROverlayController::MaxStaminaChanged);
+
+	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda([](const FGameplayTagContainer& AssetTags)
+	{
+		for (const FGameplayTag& Tag : AssetTags)
+		{
+			const FString Msg = FString::Printf(TEXT("GE Tag: %s"), *Tag.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 8.f, FColor::Yellow, Msg);
+		}
+	}
+
+	);
 }
 
 void UROverlayController::HealthChanged(const FOnAttributeChangeData& Data) const

@@ -57,15 +57,8 @@ void URAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Input
 
 void URAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle) const
 {
-	
 	FGameplayTagContainer TagContainer;
 	EffectSpec.GetAllAssetTags(TagContainer);
-	for (const FGameplayTag& Tag : TagContainer)
-	{
-		const FString Msg = FString::Printf(TEXT("GE Tag: %s"), *Tag.ToString());
-		GEngine->AddOnScreenDebugMessage(-1, 8.f, FColor::Yellow, Msg);
-		//EffectTags.Broadcast(TagContainer);
-	}
-	
+	EffectAssetTags.Broadcast(TagContainer);
 }
 
