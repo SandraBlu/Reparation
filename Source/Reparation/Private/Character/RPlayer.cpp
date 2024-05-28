@@ -14,6 +14,7 @@
 #include "GameplayTagContainer.h"
 #include "Components/REquipmentComponent.h"
 #include "Input/RInputComponent.h"
+#include "UI/AbilityStats/RHUD.h"
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
 
@@ -31,7 +32,6 @@ ARPlayer::ARPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
-	
 }
 
 void ARPlayer::PossessedBy(AController* NewController)
@@ -40,7 +40,7 @@ void ARPlayer::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
-	GrantAbilities();
+	//GrantAbilities();
 }
 
 void ARPlayer::OnRep_PlayerState()
@@ -54,15 +54,15 @@ void ARPlayer::InitAbilityActorInfo()
 	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
 	check(RPlayerState)
 	RPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(RPlayerState, this);
-	//Cast<URAbilitySystemComponent>(RPlayerState->GetAbilitySystemComponent())->AbilityActorInfoInit();
+	Cast<URAbilitySystemComponent>(RPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = RPlayerState->GetAbilitySystemComponent();
 	AttributeSet = RPlayerState->GetAttributeSet();
 	if (ARPlayerController* AOPC = Cast<ARPlayerController>(GetController()))
 	{
- 		/*if (ARHUD* Hud = Cast<ARHUD>(AOPC->GetHUD()))
+ 		if (ARHUD* Hud = Cast<ARHUD>(AOPC->GetHUD()))
  		{
  			Hud->InitOverlay(AOPC, RPlayerState, AbilitySystemComponent, AttributeSet);
- 		}*/
+ 		}
 	}
 	//InitializeAttributes();
 }

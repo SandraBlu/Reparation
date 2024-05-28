@@ -9,8 +9,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 //#include <Framework/RBFL.h>
 
-
-void URAbilitySystemComponent::AbilityActorInfoInit()
+void URAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &URAbilitySystemComponent::ClientEffectApplied);
 }
@@ -56,37 +55,17 @@ void URAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Input
 	}
 }
 
-void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag) const
-{
-	if (GetAvatarActor()->Implements<URPlayerInterface>())
-	{
-		if (IRPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
-		{
-			FGameplayEventData Payload;
-			Payload.EventTag = AttributeTag;
-			Payload.EventMagnitude = .5f;
-
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
-
-			IRPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(), -1);
-		}
-	}
-}
-
-//void URAbilitySystemComponent::AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities)
-//{
-//	for (const TSubclassOf<UGameplayAbility> AbilityClass : PassiveAbilities)
-//	{
-//		//if ability is an AOGameplayAbility, look for ability input tag and add it to dynamic ability tags
-//		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-//		GiveAbilityAndActivateOnce(AbilitySpec);
-//	}
-//}
-
 void URAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* ASComp, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle) const
 {
+	
 	FGameplayTagContainer TagContainer;
 	EffectSpec.GetAllAssetTags(TagContainer);
-	EffectTags.Broadcast(TagContainer);
+	for (const FGameplayTag& Tag : TagContainer)
+	{
+		const FString Msg = FString::Printf(TEXT("GE Tag: %s"), *Tag.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 8.f, FColor::Yellow, Msg);
+		//EffectTags.Broadcast(TagContainer);
+	}
+	
 }
 

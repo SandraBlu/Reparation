@@ -63,22 +63,22 @@ void ARCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, fl
 	}
 }
 
-void ARCharacter::InitializeAttributes() const
+/*void ARCharacter::InitializeAttributes() const
 {
 	ApplyEffectToSelf(PrimaryAttributes, 1.f);
 	ApplyEffectToSelf(SecondaryAttributes, 1.f);
 	ApplyEffectToSelf(BaseAttributes, 1.f);
 	ApplyEffectToSelf(ResistanceAttributes, 1.f);
-}
+}*/
 
-void ARCharacter::GrantAbilities()
+/*void ARCharacter::GrantAbilities()
 {
 	
 	if (!HasAuthority()) return;
 	
 	GetASC()->AddGrantedAbilities(GrantedAbilities);
 	
-}
+}*/
 
 TArray<FTaggedMontage> ARCharacter::GetAttackMontages_Implementation()
 {

@@ -6,6 +6,9 @@
 #include "GameFramework/HUD.h"
 #include "RHUD.generated.h"
 
+struct FWidgetControllerParams;
+class UAbilitySystemComponent;
+class UAttributeSet;
 class URUserWidget;
 class UROverlayController;
 
@@ -22,12 +25,9 @@ public:
 	UPROPERTY()
 	URUserWidget* OverlayWidget;
 	
-	//UROverlayController* GetOverlayController(const FWidgetControllerParams& WCParams);
+	UROverlayController* GetOverlayController(const FWidgetControllerParams& WCParams);
 
-protected:
-
-	virtual void BeginPlay();
-	
+	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 private:
 

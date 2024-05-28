@@ -55,7 +55,7 @@ void ARNPC::PossessedBy(AController* NewController)
 void ARNPC::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	//Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoInit();
+	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	//InitializeAttributes();
 }

@@ -2,25 +2,19 @@
 
 
 #include "AbilitySystem/RAttributeSet.h"
-#include "GameFramework/Character.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "GameplayEffect.h"
-#include "Framework/RPlayerController.h"
-#include "Kismet/GameplayStatics.h"
 #include "RGameplayTags.h"
-#include "Interface/RCombatInterface.h"
-#include "Interface/RPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
-//#include "AOGameplayEffectTypes.h"
-//#include "AlphaOmega/AOLogChannel.h"
+#include "GameFramework/Character.h"
+
 
 URAttributeSet::URAttributeSet()
 {
-	InitHealth(80.f);
+	InitHealth(50.f);
 	InitMaxHealth(100.f);
-	InitStamina(60.f);
+	InitStamina(70.f);
 	InitMaxStamina(70.f);
 	InitEnergy(10.f);
 	InitMaxEnergy(40.f);
@@ -111,8 +105,7 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	Super::PostGameplayEffectExecute(Data);
 
 	FEffectProperties Props;
-
-//if (Props.TargetCharacter->Implements<URCombatInterface>() && IRCombatInterface::Execute_IsDead(Props.TargetCharacter)) return;
+	SetEffectProperties(Data, Props);
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -127,7 +120,6 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	{
 		SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
 	}
-	
 }
 
 void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
@@ -145,6 +137,39 @@ void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, fl
 	if (Attribute == GetMaxEnergyAttribute())
 	{
 		SetEnergy(GetMaxEnergy());
+	}
+}
+
+void URAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
+{
+	// Source = causer of the effect, Target = target of the effect (owner of this AS)
+
+	Props.EffectContextHandle = Data.EffectSpec.GetContext();
+	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+
+	if (IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
+	{
+		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
+		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
+		if (Props.SourceController == nullptr && Props.SourceAvatarActor != nullptr)
+		{
+			if (const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
+			{
+				Props.SourceController = Pawn->GetController();
+			}
+		}
+		if (Props.SourceController)
+		{
+			ACharacter* SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
+		}
+	}
+
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		Props.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		Props.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
+		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
+		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
 }
 

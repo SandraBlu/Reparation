@@ -22,7 +22,7 @@ struct FEffectProperties
 	FEffectProperties() {}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayEffectContextHandle ContextHandle;
+	FGameplayEffectContextHandle EffectContextHandle;
 	//Source
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAbilitySystemComponent* SourceASC = nullptr;
@@ -31,7 +31,8 @@ struct FEffectProperties
 	AActor* SourceAvatarActor = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	APlayerController* SourcePC = nullptr;
+	AController* SourceController = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACharacter* SourceCharacter = nullptr;
 
@@ -72,6 +73,10 @@ public:
 
 	//Attribute Map
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> AttributeTagMap;
+
+private:
+
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 
 public:
 

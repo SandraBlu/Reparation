@@ -36,8 +36,8 @@ protected:
 
 	virtual void InitAbilityActorInfo();
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const;
-	virtual void InitializeAttributes() const;
-	void GrantAbilities();
+	//virtual void InitializeAttributes() const;
+	//void GrantAbilities();
 
 	UPROPERTY()
 	UAttributeSet* AttributeSet;
@@ -45,17 +45,17 @@ protected:
 	UPROPERTY()
 	UAbilitySystemComponent* AbilitySystemComponent;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	TSubclassOf<class UGameplayEffect> BaseAttributes;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	//TSubclassOf<class UGameplayEffect> BaseAttributes;
 	
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	TSubclassOf<class UGameplayEffect> PrimaryAttributes;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	//TSubclassOf<class UGameplayEffect> PrimaryAttributes;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	TSubclassOf<class UGameplayEffect> SecondaryAttributes;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	//TSubclassOf<class UGameplayEffect> SecondaryAttributes;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	TSubclassOf<class UGameplayEffect> ResistanceAttributes;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	//TSubclassOf<class UGameplayEffect> ResistanceAttributes;
 	
 	//Combat Interface
 	virtual FVector GetCombatSocketLocation_Implementation() override;
@@ -82,9 +82,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName LHand;
-
-	//UPROPERTY(VisibleAnywhere, Category = "Combat")
-	//UDebuffNiagaraComp* NiagaraDebuffComp;
 	
 	//Footsteps Comp getter-----------------
 	URFootstepsComponent* GetFootstepsComp() const;
@@ -100,6 +97,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	USoundBase* DeathSFX;
 	
+	UPROPERTY()
 	class URAbilitySystemComponent* RAbilitySystemComponent;
 
 	class URAbilitySystemComponent* GetASC();
@@ -112,7 +110,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
 
-	//UPROPERTY(EditAnywhere, Category = "Abilities")
-	//TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities;
 
 };
