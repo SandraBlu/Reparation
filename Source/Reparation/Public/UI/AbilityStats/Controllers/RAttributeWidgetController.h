@@ -6,12 +6,28 @@
 #include "UI/AbilityStats/Controllers/RWidgetController.h"
 #include "RAttributeWidgetController.generated.h"
 
+class UAttributeData;
+struct FRAttributeInfo;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FRAttributeInfo&, Info);
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class REPARATION_API URAttributeWidgetController : public URWidgetController
 {
 	GENERATED_BODY()
+
+public:
 	
+	
+	virtual void BroadcastInitialValues() override;
+	virtual void BindCallbacksToDependencies() override;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FAttributeInfoSignature AttributeInfoDelegate;
+
+protected:
+	
+	UPROPERTY(EditDefaultsOnly)
+	UAttributeData* AttributeData;
 };

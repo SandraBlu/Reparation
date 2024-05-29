@@ -3,6 +3,7 @@
 
 #include "UI/AbilityStats/RHUD.h"
 #include "UI/AbilityStats/RUserWidget.h"
+#include "UI/AbilityStats/Controllers/RAttributeWidgetController.h"
 #include "UI/AbilityStats/Controllers/ROverlayController.h"
 
  UROverlayController* ARHUD::GetOverlayController(const FWidgetControllerParams& WCParams)
@@ -12,10 +13,20 @@
  		OverlayController = NewObject<UROverlayController>(this, OverlayControllerClass);
  		OverlayController->SetWidgetControllerParams(WCParams);
  		OverlayController->BindCallbacksToDependencies();
- 		return OverlayController;
 	}
  	return OverlayController;
  }
+
+URAttributeWidgetController* ARHUD::GetAttributeMenuController(const FWidgetControllerParams& WCParams)
+{
+ 	if (AttributeMenuController == nullptr)
+ 	{
+ 		AttributeMenuController = NewObject<URAttributeWidgetController>(this, AttributeMenuControllerClass);
+ 		AttributeMenuController->SetWidgetControllerParams(WCParams);
+ 		AttributeMenuController->BindCallbacksToDependencies();
+ 	}
+ 	return AttributeMenuController;
+}
 
 void ARHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {

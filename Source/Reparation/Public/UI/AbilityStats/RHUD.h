@@ -11,7 +11,7 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 class URUserWidget;
 class UROverlayController;
-
+class URAttributeWidgetController;
 /**
  * 
  */
@@ -22,15 +22,15 @@ class REPARATION_API ARHUD : public AHUD
 
 public:
 
-	UPROPERTY()
-	URUserWidget* OverlayWidget;
-	
 	UROverlayController* GetOverlayController(const FWidgetControllerParams& WCParams);
+	URAttributeWidgetController* GetAttributeMenuController(const FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 private:
-
+	
+	UPROPERTY()
+	URUserWidget* OverlayWidget;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URUserWidget> OverlayWidgetClass;
 
@@ -39,4 +39,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UROverlayController> OverlayControllerClass;
+
+	UPROPERTY()
+	URAttributeWidgetController* AttributeMenuController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URAttributeWidgetController> AttributeMenuControllerClass;
 };
