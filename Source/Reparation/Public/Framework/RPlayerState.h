@@ -31,9 +31,9 @@ class REPARATION_API ARPlayerState : public APlayerState, public IAbilitySystemI
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	URInventoryComponent* PlayerInventory;
-
-	//FOnPlayerStatChanged OnXPChangeDelegate;
+	
 	//FOnPlayerStatChanged OnLevelChangeDelegate;
+	//FOnPlayerStatChanged OnXPChangeDelegate;
 	//FOnPlayerStatChanged OnAttributePtsChangeDelegate;
 	//FOnPlayerStatChanged OnAbilityPtsChangeDelegate;
 

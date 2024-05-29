@@ -12,12 +12,6 @@
 
 URAttributeSet::URAttributeSet()
 {
-	InitHealth(50.f);
-	InitMaxHealth(100.f);
-	InitStamina(70.f);
-	InitMaxStamina(70.f);
-	InitEnergy(10.f);
-	InitMaxEnergy(40.f);
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 
 	//Primary Attributes

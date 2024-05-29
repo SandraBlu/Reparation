@@ -194,10 +194,6 @@ int32 ARNPC::GetCharacterLevel_Implementation()
 	return Level;
 }
 
-
-
-
-
 void ARNPC::PlayHitReactMontage(const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

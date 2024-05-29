@@ -32,7 +32,6 @@ public:
 	virtual AActor* GetCombatTarget_Implementation() const override;
 	virtual FVector GetCombatSocketLocation_Implementation() override;
 	//Combat Interface
-
 	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
