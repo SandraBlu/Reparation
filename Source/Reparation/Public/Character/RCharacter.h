@@ -51,8 +51,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<class UGameplayEffect> PrimaryAttributes;
 
-	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	//TSubclassOf<class UGameplayEffect> SecondaryAttributes;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<class UGameplayEffect> SecondaryAttributes;
 
 	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	//TSubclassOf<class UGameplayEffect> ResistanceAttributes;

@@ -64,7 +64,7 @@ void ARPlayer::InitAbilityActorInfo()
  			Hud->InitOverlay(AOPC, RPlayerState, AbilitySystemComponent, AttributeSet);
  		}
 	}
-	//InitializeAttributes();
+	InitializeAttributes();
 }
 	int32 ARPlayer::GetCharacterLevel_Implementation()
  {
