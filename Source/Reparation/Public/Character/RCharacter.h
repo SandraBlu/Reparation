@@ -36,7 +36,7 @@ protected:
 
 	virtual void InitAbilityActorInfo();
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const;
-	//virtual void InitializeAttributes() const;
+	virtual void InitializeAttributes() const;
 	//void GrantAbilities();
 
 	UPROPERTY()
@@ -45,11 +45,11 @@ protected:
 	UPROPERTY()
 	UAbilitySystemComponent* AbilitySystemComponent;
 
-	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	//TSubclassOf<class UGameplayEffect> BaseAttributes;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<class UGameplayEffect> BaseAttributes;
 	
-	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	//TSubclassOf<class UGameplayEffect> PrimaryAttributes;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<class UGameplayEffect> PrimaryAttributes;
 
 	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	//TSubclassOf<class UGameplayEffect> SecondaryAttributes;
