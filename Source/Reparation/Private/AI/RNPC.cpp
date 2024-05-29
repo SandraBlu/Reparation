@@ -163,7 +163,7 @@ AActor* ARNPC::GetCombatTarget_Implementation() const
 	return CombatTarget;
 }
 
-FVector ARNPC::GetCombatSocketLocation_Implementation()
+FVector ARNPC::GetCombatSocketLocation()
 {
 	return Weapon->GetSocketLocation(DamageSocket);
 }

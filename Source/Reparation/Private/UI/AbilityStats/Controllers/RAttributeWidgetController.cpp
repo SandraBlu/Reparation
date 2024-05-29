@@ -12,9 +12,12 @@ void URAttributeWidgetController::BroadcastInitialValues()
 
 	check(AttributeData);
 
-	FRAttributeInfo Info = AttributeData->FindAttributeInfoForTag(FRGameplayTags::Get().Attributes_Primary_Agility);
-	Info.AttributeValue = AS->GetAgility();
-	AttributeInfoDelegate.Broadcast(Info);
+	for (auto& Pair : AS->AttributeTagMap)
+	{
+		FRAttributeInfo Info = AttributeData->FindAttributeInfoForTag(Pair.Key);
+		Info.AttributeValue = Pair.Value().GetNumericValue(AS);
+		AttributeInfoDelegate.Broadcast(Info);
+	}
 }
 
 void URAttributeWidgetController::BindCallbacksToDependencies()

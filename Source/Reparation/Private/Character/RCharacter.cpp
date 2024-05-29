@@ -37,13 +37,13 @@ URFootstepsComponent* ARCharacter::GetFootstepsComp() const
 	return FootstepsComp;
 }
 
-URAbilitySystemComponent* ARCharacter::GetASC()
+URAbilitySystemComponent* ARCharacter::GetRASC()
 {
-	if (RAbilitySystemComponent == nullptr)
+	if (RASC == nullptr)
 	{
-		RAbilitySystemComponent = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
+		RASC = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
 	}
-	return RAbilitySystemComponent;
+	return RASC;
 }
 
 void ARCharacter::InitAbilityActorInfo()
@@ -71,6 +71,12 @@ void ARCharacter::InitializeAttributes() const
 	//ApplyEffectToSelf(ResistanceAttributes, 1.f);
 }
 
+void ARCharacter::GrantAbilities()
+{
+	if (!HasAuthority()) return;
+	GetRASC()->AddGrantedAbilities(GrantedAbilities);
+}
+
 TArray<FTaggedMontage> ARCharacter::GetAttackMontages_Implementation()
 {
 	return AttackMontages;
@@ -81,7 +87,7 @@ AActor* ARCharacter::GetAvatar_Implementation()
 	return this;
 }
 
-FVector ARCharacter::GetCombatSocketLocation_Implementation()
+FVector ARCharacter::GetCombatSocketLocation()
 {
 	return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
 }

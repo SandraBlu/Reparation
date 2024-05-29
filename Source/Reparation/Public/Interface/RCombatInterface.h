@@ -53,8 +53,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	int32 GetCharacterLevel();
 	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	FVector GetCombatSocketLocation();
+	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	virtual FVector GetCombatSocketLocation();
 	//FVector GetCombatSocketLocation(const FGameplayTag& CombatSocketTag);
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)

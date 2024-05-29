@@ -2,6 +2,8 @@
 
 
 #include "Character/RPlayer.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -40,7 +42,7 @@ void ARPlayer::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
-	//GrantAbilities();
+	GrantAbilities();
 }
 
 void ARPlayer::OnRep_PlayerState()
@@ -93,14 +95,14 @@ void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (GetASC() == nullptr) return;
-	GetASC()->AbilityInputTagReleased(InputTag);
+	if (GetRASC() == nullptr) return;
+	GetRASC()->AbilityInputTagReleased(InputTag);
 }
 
 void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (GetASC() == nullptr) return;
-	GetASC()->AbilityInputTagHeld(InputTag);
+	if (GetRASC() == nullptr) return;
+	GetRASC()->AbilityInputTagHeld(InputTag);
 }
 
 void ARPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

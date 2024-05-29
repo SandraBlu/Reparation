@@ -30,7 +30,7 @@ public:
 	virtual void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
-	virtual FVector GetCombatSocketLocation_Implementation() override;
+	virtual FVector GetCombatSocketLocation() override;
 	//Combat Interface
 	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);

@@ -37,7 +37,7 @@ protected:
 	virtual void InitAbilityActorInfo();
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> EffectClass, float Level) const;
 	virtual void InitializeAttributes() const;
-	//void GrantAbilities();
+	void GrantAbilities();
 
 	UPROPERTY()
 	UAttributeSet* AttributeSet;
@@ -58,7 +58,7 @@ protected:
 	//TSubclassOf<class UGameplayEffect> ResistanceAttributes;
 	
 	//Combat Interface
-	virtual FVector GetCombatSocketLocation_Implementation() override;
+	virtual FVector GetCombatSocketLocation() override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation();
@@ -98,9 +98,9 @@ protected:
 	USoundBase* DeathSFX;
 	
 	UPROPERTY()
-	class URAbilitySystemComponent* RAbilitySystemComponent;
+	class URAbilitySystemComponent* RASC;
 
-	class URAbilitySystemComponent* GetASC();
+	class URAbilitySystemComponent* GetRASC();
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage* HitReactMontage;
