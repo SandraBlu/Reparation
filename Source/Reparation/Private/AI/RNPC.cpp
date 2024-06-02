@@ -2,15 +2,18 @@
 
 
 #include "AI/RNPC.h"
+#include "Reparation/Reparation.h"
 #include "Components/WidgetComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystem/RAbilitySystemComponent.h"
 #include "AbilitySystem//RAttributeSet.h"
-#include "Components/WidgetComponent.h"
 #include "RGameplayTags.h"
+#include "Framework/RAbilitySystemBFL.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/AbilityStats/RUserWidget.h"
+
 
 ARNPC::ARNPC()
 {
@@ -32,7 +35,7 @@ ARNPC::ARNPC()
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	//GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
@@ -57,7 +60,12 @@ void ARNPC::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
-	//InitializeAttributes();
+	InitializeAttributes();
+}
+
+void ARNPC::InitializeAttributes() const
+{
+	URAbilitySystemBFL::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 }
 
 void ARNPC::BeginPlay()
@@ -65,38 +73,35 @@ void ARNPC::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
-
-
-	////Set widget controller for enemy health bar
-	//if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(Health->GetUserWidgetObject()))
-	//{
-	//	EnemyHealthUI->SetWidgetController(this);
-	//}
+	
+	//Set widget controller for enemy health bar
+	if (URUserWidget* NPCHealthUI = Cast<URUserWidget>(Health->GetUserWidgetObject()))
+	{
+		NPCHealthUI->SetWidgetController(this);
+	}
 	////Set up binding value changes (lambdas) for Progress bar
-	//if (const URAttributeSet* AS = Cast<URAttributeSet>(AttributeSet))
-	//{
-	//	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
-	//		[this](const FOnAttributeChangeData& Data)
-	//		{
-	//			OnHealthChange.Broadcast(Data.NewValue);
-	//		}
-	//	);
+	if (const URAttributeSet* AS = Cast<URAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthChange.Broadcast(Data.NewValue);
+		}
+	);
 
-	//	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
-	//		[this](const FOnAttributeChangeData& Data)
-	//		{
-	//			OnMaxHealthChange.Broadcast(Data.NewValue);
-	//		}
-	//	);
-	//	//Hit react Event Tag to GE_HitReact
-	//	AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ARNPC::HitReactTagChanged);
-
-
-	//	//Set Initial values for attributes
-	//	OnHealthChange.Broadcast(AS->GetHealth());
-	//	OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
-	//}
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxHealthChange.Broadcast(Data.NewValue);
+		}
+	);
+	//Hit react Event Tag to GE_HitReact
+	AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ARNPC::HitReactTagChanged);
+	//Set Initial values for attributes
+	OnHealthChange.Broadcast(AS->GetHealth());
+	OnMaxHealthChange.Broadcast(AS->GetMaxHealth());}
 }
+
 void ARNPC::Die()
 {
 	SetLifeSpan(LifeSpan);
@@ -163,9 +168,22 @@ AActor* ARNPC::GetCombatTarget_Implementation() const
 	return CombatTarget;
 }
 
-FVector ARNPC::GetCombatSocketLocation()
+FVector ARNPC::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
-	return Weapon->GetSocketLocation(DamageSocket);
+	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(DamageSocket);
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
+	{
+		return GetMesh()->GetSocketLocation(LHand);
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handR))
+	{
+		return GetMesh()->GetSocketLocation(RHand);
+	}
+	return FVector();
 }
 
 void ARNPC::SetCombatTarget_Implementation(AActor* InCombatTarget)

@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "RGameMode.generated.h"
 
-class URNPCData;
+class URCharacterClassData;
 class URAbilityInfo;
 
 /**
@@ -17,6 +17,9 @@ class REPARATION_API ARGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-	public:
+public:
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
+	URCharacterClassData* CharacterClassInfo;
 	
 };

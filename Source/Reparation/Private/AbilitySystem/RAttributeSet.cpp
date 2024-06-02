@@ -73,6 +73,12 @@ void URAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, MaxEnergy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, PoisonResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, DarkResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, ElectricResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, IceResistance, COND_None, REPNOTIFY_Always);
 
 }
 
@@ -104,6 +110,7 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+		UE_LOG(LogTemp, Warning, TEXT("Changed Health on %s, Health: %f"), *Props.TargetAvatarActor->GetName(), GetHealth());
 	}
 	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
@@ -136,7 +143,6 @@ void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, fl
 void URAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
 {
 	// Source = causer of the effect, Target = target of the effect (owner of this AS)
-
 	Props.EffectContextHandle = Data.EffectSpec.GetContext();
 	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
@@ -280,3 +286,34 @@ void URAttributeSet::OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRe
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, EnergyRegen, OldEnergyRegen);
 }
+
+void URAttributeSet::OnRep_PhysicaLResistance(const FGameplayAttributeData& OldPhysicalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, PhysicalResistance, OldPhysicalResistance);
+}
+
+void URAttributeSet::OnRep_PoisonResistance(const FGameplayAttributeData& OldPoisonResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, PoisonResistance, OldPoisonResistance);
+}
+
+void URAttributeSet::OnRep_DarkResistance(const FGameplayAttributeData& OldDarkResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, DarkResistance, OldDarkResistance);
+}
+
+void URAttributeSet::OnRep_ElectricResistance(const FGameplayAttributeData& OldElectricResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, ElectricResistance, OldElectricResistance);
+}
+
+void URAttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, FireResistance, OldFireResistance);
+}
+
+void URAttributeSet::OnRep_IceResistance(const FGameplayAttributeData& OldIceResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, IceResistance, OldIceResistance);
+}
+

@@ -7,6 +7,8 @@
 #include "Interface/RCombatInterface.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "UI/AbilityStats/Controllers/ROverlayController.h"
+#include "AbilitySystem/Data/RCharacterClassData.h"
 #include "RNPC.generated.h"
 
 class UWidgetComponent;
@@ -30,8 +32,14 @@ public:
 	virtual void DirectionalHitReact(const FVector& ImpactPoint);
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
-	virtual FVector GetCombatSocketLocation() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	//Combat Interface
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnStatChangedSignature OnHealthChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnStatChangedSignature OnMaxHealthChange;
 	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
@@ -55,9 +63,12 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAbilityActorInfo() override;
-	//virtual void InitializeAttributes() const override;
+	virtual void InitializeAttributes() const override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Default Settings")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

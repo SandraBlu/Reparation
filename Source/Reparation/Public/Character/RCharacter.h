@@ -58,7 +58,7 @@ protected:
 	//TSubclassOf<class UGameplayEffect> ResistanceAttributes;
 	
 	//Combat Interface
-	virtual FVector GetCombatSocketLocation() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation();

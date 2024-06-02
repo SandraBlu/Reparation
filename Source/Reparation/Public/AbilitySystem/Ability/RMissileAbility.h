@@ -6,7 +6,6 @@
 #include "AbilitySystem/Ability/RGameplayAbility.h"
 #include "RMissileAbility.generated.h"
 
-class ARProjectile;
 /**
  * 
  */
@@ -22,8 +21,20 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<ARProjectile> ProjectileClass;
+	TSubclassOf<class ARProjectile> ProjectileClass;
 
+	/* Sphere radius of the sweep to find desired target under crosshair. Adjusts final projectile direction */
+	UPROPERTY(EditAnywhere, Category="Targeting")
+	float SweepRadius;
 
+	/* Fallback distance when sweep finds no collision under crosshair. Adjusts final projectile direction */
+	UPROPERTY(EditAnywhere, Category="Targeting")
+	float SweepDistanceFallback;
+
+	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	void SpawnProjectile(ACharacter* InstigatorCharacter);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<class UGameplayEffect> DamageEffectClass;
 	
 };

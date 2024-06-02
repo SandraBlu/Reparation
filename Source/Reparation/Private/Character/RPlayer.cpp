@@ -68,12 +68,13 @@ void ARPlayer::InitAbilityActorInfo()
 	}
 	InitializeAttributes();
 }
-	int32 ARPlayer::GetCharacterLevel_Implementation()
- {
+
+int32 ARPlayer::GetCharacterLevel_Implementation()
+{
  	const ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
  	check(RPlayerState)
  	return RPlayerState->GetCharacterLevel();
- }
+}
 
 void ARPlayer::BeginPlay()
 {

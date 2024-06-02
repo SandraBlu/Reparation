@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayEffectTypes.h"
 #include "RProjectile.generated.h"
 
 UCLASS()
@@ -17,10 +18,11 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UProjectileMovementComponent* MovementComp;
+
+	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
+	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 	
 protected:
-	
-	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class USphereComponent* SphereComp;
@@ -29,13 +31,16 @@ protected:
 	class UNiagaraComponent* EffectComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	USoundBase* LaunchSFX;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	class UNiagaraSystem* ImpactVFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	USoundBase* ImpactSound;
+	USoundBase* ImpactSFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	float Lifespan = 5;
+	float Lifespan;
 
 	UFUNCTION()
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

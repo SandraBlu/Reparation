@@ -87,17 +87,8 @@ AActor* ARCharacter::GetAvatar_Implementation()
 	return this;
 }
 
-FVector ARCharacter::GetCombatSocketLocation()
-{
-	return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
-}
 
-UAnimMontage* ARCharacter::GetHitReactMontage_Implementation()
-{
-	return HitReactMontage;
-}
-
-/*FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
+FVector ARCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Gear->EquippedWeapon))
@@ -113,7 +104,12 @@ UAnimMontage* ARCharacter::GetHitReactMontage_Implementation()
 		return GetMesh()->GetSocketLocation(RHand);
 	}
 	return FVector();
-}*/
+}
+
+UAnimMontage* ARCharacter::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
 
 UNiagaraSystem* ARCharacter::GetBloodEffect_Implementation()
 {

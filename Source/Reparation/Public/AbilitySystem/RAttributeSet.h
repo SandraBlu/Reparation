@@ -190,27 +190,27 @@ public:
 	ATTRIBUTE_ACCESSORS(URAttributeSet, EnergyRegen)
 
 	//Resistances
-	UPROPERTY(BlueprintReadOnly, Category = "Resistance Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData PhysicalResistance;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, PhysicalResistance);
 
-	UPROPERTY(BlueprintReadOnly, Category = "Resistance Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PoisonResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData PoisonResistance;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, PoisonResistance);
 
-	UPROPERTY(BlueprintReadOnly, Category = "Resistance Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DarkResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData DarkResistance;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, DarkResistance);
 
-	UPROPERTY(BlueprintReadOnly, Category = "Resistance Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ElectricResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData ElectricResistance;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, ElectricResistance);
 
-	UPROPERTY(BlueprintReadOnly, Category = "Resistance Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData FireResistance;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, FireResistance);
 
-	UPROPERTY(BlueprintReadOnly, Category = "Resistance Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IceResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData IceResistance;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, IceResistance);
 
@@ -260,5 +260,17 @@ public:
 	void OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen) const;
 	UFUNCTION()
 	void OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRegen) const;
+	UFUNCTION()
+	void OnRep_PhysicaLResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+	UFUNCTION()
+	void OnRep_PoisonResistance(const FGameplayAttributeData& OldPoisonResistance) const;
+	UFUNCTION()
+	void OnRep_DarkResistance(const FGameplayAttributeData& OldDarkResistance) const;
+	UFUNCTION()
+	void OnRep_ElectricResistance(const FGameplayAttributeData& OldElectricResistance) const;
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+	UFUNCTION()
+	void OnRep_IceResistance(const FGameplayAttributeData& OldIceResistance) const;
 	
 };

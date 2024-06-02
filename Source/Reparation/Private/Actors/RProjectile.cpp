@@ -2,7 +2,7 @@
 
 
 #include "Actors/RProjectile.h"
-
+#include "Reparation/Reparation.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraComponent.h"
@@ -22,7 +22,7 @@ ARProjectile::ARProjectile()
 	SphereComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 	SphereComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	//SphereComp->SetCollisionObjectType(ECC_Projectile);
+	SphereComp->SetCollisionObjectType(ECC_Projectile);
 	RootComponent = SphereComp;
 	
 	SphereComp->SetSphereRadius(20.0f);
@@ -38,26 +38,20 @@ ARProjectile::ARProjectile()
 	MovementComp->ProjectileGravityScale = 0.0f;
 }
 
-void ARProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ARProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
+	//AActor* SourceAvatarActor = DamageEffectSpecHandle.SourceASC->GetAvatarActor();
 //	if  (SourceAvatarActor == OtherActor) return;
 	//if (!UAOBFL::IsNotFriend(SourceAvatarActor, OtherActor)) return;
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactVFX, GetActorLocation());
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX, GetActorLocation());
 
 	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 	{
-		//DamageEffectParams.TargetASC = TargetASC;
-		//UAOBFL::ApplyDamageEffect(DamageEffectParams);
+		TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
 	}
-	Destroy();
+		Destroy();
 }
 
 void ARProjectile::PostInitializeComponents()
@@ -65,6 +59,6 @@ void ARProjectile::PostInitializeComponents()
 	// PostInitializeComponent is the preferred way of binding any events.
 	Super::PostInitializeComponents();
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ARProjectile::OnActorOverlap);
-	SetLifeSpan(Lifespan);
+	UGameplayStatics::PlaySoundAtLocation(this, LaunchSFX, GetActorLocation());
 }
 

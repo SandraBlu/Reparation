@@ -3,11 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSet.h"
 #include "UI/AbilityStats/Controllers/RWidgetController.h"
 #include "RAttributeWidgetController.generated.h"
 
+
 class UAttributeData;
 struct FRAttributeInfo;
+struct FGameplayTag;
+struct FGameplayAttribute;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FRAttributeInfo&, Info);
 /**
  * 
@@ -30,4 +34,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	UAttributeData* AttributeData;
+
+private:
+
+	void BroadcastAttributeInfo(const FGameplayTag& AttributeTag, const FGameplayAttribute& Attribute) const;
+	
 };
