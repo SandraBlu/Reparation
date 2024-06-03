@@ -2,7 +2,6 @@
 
 
 #include "Character/RPlayer.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -16,7 +15,6 @@
 #include "GameplayTagContainer.h"
 #include "Components/REquipmentComponent.h"
 #include "Input/RInputComponent.h"
-#include "UI/AbilityStats/RHUD.h"
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
 
@@ -59,13 +57,7 @@ void ARPlayer::InitAbilityActorInfo()
 	Cast<URAbilitySystemComponent>(RPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = RPlayerState->GetAbilitySystemComponent();
 	AttributeSet = RPlayerState->GetAttributeSet();
-	if (ARPlayerController* AOPC = Cast<ARPlayerController>(GetController()))
-	{
- 		if (ARHUD* Hud = Cast<ARHUD>(AOPC->GetHUD()))
- 		{
- 			Hud->InitOverlay(AOPC, RPlayerState, AbilitySystemComponent, AttributeSet);
- 		}
-	}
+	
 	InitializeAttributes();
 }
 
