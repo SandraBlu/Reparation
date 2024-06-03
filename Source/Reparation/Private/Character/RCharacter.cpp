@@ -68,7 +68,7 @@ void ARCharacter::InitializeAttributes() const
 	ApplyEffectToSelf(PrimaryAttributes, 1.f);
 	ApplyEffectToSelf(SecondaryAttributes, 1.f);
 	ApplyEffectToSelf(BaseAttributes, 1.f);
-	//ApplyEffectToSelf(ResistanceAttributes, 1.f);
+	ApplyEffectToSelf(ResistanceAttributes, 1.f);
 }
 
 void ARCharacter::GrantAbilities()

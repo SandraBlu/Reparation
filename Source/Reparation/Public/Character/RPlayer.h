@@ -28,8 +28,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	//class UNiagaraComponent* LevelUpFX;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UNiagaraComponent* LevelUpFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* DrawAnim;
