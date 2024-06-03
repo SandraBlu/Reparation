@@ -10,11 +10,11 @@
 #include "NiagaraComponent.h"
 #include "Framework/RPlayerState.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/RAbilitySystemComponent.h"
+
 #include "Framework/RPlayerController.h"
 #include "GameplayTagContainer.h"
 #include "Components/REquipmentComponent.h"
-#include "Input/RInputComponent.h"
+
 #include "UI/AbilitySystem/RHUD.h"
 
 #define LOCTEXT_NAMESPACE "AOCharacter"
@@ -39,40 +39,6 @@ void ARPlayer::PossessedBy(AController* NewController)
 {
 	//server
 	Super::PossessedBy(NewController);
-
-	InitAbilityActorInfo();
-	GrantAbilities();
-}
-
-void ARPlayer::OnRep_PlayerState()
-{
-	//client
-	InitAbilityActorInfo();
-}
-
-void ARPlayer::InitAbilityActorInfo()
-{
-	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
-	check(RPlayerState)
-	RPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(RPlayerState, this);
-	Cast<URAbilitySystemComponent>(RPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
-	AbilitySystemComponent = RPlayerState->GetAbilitySystemComponent();
-	AttributeSet = RPlayerState->GetAttributeSet();
-	if (ARPlayerController* RPlayerController = Cast<ARPlayerController>(GetController()))
-	{
-		if (ARHUD* RHUD = Cast<ARHUD>(RPlayerController->GetHUD()))
-		{
-			RHUD->InitOverlay(RPlayerController, RPlayerState, AbilitySystemComponent, AttributeSet);
-		}
-	}
-	InitializeAttributes();
-}
-
-int32 ARPlayer::GetCharacterLevel_Implementation()
-{
- 	const ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
- 	check(RPlayerState)
- 	return RPlayerState->GetCharacterLevel();
 }
 
 void ARPlayer::BeginPlay()
@@ -88,33 +54,15 @@ void ARPlayer::BeginPlay()
 	}
 }
 
-void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
-{
-	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
-}
-
-void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
-{
-	if (GetRASC() == nullptr) return;
-	GetRASC()->AbilityInputTagReleased(InputTag);
-}
-
-void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
-{
-	if (GetRASC() == nullptr) return;
-	GetRASC()->AbilityInputTagHeld(InputTag);
-}
-
-void ARPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (URInputComponent* RInputComp = CastChecked<URInputComponent>(InputComponent))
-	{
-		RInputComp->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
-		//RInputComp->BindAction(DrawWeapon, ETriggerEvent::Triggered, this, &ARPlayer::DrawWeapon);
-	}
 	
+
+		{
+			//RInputComp->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+			//RInputComp->BindAction(DrawWeapon, ETriggerEvent::Triggered, this, &ARPlayer::DrawWeapon);
+		}
 }
 
 #undef LOCTEXT_NAMESPACE

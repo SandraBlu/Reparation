@@ -19,7 +19,7 @@ class REPARATION_API ARGameMode : public AGameModeBase
 
 public:
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
-	URCharacterClassData* CharacterClassInfo;
+	//UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
+	//URCharacterClassData* CharacterClassInfo;
 	
 };

@@ -74,18 +74,18 @@ void ARWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
     UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), TraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false,
         ActorsToIgnore, EDrawDebugTrace::ForDuration, BoxHit, true);
 
-    if (BoxHit.GetActor())
-    {
-        IRCombatInterface* iHit = Cast<IRCombatInterface>(BoxHit.GetActor());
-        if (iHit)
-        {
-            iHit->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
-            OnHit(BoxHit);
-        }
-        IgnoreActors.AddUnique(BoxHit.GetActor());
+    // if (BoxHit.GetActor())
+    // {
+    //     IRCombatInterface* iHit = Cast<IRCombatInterface>(BoxHit.GetActor());
+    //     if (iHit)
+    //     {
+    //         iHit->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
+    //         OnHit(BoxHit);
+    //     }
+       // IgnoreActors.AddUnique(BoxHit.GetActor());
 
-        CreateForceFields(BoxHit.ImpactPoint);
-    }
+      //  CreateForceFields(BoxHit.ImpactPoint);
+   // }
 }
 
 void ARWeapon::UpdateCombatType(ECombatType)
