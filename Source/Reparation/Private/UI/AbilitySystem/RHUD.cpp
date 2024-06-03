@@ -28,5 +28,6 @@ void ARHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemC
 	UROverlayController* WidgetController = GetOverlayController(WidgetControllerParams);
 
 	OverlayWidget->SetWidgetController(WidgetController);
+	WidgetController->BroadcastInitialValues();
 	Widget->AddToViewport();
 }
