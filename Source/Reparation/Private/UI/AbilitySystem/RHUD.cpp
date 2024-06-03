@@ -3,11 +3,30 @@
 
 #include "UI/AbilitySystem/RHUD.h"
 #include "UI/AbilitySystem/RUserWidget.h"
+#include "UI/AbilitySystem/Controller/ROverlayController.h"
 
-void ARHUD::BeginPlay()
+UROverlayController* ARHUD::GetOverlayController(const FWidgetControllerParams& WCParams)
 {
-	Super::BeginPlay();
+	if (OverlayController == nullptr)
+	{
+		OverlayController = NewObject<UROverlayController>(this, OverlayControllerClass);
+		OverlayController->SetWidgetControllerParams(WCParams);
+		return OverlayController;
+	}
+	return OverlayController;
+}
+
+void ARHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
+{
+	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_HUD"));
+	checkf(OverlayControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_HUD"));
 
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
+	OverlayWidget = Cast<URUserWidget>(Widget);
+	
+	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
+	UROverlayController* WidgetController = GetOverlayController(WidgetControllerParams);
+
+	OverlayWidget->SetWidgetController(WidgetController);
 	Widget->AddToViewport();
 }
