@@ -6,5 +6,5 @@
 void URUserWidget::SetWidgetController(UObject* InWidgetController)
 {
 	WidgetController = InWidgetController;
-	WidgetControllerInit();
+	InitWidgetController();
 }

@@ -39,6 +39,23 @@ void ARPlayer::PossessedBy(AController* NewController)
 {
 	//server
 	Super::PossessedBy(NewController);
+	InitAbilityActorInfo();
+}
+
+void ARPlayer::OnRep_PlayerState()
+{
+	//client
+	Super::OnRep_PlayerState();
+	InitAbilityActorInfo();
+}
+
+void ARPlayer::InitAbilityActorInfo()
+{
+	ARPlayerState* RPlayerState = GetPlayerState<ARPlayerState>();
+	check(RPlayerState);
+	RPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(RPlayerState, this);
+	AbilitySystemComponent = RPlayerState->GetAbilitySystemComponent();
+	AttributeSet = RPlayerState->GetAttributeSet();
 }
 
 void ARPlayer::BeginPlay()

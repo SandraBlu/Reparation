@@ -24,6 +24,7 @@ public:
 	ARPlayer();
 
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UNiagaraComponent* LevelUpFX;
@@ -32,6 +33,8 @@ public:
 	UAnimMontage* DrawAnim;
 
 protected:
+
+	virtual void InitAbilityActorInfo();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class USpringArmComponent* CameraBoom;

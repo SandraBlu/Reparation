@@ -10,7 +10,7 @@
 #include "GameplayTagContainer.h"
 #include "RCharacter.generated.h"
 
-
+class UAttributeSet;
 class UAbilitySystemComponent;
 class URFootstepsComponent;
 class UGameplayAbility;
@@ -24,7 +24,7 @@ class REPARATION_API ARCharacter : public ACharacter, public IAbilitySystemInter
 public:
 
 	ARCharacter();
-
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	

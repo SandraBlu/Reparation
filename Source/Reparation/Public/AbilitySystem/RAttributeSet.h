@@ -66,15 +66,9 @@ public:
 	URAttributeSet();
 
 	virtual void GetLifetimeReplicatedProps( TArray<class FLifetimeProperty> & OutLifetimeProps ) const override;
-
 	
-
 	//Attribute Map
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> AttributeTagMap;
-
-private:
-
-	
 
 public:
 
