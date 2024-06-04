@@ -4,7 +4,9 @@
 #include "Characters/RPlayer.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "Actors/RWeapon.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/REquipmentComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -23,6 +25,15 @@ ARPlayer::ARPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
+}
+
+void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())
+	{
+		Gear->EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		Gear->EquippedWeapon->IgnoreActors.Empty();
+	}
 }
 
 void ARPlayer::BeginPlay()
