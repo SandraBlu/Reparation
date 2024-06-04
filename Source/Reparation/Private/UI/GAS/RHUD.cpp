@@ -12,6 +12,7 @@ UROverlayWidgetController* ARHUD::GetOverlayWidgetController(const FWidgetContro
 	{
 		OverlayWidgetController = NewObject<UROverlayWidgetController>(this, OverlayWidgetControllerClass);
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
+		OverlayWidgetController->BindCallbacksToDependencies();
 		return OverlayWidgetController;
 	}
 	return OverlayWidgetController;

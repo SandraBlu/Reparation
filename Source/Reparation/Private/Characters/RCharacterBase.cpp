@@ -23,3 +23,7 @@ void ARCharacterBase::BeginPlay()
 	
 }
 
+void ARCharacterBase::InitAbilityActorInfo()
+{
+}
+

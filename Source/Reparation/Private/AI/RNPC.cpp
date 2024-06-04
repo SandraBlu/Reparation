@@ -22,5 +22,11 @@ ARNPC::ARNPC()
 void ARNPC::BeginPlay()
 {
 	Super::BeginPlay();
+	InitAbilityActorInfo();
+}
+
+void ARNPC::InitAbilityActorInfo()
+{
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 }

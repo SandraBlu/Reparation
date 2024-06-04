@@ -3,3 +3,16 @@
 
 #include "GAS/RAbilitySystemComponent.h"
 
+void URAbilitySystemComponent::AbilityActorInfoSet()
+{
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &URAbilitySystemComponent::EffectApplied);
+}
+
+void URAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
+                                             const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
+{
+	
+	FGameplayTagContainer TagContainer;
+	EffectSpec.GetAllAssetTags(TagContainer);
+	EffectAssetTags.Broadcast(TagContainer);
+}

@@ -13,6 +13,7 @@
 #include "Framework/RPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GAS/RAbilitySystemComponent.h"
 #include "UI/GAS/RHUD.h"
 
 ARPlayer::ARPlayer()
@@ -72,6 +73,7 @@ void ARPlayer::InitAbilityActorInfo()
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
 	check(RPS);
 	RPS->GetAbilitySystemComponent()->InitAbilityActorInfo(RPS, this);
+	Cast<URAbilitySystemComponent>(RPS->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = RPS->GetAbilitySystemComponent();
 	AttributeSet = RPS->GetAttributeSet();
 	if (ARPlayerController* RPC = Cast<ARPlayerController>(GetController()))

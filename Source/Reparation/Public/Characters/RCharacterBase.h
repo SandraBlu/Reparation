@@ -31,6 +31,8 @@ protected:
 
 	UPROPERTY()
 	UAttributeSet* AttributeSet;
+
+	virtual void InitAbilityActorInfo();
 	
 
 	

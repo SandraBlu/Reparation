@@ -44,7 +44,7 @@ protected:
 	UInputMappingContext* PlayerMappingContext;
 
 private:
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
 
 public:
 	
