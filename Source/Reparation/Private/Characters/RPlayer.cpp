@@ -9,9 +9,11 @@
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/REquipmentComponent.h"
+#include "Framework/RPlayerController.h"
 #include "Framework/RPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "UI/GAS/RHUD.h"
 
 ARPlayer::ARPlayer()
 {
@@ -72,6 +74,14 @@ void ARPlayer::InitAbilityActorInfo()
 	RPS->GetAbilitySystemComponent()->InitAbilityActorInfo(RPS, this);
 	AbilitySystemComponent = RPS->GetAbilitySystemComponent();
 	AttributeSet = RPS->GetAttributeSet();
+	if (ARPlayerController* RPC = Cast<ARPlayerController>(GetController()))
+	{
+		if (ARHUD* RHUD = Cast<ARHUD>(RPC->GetHUD()))
+		{
+			RHUD->InitOverlay(RPC, RPS, AbilitySystemComponent, AttributeSet);
+		}
+	}
+	
 }
 
 void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

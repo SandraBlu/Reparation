@@ -1,0 +1,34 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "UI/GAS/RHUD.h"
+
+#include "UI/GAS/RUserWidget.h"
+#include "UI/GAS/Controllers/ROverlayWidgetController.h"
+
+UROverlayWidgetController* ARHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (OverlayWidgetController ==nullptr)
+	{
+		OverlayWidgetController = NewObject<UROverlayWidgetController>(this, OverlayWidgetControllerClass);
+		OverlayWidgetController->SetWidgetControllerParams(WCParams);
+		return OverlayWidgetController;
+	}
+	return OverlayWidgetController;
+}
+
+void ARHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
+{
+	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_HUD"));
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_HUD"));
+
+	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
+	OverlayWidget = Cast<URUserWidget>(Widget);
+
+	const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
+	UROverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
+
+	OverlayWidget->SetWidgetController(WidgetController);
+	WidgetController->BroadcastInitialValues();
+	Widget->AddToViewport();
+}

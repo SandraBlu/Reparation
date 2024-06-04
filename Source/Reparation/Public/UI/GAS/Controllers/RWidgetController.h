@@ -8,6 +8,29 @@
 
 class UAttributeSet;
 class UAbilitySystemComponent;
+
+USTRUCT(BlueprintType)
+struct FWidgetControllerParams
+{
+	GENERATED_BODY()
+
+	FWidgetControllerParams() {}
+	FWidgetControllerParams(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS) 
+	: PlayerController(PC), PlayerState(PS), AbilitySystemComponent(ASC), AttributeSet(AS) {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	APlayerController* PlayerController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	APlayerState* PlayerState = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UAbilitySystemComponent* AbilitySystemComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UAttributeSet* AttributeSet = nullptr;
+};
+
 /**
  * 
  */
@@ -15,6 +38,15 @@ UCLASS()
 class REPARATION_API URWidgetController : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void BroadcastInitialValues();
+	virtual void BindCallbacksToDependencies();
 
 protected:
 
