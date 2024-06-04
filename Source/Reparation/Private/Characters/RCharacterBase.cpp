@@ -11,6 +11,11 @@ ARCharacterBase::ARCharacterBase()
 
 }
 
+UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 // Called when the game starts or when spawned
 void ARCharacterBase::BeginPlay()
 {
