@@ -18,10 +18,10 @@ void UROverlayWidgetController::BroadcastInitialValues()
 void UROverlayWidgetController::BindCallbacksToDependencies()
 {
 	const URAttributeSet* Attributes = CastChecked<URAttributeSet>(AttributeSet);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &UROverlayWidgetController::HealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddUObject(this, &UROverlayWidgetController::MaxHealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).AddUObject(this, &UROverlayWidgetController::StaminaChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).AddUObject(this, &UROverlayWidgetController::MaxStaminaChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnHealthChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnStaminaChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxStaminaChange.Broadcast(Data.NewValue);});
 	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda(
 		[this](const FGameplayTagContainer& AssetTags)
 		{
@@ -36,24 +36,4 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 			}
 		}
 	);
-}
-
-void UROverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnHealthChange.Broadcast(Data.NewValue);
-}
-
-void UROverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxHealthChange.Broadcast(Data.NewValue);
-}
-
-void UROverlayWidgetController::StaminaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnStaminaChange.Broadcast(Data.NewValue);
-}
-
-void UROverlayWidgetController::MaxStaminaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxStaminaChange.Broadcast(Data.NewValue);
 }
