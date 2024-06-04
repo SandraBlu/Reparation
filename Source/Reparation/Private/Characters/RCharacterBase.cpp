@@ -2,13 +2,12 @@
 
 
 #include "Characters/RCharacterBase.h"
+#include "AbilitySystemComponent.h"
 
 // Sets default values
 ARCharacterBase::ARCharacterBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
@@ -25,5 +24,11 @@ void ARCharacterBase::BeginPlay()
 
 void ARCharacterBase::InitAbilityActorInfo()
 {
+}
+void ARCharacterBase::InitializeAttributes() const
+{
+	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(PrimaryAttributes, 1.f, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 }
 

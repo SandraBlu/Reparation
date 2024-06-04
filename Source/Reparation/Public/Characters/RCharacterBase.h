@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "RCharacterBase.generated.h"
 
+class UGameplayEffect;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
@@ -34,6 +35,10 @@ protected:
 
 	virtual void InitAbilityActorInfo();
 	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	TSubclassOf<UGameplayEffect>PrimaryAttributes;
+
+	void InitializeAttributes() const;
 
 	
 	

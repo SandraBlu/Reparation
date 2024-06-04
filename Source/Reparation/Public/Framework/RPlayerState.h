@@ -25,7 +25,7 @@ public:
 
 protected:
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UAbilitySystemComponent* AbilitySystemComponent;
 
 	UPROPERTY()

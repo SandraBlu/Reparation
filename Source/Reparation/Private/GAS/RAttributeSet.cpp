@@ -39,28 +39,28 @@ void URAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	// Secondary Attributes
 
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, Armor, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, DodgeChance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, CritHitChance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, CritHitDamage, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, CritHitResistance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, HealthRegen, COND_None, REPNOTIFY_Always);	
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, StaminaRegen, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, EnergyRegen, COND_None, REPNOTIFY_Always);	
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, DodgeChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, CritHitChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, CritHitDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, CritHitResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, HealthRegen, COND_None, REPNOTIFY_Always);	
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, StaminaRegen, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, EnergyRegen, COND_None, REPNOTIFY_Always);	
 	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);	
 	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, MaxEnergy, COND_None, REPNOTIFY_Always);
-//	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, Stealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, Stealth, COND_None, REPNOTIFY_Always);
 
 	// Resistance Attributes
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, PoisonResistance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, DarkResistance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, ElectricResistance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
-	//DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, IceResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, PoisonResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, DarkResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, ElectricResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(URAttributeSet, IceResistance, COND_None, REPNOTIFY_Always);
 }
 
 void URAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -115,6 +115,19 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	Super::PostGameplayEffectExecute(Data);
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
+
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+	{
+		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
+	}
+	if (Data.EvaluatedData.Attribute == GetEnergyAttribute())
+	{
+		SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
+	}
 	
 }
 
@@ -178,4 +191,89 @@ void URAttributeSet::OnRep_Energy(const FGameplayAttributeData& OldEnergy) const
 void URAttributeSet::OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, MaxEnergy, OldMaxEnergy);
+}
+
+void URAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, Armor, OldArmor);
+}
+
+void URAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, ArmorPenetration, OldArmorPenetration);
+}
+
+void URAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, BlockChance, OldBlockChance);
+}
+
+void URAttributeSet::OnRep_DodgeChance(const FGameplayAttributeData& OldDodgeChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, DodgeChance, OldDodgeChance);
+}
+
+void URAttributeSet::OnRep_CritHitChance(const FGameplayAttributeData& OldCritHitChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, CritHitChance, OldCritHitChance);
+}
+
+void URAttributeSet::OnRep_CritHitDamage(const FGameplayAttributeData& OldCritHitDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, CritHitDamage, OldCritHitDamage);
+}
+
+void URAttributeSet::OnRep_CritHitResistance(const FGameplayAttributeData& OldCritHitResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, CritHitResistance, OldCritHitResistance);
+}
+
+void URAttributeSet::OnRep_HealthRegen(const FGameplayAttributeData& OldHealthRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, HealthRegen, OldHealthRegen);
+}
+
+void URAttributeSet::OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, StaminaRegen, OldStaminaRegen);
+}
+
+void URAttributeSet::OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRegen) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, EnergyRegen, OldEnergyRegen);
+}
+
+void URAttributeSet::OnRep_Stealth(const FGameplayAttributeData& OldStealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, Stealth, OldStealth);
+}
+
+void URAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, PhysicalResistance, OldPhysicalResistance);
+}
+
+void URAttributeSet::OnRep_PoisonResistance(const FGameplayAttributeData& OldPoisonResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, PoisonResistance, OldPoisonResistance);
+}
+
+void URAttributeSet::OnRep_DarkResistance(const FGameplayAttributeData& OldDarkResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, DarkResistance, OldDarkResistance);
+}
+
+void URAttributeSet::OnRep_ElectricResistance(const FGameplayAttributeData& OldElectricResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, ElectricResistance, OldElectricResistance);
+}
+
+void URAttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, FireResistance, OldFireResistance);
+}
+
+void URAttributeSet::OnRep_IceResistance(const FGameplayAttributeData& OldIceResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, IceResistance, OldIceResistance);
 }

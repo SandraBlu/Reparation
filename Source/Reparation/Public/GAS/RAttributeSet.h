@@ -111,7 +111,7 @@ public:
 	ATTRIBUTE_ACCESSORS(URAttributeSet, Vigor)
 	
 	//Secondary Attributes
-
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Base Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, MaxHealth)
@@ -123,6 +123,76 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxEnergy, Category = "Base Attributes")
 	FGameplayAttributeData MaxEnergy;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, MaxEnergy)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Attributes")
+	FGameplayAttributeData Armor;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, Armor)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Attributes")
+	FGameplayAttributeData ArmorPenetration;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, ArmorPenetration)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "Attributes")
+	FGameplayAttributeData BlockChance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, BlockChance)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DodgeChance, Category = "Attributes")
+	FGameplayAttributeData DodgeChance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, DodgeChance)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CritHitChance, Category = "Attributes")
+	FGameplayAttributeData CritHitChance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, CritHitChance)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CritHitDamage, Category = "Attributes")
+	FGameplayAttributeData CritHitDamage;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, CritHitDamage)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CritHitResistance, Category = "Attributes")
+	FGameplayAttributeData CritHitResistance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, CritHitResistance)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegen, Category = "Base Attributes")
+	FGameplayAttributeData HealthRegen;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, HealthRegen)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_StaminaRegen, Category = "Attributes")
+	FGameplayAttributeData StaminaRegen;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, StaminaRegen)
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_EnergyRegen, Category = "Attributes")
+	FGameplayAttributeData EnergyRegen;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, EnergyRegen)
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Stealth, Category = "Attributes")
+	FGameplayAttributeData Stealth;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, Stealth)
+	
+	//Resistances
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, PhysicalResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PoisonResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData PoisonResistance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, PoisonResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DarkResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData DarkResistance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, DarkResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ElectricResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData ElectricResistance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, ElectricResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, FireResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IceResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData IceResistance;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, IceResistance);
+
 
 	//Vital
 	UFUNCTION()
@@ -153,4 +223,40 @@ public:
 	void OnRep_Energy(const FGameplayAttributeData& OldEnergy) const;
 	UFUNCTION()
 	void OnRep_MaxEnergy(const FGameplayAttributeData& OldMaxEnergy) const;
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
+	UFUNCTION()
+	void OnRep_DodgeChance(const FGameplayAttributeData& OldDodgeChance) const;
+	UFUNCTION()
+	void OnRep_CritHitChance(const FGameplayAttributeData& OldCritHitChance) const;
+	UFUNCTION()
+	void OnRep_CritHitDamage(const FGameplayAttributeData& OldCritHitDamage) const;
+	UFUNCTION()
+	void OnRep_CritHitResistance(const FGameplayAttributeData& OldCritHitResistance) const;
+	UFUNCTION()
+	void OnRep_HealthRegen(const FGameplayAttributeData& OldHealthRegen) const;
+	UFUNCTION()
+	void OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen) const;
+	UFUNCTION()
+	void OnRep_EnergyRegen(const FGameplayAttributeData& OldEnergyRegen) const;
+	UFUNCTION()
+	void OnRep_Stealth(const FGameplayAttributeData& OldStealth) const;
+
+	//Resistances
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+	UFUNCTION()
+	void OnRep_PoisonResistance(const FGameplayAttributeData& OldPoisonResistance) const;
+	UFUNCTION()
+	void OnRep_DarkResistance(const FGameplayAttributeData& OldDarkResistance) const;
+	UFUNCTION()
+	void OnRep_ElectricResistance(const FGameplayAttributeData& OldElectricResistance) const;
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+	UFUNCTION()
+	void OnRep_IceResistance(const FGameplayAttributeData& OldIceResistance) const;
 };

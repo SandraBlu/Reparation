@@ -83,7 +83,7 @@ void ARPlayer::InitAbilityActorInfo()
 			RHUD->InitOverlay(RPC, RPS, AbilitySystemComponent, AttributeSet);
 		}
 	}
-	
+	InitializeAttributes();
 }
 
 void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
