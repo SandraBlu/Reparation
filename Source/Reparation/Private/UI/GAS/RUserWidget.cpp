@@ -3,3 +3,8 @@
 
 #include "UI/GAS/RUserWidget.h"
 
+void URUserWidget::SetWidgetController(UObject* InWidgetController)
+{
+	WidgetController = InWidgetController;
+	WidgetControllerSet();
+}

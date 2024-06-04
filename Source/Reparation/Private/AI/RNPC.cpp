@@ -10,10 +10,17 @@ ARNPC::ARNPC()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<URAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
-
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	
 	AttributeSet = CreateDefaultSubobject<URAttributeSet>("AttributeSet");
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+}
+
+void ARNPC::BeginPlay()
+{
+	Super::BeginPlay();
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }

@@ -10,7 +10,8 @@ ARPlayerState::ARPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<URAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
-
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	
 	AttributeSet = CreateDefaultSubobject<URAttributeSet>("AttributeSet");
 	NetUpdateFrequency = 100.f;
 }

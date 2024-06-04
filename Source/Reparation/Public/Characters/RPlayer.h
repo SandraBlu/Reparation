@@ -19,6 +19,9 @@ class REPARATION_API ARPlayer : public ARCharacterBase
 public:
 	
 	ARPlayer();
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;
@@ -40,6 +43,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* PlayerMappingContext;
 
+private:
+	void InitAbilityActorInfo();
 
 public:
 	

@@ -3,11 +3,13 @@
 
 #include "Characters/RPlayer.h"
 
+#include "AbilitySystemComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Actors/RWeapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/REquipmentComponent.h"
+#include "Framework/RPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -25,6 +27,20 @@ ARPlayer::ARPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
+}
+
+void ARPlayer::PossessedBy(AController* NewController)
+{
+	//server
+	Super::PossessedBy(NewController);
+	InitAbilityActorInfo();
+}
+
+void ARPlayer::OnRep_PlayerState()
+{
+	//client
+	Super::OnRep_PlayerState();
+	InitAbilityActorInfo();
 }
 
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
@@ -47,6 +63,15 @@ void ARPlayer::BeginPlay()
 			Subsystem->AddMappingContext(PlayerMappingContext, 0);
 		}
 	}
+}
+
+void ARPlayer::InitAbilityActorInfo()
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	RPS->GetAbilitySystemComponent()->InitAbilityActorInfo(RPS, this);
+	AbilitySystemComponent = RPS->GetAbilitySystemComponent();
+	AttributeSet = RPS->GetAttributeSet();
 }
 
 void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
