@@ -23,12 +23,16 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).AddUObject(this, &UROverlayWidgetController::StaminaChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).AddUObject(this, &UROverlayWidgetController::MaxStaminaChanged);
 	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda(
-		[](const FGameplayTagContainer& AssetTags)
+		[this](const FGameplayTagContainer& AssetTags)
 		{
 			for (const FGameplayTag& Tag : AssetTags)
 			{
-				const FString Msg = FString::Printf(TEXT("GE Tag: %s"), *Tag.ToString());
-				GEngine->AddOnScreenDebugMessage(-1, 8.f, FColor::Blue, Msg);
+				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("message"));
+				if (Tag.MatchesTag(MessageTag))
+				{
+					const FUIMessageRow* Row = GetDataTableRowByTag<FUIMessageRow>(MessageWidgetDataTable, Tag);
+					MessageWidgetDelegate.Broadcast(*Row);
+				}
 			}
 		}
 	);
