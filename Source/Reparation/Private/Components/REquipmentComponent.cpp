@@ -2,8 +2,10 @@
 
 
 #include "Components/REquipmentComponent.h"
+
+#include "Actors/RWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Actors/Weapon/RWeapon.h"
+
 
 // Sets default values for this component's properties
 UREquipmentComponent::UREquipmentComponent()

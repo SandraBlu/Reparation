@@ -4,7 +4,7 @@
 #include "Items/REquipItem.h"
 #include <Components/REquipmentComponent.h>
 #include "Engine/SkinnedAssetCommon.h"
-#include "Actors/Weapon/RWeapon.h"
+#include "Actors/RWeapon.h"
 
 #define LOCTEXT_NAMESPACE "EquipItem"
 

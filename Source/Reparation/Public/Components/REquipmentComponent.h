@@ -84,11 +84,11 @@ public:
 	UFUNCTION()
 	void OnWeaponEquipped();
 	
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	class ARWeapon* EquippedWeapon;
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE ARWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+	 UPROPERTY(EditAnywhere, Category = "Weapon")
+	 class ARWeapon* EquippedWeapon;
+	
+	 UFUNCTION(BlueprintPure)
+	 FORCEINLINE ARWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 
 public:
 
