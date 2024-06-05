@@ -18,6 +18,8 @@ public:
 	
 	ARNPC();
 
+	//Combat Interface
+	int32 GetPLayerLevel_Implementation() override;
 
 	
 protected:
@@ -28,5 +30,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	USkeletalMeshComponent* Weapon;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level = 1;
 	
 };

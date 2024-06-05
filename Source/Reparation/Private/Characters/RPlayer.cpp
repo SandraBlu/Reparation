@@ -46,6 +46,13 @@ void ARPlayer::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+int32 ARPlayer::GetPLayerLevel_Implementation()
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	return RPS->GetPlayerLevel();
+}
+
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())

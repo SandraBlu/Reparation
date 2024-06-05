@@ -19,6 +19,11 @@ ARNPC::ARNPC()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
+int32 ARNPC::GetPLayerLevel_Implementation()
+{
+	return Level;
+}
+
 void ARNPC::BeginPlay()
 {
 	Super::BeginPlay();

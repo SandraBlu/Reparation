@@ -3,6 +3,8 @@
 
 #include "GAS/RAbilitySystemComponent.h"
 
+#include "RGameplayTags.h"
+
 void URAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &URAbilitySystemComponent::EffectApplied);

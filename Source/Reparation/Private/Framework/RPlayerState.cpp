@@ -5,6 +5,7 @@
 
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 ARPlayerState::ARPlayerState()
 {
@@ -16,7 +17,17 @@ ARPlayerState::ARPlayerState()
 	NetUpdateFrequency = 100.f;
 }
 
+void ARPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ARPlayerState, Level);
+}
+
 UAbilitySystemComponent* ARPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void ARPlayerState::OnRep_Level(int32 OldLevel)
+{
 }

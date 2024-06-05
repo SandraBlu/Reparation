@@ -26,6 +26,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;
 
+	//Combat Interface
+	int32 GetPLayerLevel_Implementation() override;
+
+
+	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);
 

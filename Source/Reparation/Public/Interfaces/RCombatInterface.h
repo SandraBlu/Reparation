@@ -24,5 +24,8 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void GetHit(const FVector& ImpactPoint);
-public:
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetPLayerLevel();
+
 };

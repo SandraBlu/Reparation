@@ -11,10 +11,6 @@
 
 URAttributeSet::URAttributeSet()
 {
-	InitHealth(50.f);
-	InitMaxHealth(100.f);
-	InitStamina(30.f);
-	InitMaxStamina(60.f);
 	
 }
 
