@@ -8,6 +8,7 @@
 #include "Interfaces/RCombatInterface.h"
 #include "RCharacterBase.generated.h"
 
+class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -36,18 +37,24 @@ protected:
 
 	virtual void InitAbilityActorInfo();
 	
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>PrimaryAttributes;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>SecondaryAttributes;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>VitalAttributes;
 	
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	
 	void InitializeAttributes() const;
+
+private:
+	
+	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
+	TSubclassOf<UGameplayAbility> GrantedAbilities;
+	
 
 	
 	

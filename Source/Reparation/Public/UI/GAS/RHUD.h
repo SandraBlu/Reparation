@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "RHUD.generated.h"
 
+class URAttributeMenuController;
 class UROverlayWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -22,6 +23,7 @@ class REPARATION_API ARHUD : public AHUD
 public:
 
 	UROverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
+	URAttributeMenuController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 private:
@@ -35,5 +37,10 @@ private:
 	UROverlayWidgetController* OverlayWidgetController;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UROverlayWidgetController> OverlayWidgetControllerClass;
+
+	UPROPERTY()
+	URAttributeMenuController* AttributeMenuController;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URAttributeMenuController> AttributeMenuControllerClass;
 	
 };
