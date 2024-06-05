@@ -36,6 +36,9 @@ protected:
 	UAttributeSet* AttributeSet;
 
 	virtual void InitAbilityActorInfo();
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+	void InitializeAttributes() const;
+	void GrantAbilities();
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>PrimaryAttributes;
@@ -45,15 +48,11 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>VitalAttributes;
-	
-	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-	
-	void InitializeAttributes() const;
 
 private:
 	
 	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
-	TSubclassOf<UGameplayAbility> GrantedAbilities;
+	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
 	
 
 	

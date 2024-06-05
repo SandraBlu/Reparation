@@ -3,6 +3,7 @@
 
 #include "Characters/RCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "GAS/RAbilitySystemComponent.h"
 
 // Sets default values
 ARCharacterBase::ARCharacterBase()
@@ -42,4 +43,12 @@ void ARCharacterBase::InitializeAttributes() const
 	ApplyEffectToSelf(SecondaryAttributes, 1.f);
 	ApplyEffectToSelf(VitalAttributes, 1.f);
 }
+
+void ARCharacterBase::GrantAbilities()
+{
+	URAbilitySystemComponent* RASC = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
+	if (!HasAuthority()) return;
+	RASC->AddGrantedAbilities(GrantedAbilities);
+}
+	
 

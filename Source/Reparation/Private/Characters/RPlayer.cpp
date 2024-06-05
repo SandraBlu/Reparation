@@ -14,6 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
+#include "Input/RInputComponent.h"
 #include "UI/GAS/RHUD.h"
 
 ARPlayer::ARPlayer()
@@ -37,6 +38,7 @@ void ARPlayer::PossessedBy(AController* NewController)
 	//server
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();
+	GrantAbilities();
 }
 
 void ARPlayer::OnRep_PlayerState()
@@ -93,7 +95,26 @@ void ARPlayer::InitAbilityActorInfo()
 	InitializeAttributes();
 }
 
+void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+}
+
+void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Blue, *InputTag.ToString());
+}
+
+void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::White, *InputTag.ToString());
+}
+
 void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (URInputComponent* InputComp = CastChecked<URInputComponent>(InputComponent))
+	{
+		InputComp->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+	}
 }

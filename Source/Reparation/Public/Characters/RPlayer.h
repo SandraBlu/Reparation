@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Characters/RCharacterBase.h"
 #include "RPlayer.generated.h"
 
+class URInputConfig;
 class UInputMappingContext;
 class UREquipmentComponent;
 /**
@@ -50,6 +52,14 @@ protected:
 
 private:
 	virtual void InitAbilityActorInfo() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	URInputConfig* InputConfig;
+
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+	
 
 public:
 	
