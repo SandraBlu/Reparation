@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Characters/RCharacterBase.h"
+#include "UI/GAS/Controllers/ROverlayWidgetController.h"
 #include "RNPC.generated.h"
 
+class UWidgetComponent;
 /**
  * 
  */
@@ -19,16 +21,28 @@ public:
 	ARNPC();
 
 	//Combat Interface
-	int32 GetPLayerLevel_Implementation() override;
+	virtual int32 GetPLayerLevel_Implementation() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnHealthChanged;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnMaxHealthChanged;
 	
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void InitAbilityActorInfo() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UWidgetComponent* HealthBar;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponDamageSocket;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;

@@ -6,6 +6,7 @@
 #include "GAS/Ability/RGameplayAbility.h"
 #include "RMissileAbility.generated.h"
 
+class UGameplayEffect;
 class AROverlapMissile;
 /**
  * 

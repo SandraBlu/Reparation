@@ -57,6 +57,7 @@ void URMissileAbility::SpawnProjectile(ACharacter* InstigatorCharacter)
 
 	AROverlapMissile* Missile = GetWorld()->SpawnActorDeferred<AROverlapMissile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
 	ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
 	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 	const FGameplayEffectSpecHandle SpecHandle  = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
 		

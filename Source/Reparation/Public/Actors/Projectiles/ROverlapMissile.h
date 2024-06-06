@@ -18,6 +18,7 @@ class REPARATION_API AROverlapMissile : public ARProjectile
 public:
 	
 	AROverlapMissile();
+	
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
