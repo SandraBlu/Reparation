@@ -3,6 +3,7 @@
 
 #include "Framework/RPlayerState.h"
 
+#include "Components/RInventoryComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
 #include "Net/UnrealNetwork.h"
@@ -14,6 +15,11 @@ ARPlayerState::ARPlayerState()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	
 	AttributeSet = CreateDefaultSubobject<URAttributeSet>("AttributeSet");
+
+	PlayerInventory = CreateDefaultSubobject<URInventoryComponent>("InventoryComp");
+	PlayerInventory->SetCapacity(25);
+	PlayerInventory->SetWeightCapacity(60.f);
+	
 	NetUpdateFrequency = 100.f;
 }
 

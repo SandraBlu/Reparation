@@ -3,8 +3,10 @@
 
 #include "Characters/RPlayer.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "RGameplayTags.h"
 #include "Actors/RWeapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
@@ -55,6 +57,16 @@ int32 ARPlayer::GetPLayerLevel_Implementation()
 	return RPS->GetPlayerLevel();
 }
 
+FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
+{
+	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Gear->EquippedWeapon))
+	{
+		return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
+	}
+	return FVector();
+}
+
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())
@@ -97,17 +109,28 @@ void ARPlayer::InitAbilityActorInfo()
 
 void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
 }
 
 void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Blue, *InputTag.ToString());
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagReleased(InputTag);
 }
 
 void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::White, *InputTag.ToString());
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagHeld(InputTag);
+}
+
+URAbilitySystemComponent* ARPlayer::GetASC()
+{
+	if (RAbilitySystemComponent == nullptr)
+	{
+		RAbilitySystemComponent = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
+	}
+	return RAbilitySystemComponent;
 }
 
 void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

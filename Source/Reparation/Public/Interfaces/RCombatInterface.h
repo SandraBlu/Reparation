@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "RCombatInterface.generated.h"
 
@@ -27,5 +28,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	int32 GetPLayerLevel();
+
+	UFUNCTION(BlueprintNativeEvent)
+	FVector GetCombatSocketLocation(const FGameplayTag& CombatSocketTag);
 
 };

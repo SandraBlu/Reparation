@@ -10,6 +10,7 @@
 class URInputConfig;
 class UInputMappingContext;
 class UREquipmentComponent;
+class URAbilitySystemComponent;
 /**
  * 
  */
@@ -29,7 +30,8 @@ public:
 	UREquipmentComponent* Gear;
 
 	//Combat Interface
-	int32 GetPLayerLevel_Implementation() override;
+	virtual int32 GetPLayerLevel_Implementation() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 
 
 	
@@ -59,8 +61,11 @@ private:
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
-	
 
+	UPROPERTY()
+	URAbilitySystemComponent* RAbilitySystemComponent;
+	
+	URAbilitySystemComponent* GetASC();
 public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

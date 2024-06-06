@@ -13,5 +13,10 @@ UCLASS()
 class REPARATION_API URGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
+
+public:
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	FGameplayTag StartupInputTag;
 	
 };
