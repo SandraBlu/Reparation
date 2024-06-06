@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Characters/RCharacterBase.h"
+#include "GAS/Data/RCharacterClassInfo.h"
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
 #include "REnemy.generated.h"
 
+enum class ECharacterClass : uint8;
 class UWidgetComponent;
 /**
  * 
@@ -34,8 +36,8 @@ protected:
 	
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
-
-
+	virtual void InitializeAttributes() const;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent* HealthBar;
 
@@ -48,6 +50,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
 	
 };

@@ -7,6 +7,7 @@
 #include "RGameplayTags.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Framework/RAbilitySystemLibrary.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
 #include "Reparation/Reparation.h"
@@ -82,4 +83,9 @@ void AREnemy::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	InitializeAttributes();
+}
+
+void AREnemy::InitializeAttributes() const
+{
+	URAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 }

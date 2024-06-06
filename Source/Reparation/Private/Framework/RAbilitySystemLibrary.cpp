@@ -3,6 +3,8 @@
 
 #include "Framework/RAbilitySystemLibrary.h"
 
+#include "AbilitySystemComponent.h"
+#include "Framework/RGameMode.h"
 #include "Framework/RPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/GAS/RHUD.h"
@@ -39,3 +41,43 @@ URAttributeMenuController* URAbilitySystemLibrary::GetAttributeMenuController(co
 	}
 	return nullptr;
 }
+
+void URAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
+	ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
+{
+	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+ 	if (RGameMode == nullptr) return;
+	
+	AActor* AvatarActor = ASC->GetAvatarActor();
+	
+	URCharacterClassInfo* CharacterClassInfo = RGameMode->CharacterClassInfo;
+	FCharClassInfo ClassDefaultInfo = CharacterClassInfo->GetClassInfo(CharacterClass);
+
+	//Add Source Objects(ASC) and Effect Context and Outgoing Spec for AI Attributes Data Asset: CharacterClassInfo
+	FGameplayEffectContextHandle PrimaryAttributeContextHandle = ASC->MakeEffectContext();
+	PrimaryAttributeContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle PrimaryAttSpecHandle = ASC->MakeOutgoingSpec(ClassDefaultInfo.PrimaryAttributes, Level, PrimaryAttributeContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*PrimaryAttSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle SecondaryAttributeContextHandle = ASC->MakeEffectContext();
+	SecondaryAttributeContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle SecondaryAttSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->SecondaryAttributes, Level, SecondaryAttributeContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*SecondaryAttSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle ResistanceAttributeContextHandle = ASC->MakeEffectContext();
+	ResistanceAttributeContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle ResistanceAttSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->ResistanceAttributes, Level, ResistanceAttributeContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*ResistanceAttSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle VitalAttributeContextHandle = ASC->MakeEffectContext();
+	VitalAttributeContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle VitalAttSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, VitalAttributeContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttSpecHandle.Data.Get());
+}
+
+/*URCharacterClassInfo* URAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (RGameMode == nullptr) return nullptr;
+	return RGameMode->CharacterClassInfo;
+}*/

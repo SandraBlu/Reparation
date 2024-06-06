@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GAS/Data/RCharacterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "RAbilitySystemLibrary.generated.h"
 
+class UAbilitySystemComponent;
 class URAttributeMenuController;
 class UROverlayWidgetController;
 /**
@@ -18,11 +20,16 @@ class REPARATION_API URAbilitySystemLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category = "AbilityBFL")
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
 	static UROverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintPure, Category = "AbilityBFL")
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
 	static URAttributeMenuController* GetAttributeMenuController(const UObject* WorldContextObject);
-	
+
+	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
+	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
+
+	//UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
+	//static URCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 	
 };
