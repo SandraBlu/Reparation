@@ -32,4 +32,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	FVector GetCombatSocketLocation(const FGameplayTag& CombatSocketTag);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetHitReactMontage();
+	
+
 };

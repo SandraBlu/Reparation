@@ -32,11 +32,19 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangeSignature OnMaxHealthChange;
 
+	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	bool bHitReacting = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	float BaseWalkSpeed = 250.f;
+	
 protected:
 	
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
-	virtual void InitializeAttributes() const;
+	virtual void InitializeAttributes() const override;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent* HealthBar;

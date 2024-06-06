@@ -90,17 +90,21 @@ public:
 	FGameplayAttributeData Energy;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, Energy)
 
+	//Meta Attributes
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData Damage;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, Damage)
+	
+
 	//Primary Attributes
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Agility, Category = "Attributes")
 	FGameplayAttributeData Agility;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, Agility)
-
-	//Stealth will decrease AI sight
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Attributes")
 	FGameplayAttributeData Intelligence;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, Intelligence)
-
-	//Resistance will decrease damage - various types handled by gameplay tags
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Perception, Category = "Attributes")
 	FGameplayAttributeData Perception;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, Perception)

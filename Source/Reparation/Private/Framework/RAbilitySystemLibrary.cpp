@@ -75,6 +75,18 @@ void URAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldCon
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttSpecHandle.Data.Get());
 }
 
+void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+{
+	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (RGameMode == nullptr) return;
+	URCharacterClassInfo* CharacterClassInfo = RGameMode->CharacterClassInfo;
+	for (TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->SharedAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		ASC->GiveAbility(AbilitySpec);
+	}
+}
+
 /*URCharacterClassInfo* URAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
 	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));

@@ -16,6 +16,11 @@ UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+UAnimMontage* ARCharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
 // Called when the game starts or when spawned
 void ARCharacterBase::BeginPlay()
 {

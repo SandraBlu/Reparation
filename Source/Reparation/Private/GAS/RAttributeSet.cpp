@@ -156,10 +156,25 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	{
 		SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
 	}
-	
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		const float LocalDamage = GetDamage();
+		SetDamage(0.f);
+		if (LocalDamage > 0.f)
+		{
+			const float NewHealth = GetHealth() - LocalDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			const bool bFatal = NewHealth <= 0.f;
+			if (!bFatal)
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FRGameplayTags::Get().ability_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+		}
+	}
 }
-
-
 
 void URAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {

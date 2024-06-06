@@ -25,6 +25,8 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
+	//Combat Interface
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 protected:
 	
 	virtual void BeginPlay() override;
@@ -53,8 +55,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
-	
 
+	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
+	UAnimMontage* HitReactMontage;
 	
 	
 
