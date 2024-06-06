@@ -55,9 +55,9 @@ void ARNPC::BeginPlay()
 	Super::BeginPlay();
 	InitAbilityActorInfo();
 	//set health bar widget controller
-	if (URUserWidget* RUserWidget = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))
+	if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
-		RUserWidget->SetWidgetController(this);
+		EnemyHealthUI->SetWidgetController(this);
 	}
 	//respond to attribute changes
 	if (const URAttributeSet* RAS = Cast<URAttributeSet>(AttributeSet))
