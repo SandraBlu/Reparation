@@ -3,6 +3,7 @@
 
 #include "Characters/RCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
 
 // Sets default values
@@ -19,6 +20,21 @@ UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
 UAnimMontage* ARCharacterBase::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;
+}
+
+void ARCharacterBase::Die()
+{
+	MulticastHandleDeath();
+}
+
+void ARCharacterBase::MulticastHandleDeath_Implementation()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
 // Called when the game starts or when spawned

@@ -25,6 +25,9 @@ public:
 	//Combat Interface
 	virtual int32 GetPLayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
+	virtual void Die() override;
+
+	virtual void MulticastHandleDeath() override;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangeSignature OnHealthChange;
@@ -37,8 +40,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void DissolveMesh();
+
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	float BaseWalkSpeed = 250.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float LifeSpan = 5.f;
 	
 protected:
 	

@@ -32,7 +32,7 @@ public:
 	//Combat Interface
 	virtual int32 GetPLayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
-
+	virtual void Die() override;
 
 	
 	UFUNCTION(BlueprintCallable)

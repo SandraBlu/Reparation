@@ -67,6 +67,15 @@ FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& Com
 	return FVector();
 }
 
+void ARPlayer::Die()
+{
+	Gear->EquippedWeapon->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	Gear->EquippedWeapon->GetWeaponMesh()->SetSimulatePhysics(true);
+	Gear->EquippedWeapon->GetWeaponMesh()->SetEnableGravity(true);
+	Gear->EquippedWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Super::Die();
+}
+
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())

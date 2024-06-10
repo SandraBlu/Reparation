@@ -4,7 +4,6 @@
 #include "AI/REnemy.h"
 #include "RGameplayTags.h"
 #include "AbilitySystemComponent.h"
-#include "RGameplayTags.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
@@ -49,6 +48,27 @@ FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& Comb
 		return Weapon->GetSocketLocation(WeaponDamageSocket);
 	}
 	return FVector();
+}
+
+void AREnemy::Die()
+{
+	SetLifeSpan(LifeSpan);
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Super::Die();
+
+	DissolveMesh();
+}
+
+void AREnemy::MulticastHandleDeath()
+{
+	Super::MulticastHandleDeath();
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	
 }
 
 void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)

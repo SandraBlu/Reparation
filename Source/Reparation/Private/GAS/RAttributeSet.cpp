@@ -8,6 +8,7 @@
 #include "GameplayEffectExtension.h"
 #include "RGameplayTags.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/RCombatInterface.h"
 #include "Net/UnrealNetwork.h"
 
 URAttributeSet::URAttributeSet()
@@ -166,7 +167,14 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
 			const bool bFatal = NewHealth <= 0.f;
-			if (!bFatal)
+			if (bFatal)
+			{
+				if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(Props.TargetAvatarActor))
+				{
+					CombatInterface->Die();
+				}
+			}
+			else
 			{
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FRGameplayTags::Get().ability_HitReact);
