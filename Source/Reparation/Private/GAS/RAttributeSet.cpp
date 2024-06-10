@@ -7,8 +7,10 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 #include "RGameplayTags.h"
+#include "Framework/RPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/RCombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 URAttributeSet::URAttributeSet()
@@ -138,6 +140,7 @@ void URAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& D
 		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
 }
+
 void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -180,10 +183,21 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 				TagContainer.AddTag(FRGameplayTags::Get().ability_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
+			ShowFloatingText(Props, LocalDamage);
 		}
 	}
 }
 
+void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageAmount) const
+{
+	if (Props.SourceCharacter != Props.TargetCharacter)
+	{
+		if(ARPlayerController* PC = Cast<ARPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		{
+			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter);
+		}
+	}
+}
 void URAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, Health, OldHealth);

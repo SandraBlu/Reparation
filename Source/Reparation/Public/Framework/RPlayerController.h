@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "RPlayerController.generated.h"
 
+class UDamageTextComponent;
 /**
  * 
  */
@@ -13,5 +14,14 @@ UCLASS()
 class REPARATION_API ARPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+
+private:
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 	
 };
