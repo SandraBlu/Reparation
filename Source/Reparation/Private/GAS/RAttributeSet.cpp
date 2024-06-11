@@ -149,7 +149,7 @@ void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Dama
 	{
 		if(ARPlayerController* PC = Cast<ARPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
 		{
-			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter);
+			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter, bBlockedHit, bDodgedHit, bCriticalHit);
 		}
 	}
 }

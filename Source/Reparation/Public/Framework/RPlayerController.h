@@ -17,7 +17,7 @@ class REPARATION_API ARPlayerController : public APlayerController
 
 public:
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bBlockedHit, bool bDodgedHit, bool bCriticalHit);
 
 private:
 

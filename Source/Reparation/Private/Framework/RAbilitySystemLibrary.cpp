@@ -129,7 +129,7 @@ void URAbilitySystemLibrary::SetIsDodgedHit(FGameplayEffectContextHandle& Effect
 {
 	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
-		REffectContext->SetIsBlockedHit(bInIsDodgedHit);
+		REffectContext->SetIsDodgedHit(bInIsDodgedHit);
 	}
 }
 
@@ -137,7 +137,7 @@ void URAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& Effe
 {
 	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
-		REffectContext->SetIsBlockedHit(bInIsCriticalHit);
+		REffectContext->SetIsCriticalHit(bInIsCriticalHit);
 	}
 }
 
