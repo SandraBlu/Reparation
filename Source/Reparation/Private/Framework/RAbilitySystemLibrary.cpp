@@ -4,6 +4,7 @@
 #include "Framework/RAbilitySystemLibrary.h"
 
 #include "AbilitySystemComponent.h"
+#include "RAbilityTypes.h"
 #include "Framework/RGameMode.h"
 #include "Framework/RPlayerState.h"
 #include "Kismet/GameplayStatics.h"
@@ -88,3 +89,55 @@ URCharacterClassInfo* URAbilitySystemLibrary::GetCharacterClassInfo(const UObjec
 	if (RGameMode == nullptr) return nullptr;
 	return RGameMode->CharacterClassInfo;
 }
+
+bool URAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRGameplayEffectContext* REffectContext = static_cast<const FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return REffectContext->IsBlockedHit();
+	}
+	return false;
+}
+
+bool URAbilitySystemLibrary::IsDodgedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRGameplayEffectContext* REffectContext = static_cast<const FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return REffectContext->IsDodgedHit();
+	}
+	return false;
+}
+
+bool URAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRGameplayEffectContext* REffectContext = static_cast<const FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return REffectContext->IsCriticalHit();
+	}
+	return false;
+}
+
+void URAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit)
+{
+	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		REffectContext->SetIsBlockedHit(bInIsBlockedHit);
+	}
+}
+
+void URAbilitySystemLibrary::SetIsDodgedHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsDodgedHit)
+{
+	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		REffectContext->SetIsBlockedHit(bInIsDodgedHit);
+	}
+}
+
+void URAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit)
+{
+	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		REffectContext->SetIsBlockedHit(bInIsCriticalHit);
+	}
+}
+

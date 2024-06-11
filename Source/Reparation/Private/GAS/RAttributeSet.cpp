@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 #include "RGameplayTags.h"
+#include "Framework/RAbilitySystemLibrary.h"
 #include "Framework/RPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/RCombatInterface.h"
@@ -141,6 +142,18 @@ void URAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& D
 	}
 }
 
+void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageAmount, bool bBlockedHit,
+	bool bDodgedHit, bool bCriticalHit) const
+{
+	if (Props.SourceCharacter != Props.TargetCharacter)
+	{
+		if(ARPlayerController* PC = Cast<ARPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		{
+			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter);
+		}
+	}
+}
+
 void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -183,21 +196,14 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 				TagContainer.AddTag(FRGameplayTags::Get().ability_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
-			ShowFloatingText(Props, LocalDamage);
+			const bool bBlock = URAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
+			const bool bDodge = URAbilitySystemLibrary::IsDodgedHit(Props.EffectContextHandle);
+			const bool bCriticalHit = URAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+			ShowFloatingText(Props, LocalDamage,bBlock, bDodge, bCriticalHit);
 		}
 	}
 }
 
-void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageAmount) const
-{
-	if (Props.SourceCharacter != Props.TargetCharacter)
-	{
-		if(ARPlayerController* PC = Cast<ARPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
-		{
-			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter);
-		}
-	}
-}
 void URAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URAttributeSet, Health, OldHealth);
