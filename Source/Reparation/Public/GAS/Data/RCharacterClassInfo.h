@@ -60,8 +60,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Shared Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> SharedAbilities;
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Shared Class Defaults|Damage")
-	//UCurveTable* DamageCalcCoefficients;
+	UPROPERTY(EditDefaultsOnly, Category = "Shared Class Defaults|Damage")
+	UCurveTable* DamageCalcCoefficients;
 	
 
 	

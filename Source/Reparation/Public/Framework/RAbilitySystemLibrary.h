@@ -29,9 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
 
-	//UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
-	//static URCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
-
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
 	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC);
+	
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static URCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 };

@@ -59,7 +59,14 @@ void URMissileAbility::SpawnProjectile(ACharacter* InstigatorCharacter)
 	ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
 	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-	const FGameplayEffectSpecHandle SpecHandle  = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+	EffectContextHandle.SetAbility(this);
+	EffectContextHandle.AddSourceObject(Missile);
+	FHitResult HitResult;
+	HitResult.Location = TraceEnd;
+	EffectContextHandle.AddHitResult(HitResult);
+	
+	const FGameplayEffectSpecHandle SpecHandle  = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 	
 	FRGameplayTags GameplayTags = FRGameplayTags::Get();
 	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());

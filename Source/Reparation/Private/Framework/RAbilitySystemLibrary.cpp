@@ -45,12 +45,9 @@ URAttributeMenuController* URAbilitySystemLibrary::GetAttributeMenuController(co
 void URAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
 	ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
-	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
- 	if (RGameMode == nullptr) return;
-	
 	AActor* AvatarActor = ASC->GetAvatarActor();
 	
-	URCharacterClassInfo* CharacterClassInfo = RGameMode->CharacterClassInfo;
+	URCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	FCharClassInfo ClassDefaultInfo = CharacterClassInfo->GetClassInfo(CharacterClass);
 
 	//Add Source Objects(ASC) and Effect Context and Outgoing Spec for AI Attributes Data Asset: CharacterClassInfo
@@ -77,9 +74,7 @@ void URAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldCon
 
 void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
 {
-	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (RGameMode == nullptr) return;
-	URCharacterClassInfo* CharacterClassInfo = RGameMode->CharacterClassInfo;
+	URCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	for (TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->SharedAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
@@ -87,9 +82,9 @@ void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObj
 	}
 }
 
-/*URCharacterClassInfo* URAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+URCharacterClassInfo* URAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
 	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (RGameMode == nullptr) return nullptr;
 	return RGameMode->CharacterClassInfo;
-}*/
+}
