@@ -4,6 +4,9 @@
 #include "AI/REnemy.h"
 #include "RGameplayTags.h"
 #include "AbilitySystemComponent.h"
+#include "AI/RAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
@@ -33,6 +36,22 @@ AREnemy::AREnemy()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Combat");
 	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+}
+
+void AREnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!HasAuthority()) return;
+	AIC = Cast<ARAIController>(NewController);
+	AIC->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	AIC->RunBehaviorTree(BehaviorTree);
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
 int32 AREnemy::GetPLayerLevel_Implementation()
@@ -74,7 +93,8 @@ void AREnemy::MulticastHandleDeath()
 void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
 void AREnemy::BeginPlay()
@@ -84,7 +104,7 @@ void AREnemy::BeginPlay()
 	InitAbilityActorInfo();
 	if (HasAuthority())
 	{
-		URAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+		URAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
 	}
 	
 	if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))

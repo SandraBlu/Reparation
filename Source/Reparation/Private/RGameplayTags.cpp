@@ -77,8 +77,8 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	// 
 	//Ability
 	GameplayTags.ability_none = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.none"), FString("No Ability"));
-	GameplayTags.ability_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.Attack"), FString("General attack tag for Behavior Tree"));
-	GameplayTags.ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.Melee"), FString("Melee Attack tag"));
+	GameplayTags.ability_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.attack"), FString("General attack tag for Behavior Tree"));
+	GameplayTags.ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.melee"), FString("Melee Attack tag"));
 	GameplayTags.ability_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.HitReact"), FString("Hit React tag"));
 	GameplayTags.ability_missile_dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.dark"), FString("Dark Missile tag"));
 	GameplayTags.ability_missile_electric = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.electric"), FString("Electric Missile tag"));

@@ -8,6 +8,8 @@
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
 #include "REnemy.generated.h"
 
+class ARAIController;
+class UBehaviorTree;
 enum class ECharacterClass : uint8;
 class UWidgetComponent;
 /**
@@ -21,6 +23,8 @@ class REPARATION_API AREnemy : public ARCharacterBase
 public:
 
 	AREnemy();
+
+	virtual void PossessedBy(AController* NewController) override;
 
 	//Combat Interface
 	virtual int32 GetPLayerLevel_Implementation() override;
@@ -71,5 +75,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
+	UPROPERTY(EditAnywhere, Category = "AI")
+	UBehaviorTree* BehaviorTree;
+
+	UPROPERTY()
+	ARAIController* AIC;
 	
 };

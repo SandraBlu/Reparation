@@ -7,6 +7,7 @@
 #include "RAbilityTypes.h"
 #include "Framework/RGameMode.h"
 #include "Framework/RPlayerState.h"
+#include "Interfaces/RCombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/GAS/RHUD.h"
 #include "UI/GAS/Controllers/RWidgetController.h"
@@ -73,13 +74,23 @@ void URAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldCon
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttSpecHandle.Data.Get());
 }
 
-void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass)
 {
 	URCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (CharacterClassInfo == nullptr) return;
 	for (TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->SharedAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		ASC->GiveAbility(AbilitySpec);
+	}
+	const FCharClassInfo& DefaultInfo = CharacterClassInfo->GetClassInfo(CharacterClass);
+	for (auto AbilityClass : DefaultInfo.StartupAbilities)
+	{
+		if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(ASC->GetAvatarActor()))
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetPLayerLevel());
+			ASC->GiveAbility(AbilitySpec);
+		}
 	}
 }
 
