@@ -51,15 +51,13 @@ public:
 	FGameplayTag InputTag_Passive02;
 	FGameplayTag InputTag_Passive03;
 
-	
-
 	//meta
 	FGameplayTag Attributes_meta_xp;
 	FGameplayTag Damage;
 
 	FGameplayTag Damage_Physical;
 	FGameplayTag Damage_Poison;
-	FGameplayTag Damage_Elemental_Dark;
+	FGameplayTag Damage_Dark;
 	FGameplayTag Damage_Elemental_Electric;
 	FGameplayTag Damage_Elemental_Fire;
 	FGameplayTag Damage_Elemental_Ice;
@@ -131,8 +129,6 @@ public:
 	FGameplayTag Montage_Attack02;
 	FGameplayTag Montage_Attack03;
 	FGameplayTag Montage_Attack04;
-
-
 
 private:
 

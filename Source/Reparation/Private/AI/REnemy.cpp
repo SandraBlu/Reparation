@@ -82,7 +82,10 @@ void AREnemy::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
-	URAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	if (HasAuthority())
+	{
+		URAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	}
 	
 	if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -115,7 +118,10 @@ void AREnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
-	InitializeAttributes();
+	if (HasAuthority())
+	{
+		InitializeAttributes();
+	}
 }
 
 void AREnemy::InitializeAttributes() const

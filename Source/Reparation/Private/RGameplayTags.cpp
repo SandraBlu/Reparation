@@ -48,12 +48,11 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage"), FString("Damage"));
 	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.physical"), FString("Physical Damage"));
 	GameplayTags.Damage_Poison = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.poison"), FString("Poison Damage"));
-	GameplayTags.Damage_Elemental_Dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.elemental.dark"), FString("Dark Damage"));
+	GameplayTags.Damage_Dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.dark"), FString("Dark Damage"));
 	GameplayTags.Damage_Elemental_Electric = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.elemental.electric"), FString("Electric Damage"));
 	GameplayTags.Damage_Elemental_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.elemental.fire"), FString("Fire Damage"));
 	GameplayTags.Damage_Elemental_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.elemental.ice"), FString("Ice Damage"));
-
-
+	
 	//Resistance Tags
 	GameplayTags.Attributes_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("attributes.resistance.physical"), FString("Resistance to Physical damage"));
 	GameplayTags.Attributes_Resistance_Poison = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("attributes.resistance.poison"), FString("Resistance to Poison damage"));
@@ -123,7 +122,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	 */
 	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Physical, GameplayTags.Attributes_Resistance_Physical);
 	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Poison, GameplayTags.Attributes_Resistance_Poison);
-	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Dark, GameplayTags.Attributes_Resistance_Dark);
+	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Dark, GameplayTags.Attributes_Resistance_Dark);
 	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Electric, GameplayTags.Attributes_Resistance_Electric);
 	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypeToResist.Add(GameplayTags.Damage_Elemental_Ice, GameplayTags.Attributes_Resistance_Ice);
@@ -133,7 +132,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	 */
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Physical, GameplayTags.Debuff_KnockOut);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Poison, GameplayTags.Debuff_Paralyze);
-	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Dark, GameplayTags.Debuff_Dark);
+	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Dark, GameplayTags.Debuff_Dark);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Electric, GameplayTags.Debuff_Stun);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Fire, GameplayTags.Debuff_Burn);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Ice, GameplayTags.Debuff_Freeze);

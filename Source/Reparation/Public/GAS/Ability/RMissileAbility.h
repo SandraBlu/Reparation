@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Ability/RGameplayAbility.h"
+#include "GAS/Ability/RDamageAbility.h"
 #include "RMissileAbility.generated.h"
 
 class UGameplayEffect;
@@ -12,7 +12,7 @@ class AROverlapMissile;
  * 
  */
 UCLASS()
-class REPARATION_API URMissileAbility : public URGameplayAbility
+class REPARATION_API URMissileAbility : public URDamageAbility
 {
 	GENERATED_BODY()
 
@@ -36,8 +36,5 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	void SpawnProjectile(ACharacter* InstigatorCharacter);
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
 	
 };

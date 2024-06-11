@@ -20,12 +20,14 @@ struct RDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CritHitResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CritHitDamage);
 
-	/*DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(PoisonResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(DarkResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ElectricResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(FireResistance);
-	DECLARE_ATTRIBUTE_CAPTUREDEF(IceResistance);*/
+	DECLARE_ATTRIBUTE_CAPTUREDEF(IceResistance);
+
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
 	
 
 	RDamageStatics()
@@ -38,13 +40,27 @@ struct RDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, CritHitResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, CritHitDamage, Source, false);
 
-		/*DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, PhysicalResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, PhysicalResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, PoisonResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, DarkResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, ElectricResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, FireResistance, Target, false);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, IceResistance, Target, false);*/
-		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URAttributeSet, IceResistance, Target, false);
+
+		const FRGameplayTags& Tags = FRGameplayTags::Get();
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, ArmorDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ArmorPenetration, ArmorPenetrationDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_BlockChance, BlockChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitChance, CritHitChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitDamage, CritHitDamageDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance, CritHitResistanceDef);
+
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Dark, DarkResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Electric, ElectricResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, FireResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Ice, IceResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, PhysicalResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Poison, PoisonResistanceDef);
 	}
 };
 
@@ -63,6 +79,13 @@ UGEC_Damage::UGEC_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().CritHitChanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CritHitResistanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CritHitDamageDef);
+
+	RelevantAttributesToCapture.Add(DamageStatics().DarkResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ElectricResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().IceResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PoisonResistanceDef);
 }
 
 void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -96,7 +119,24 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	EvalParams.TargetTags = TargetTags; 
 	//-----------------------------------------------------------------------------------
 
-	float Damage = Spec.GetSetByCallerMagnitude(FRGameplayTags::Get().Damage);
+	float Damage = 0.f;
+	for (const auto& Pair  : FRGameplayTags::Get().DamageTypeToResist)
+	{
+		const FGameplayTag DamageTypeTag = Pair.Key;
+		const FGameplayTag ResistanceTag = Pair.Value;
+		checkf(RDamageStatics().TagsToCaptureDefs.Contains(ResistanceTag), TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"), *ResistanceTag.ToString());
+		const FGameplayEffectAttributeCaptureDefinition CaptureDef = RDamageStatics().TagsToCaptureDefs[ResistanceTag];
+
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key);
+		
+		float Resistance = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvalParams, Resistance);
+		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
+
+		DamageTypeValue *= (100.f - Resistance) / 100.f;
+		Damage += DamageTypeValue;
+	}
+	
 	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	//Block
 	float TargetBlockChance = 0.f;
