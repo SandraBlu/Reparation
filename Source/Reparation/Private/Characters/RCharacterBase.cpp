@@ -37,6 +37,11 @@ AActor* ARCharacterBase::GetAvatar_Implementation()
 	return this;
 }
 
+TArray<FTaggedMontage> ARCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
 void ARCharacterBase::MulticastHandleDeath_Implementation()
 {
 	GetMesh()->SetSimulatePhysics(true);

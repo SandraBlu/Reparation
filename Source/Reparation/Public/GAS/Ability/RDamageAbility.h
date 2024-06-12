@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/RGameplayAbility.h"
+#include "Interfaces/RCombatInterface.h"
 #include "RDamageAbility.generated.h"
 class UGameplayEffect;
 /**
@@ -26,5 +27,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TMap<FGameplayTag, FScalableFloat> DamageTypes;
+	
+	UFUNCTION(BlueprintPure)
+	FTaggedMontage GetRandomTaggedMontage(const TArray<FTaggedMontage>& TaggedMontages) const;
 	
 };

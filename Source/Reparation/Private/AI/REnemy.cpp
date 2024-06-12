@@ -66,6 +66,14 @@ FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& Comb
 	{
 		return Weapon->GetSocketLocation(WeaponDamageSocket);
 	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
+	{
+		return GetMesh()->GetSocketLocation(HandRSocket);
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handR))
+	{
+		return GetMesh()->GetSocketLocation(HandLSocket);
+	}
 	return FVector();
 }
 
@@ -104,7 +112,10 @@ void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
-	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
+	if (AIC && AIC->GetBlackboardComponent())
+	{
+		AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
+	}
 }
 
 void AREnemy::BeginPlay()

@@ -7,6 +7,18 @@
 #include "UObject/Interface.h"
 #include "RCombatInterface.generated.h"
 
+USTRUCT(BlueprintType)
+struct FTaggedMontage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAnimMontage* Montage = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag MontageTag;
+};
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class URCombatInterface : public UInterface
@@ -51,5 +63,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	AActor* GetCombatTarget() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	TArray<FTaggedMontage> GetAttackMontages();
 
 };

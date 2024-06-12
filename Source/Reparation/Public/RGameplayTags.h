@@ -119,7 +119,7 @@ public:
 	FGameplayTag cooldown_dart_knockout;
 
 
-	//Combat SocketKO
+	//Combat Socket
 	FGameplayTag combatSocket_weapon;
 	FGameplayTag combatSocket_handL;
 	FGameplayTag combatSocket_handR;

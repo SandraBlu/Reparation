@@ -30,6 +30,7 @@ public:
 	virtual void Die() override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	//Combat Interface
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -49,8 +50,6 @@ protected:
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	virtual void InitializeAttributes() const;
 	void GrantAbilities();
-
-	bool bDead = false;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>PrimaryAttributes;
@@ -60,15 +59,26 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>VitalAttributes;
+	
+	bool bDead = false;
+	
+	UPROPERTY(EditAnywhere, Category= "Combat")
+	TArray<FTaggedMontage> AttackMontages;
 
+protected:
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName HandRSocket;
+    
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName HandLSocket;
+	
 private:
 	
 	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
 
-	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
+	UPROPERTY(EditAnywhere, Category="Combat")
 	UAnimMontage* HitReactMontage;
-	
-	
 
+	
 };
