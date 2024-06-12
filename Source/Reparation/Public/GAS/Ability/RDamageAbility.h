@@ -14,6 +14,11 @@ class REPARATION_API URDamageAbility : public URGameplayAbility
 {
 	GENERATED_BODY()
 
+public:
+
+	UFUNCTION(Blueprintcallable)
+	void CauseDamage(AActor* TargetActor);
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

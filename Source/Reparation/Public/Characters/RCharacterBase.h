@@ -28,6 +28,8 @@ public:
 	//Combat Interface
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void Die() override;
+	virtual bool IsDead_Implementation() const override;
+	virtual AActor* GetAvatar_Implementation() override;
 	//Combat Interface
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -47,6 +49,8 @@ protected:
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	virtual void InitializeAttributes() const;
 	void GrantAbilities();
+
+	bool bDead = false;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>PrimaryAttributes;

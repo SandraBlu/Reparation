@@ -27,6 +27,16 @@ void ARCharacterBase::Die()
 	MulticastHandleDeath();
 }
 
+bool ARCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* ARCharacterBase::GetAvatar_Implementation()
+{
+	return this;
+}
+
 void ARCharacterBase::MulticastHandleDeath_Implementation()
 {
 	GetMesh()->SetSimulatePhysics(true);
@@ -35,6 +45,7 @@ void ARCharacterBase::MulticastHandleDeath_Implementation()
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	bDead = true;
 }
 
 // Called when the game starts or when spawned

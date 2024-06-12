@@ -150,6 +150,11 @@ void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Dama
 		if(ARPlayerController* PC = Cast<ARPlayerController>(Props.SourceCharacter->Controller))
 		{
 			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter, bBlockedHit, bDodgedHit, bCriticalHit);
+			return;
+		}
+		if(ARPlayerController* PC = Cast<ARPlayerController>(Props.TargetCharacter->Controller))
+		{
+			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter, bBlockedHit, bDodgedHit, bCriticalHit);
 		}
 	}
 }

@@ -81,6 +81,16 @@ void AREnemy::Die()
 	DissolveMesh();
 }
 
+void AREnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+AActor* AREnemy::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
 void AREnemy::MulticastHandleDeath()
 {
 	Super::MulticastHandleDeath();

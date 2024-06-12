@@ -88,7 +88,7 @@ void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObj
 	{
 		if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(ASC->GetAvatarActor()))
 		{
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetPLayerLevel());
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->Execute_GetPLayerLevel(ASC->GetAvatarActor()));
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}
@@ -149,6 +149,27 @@ void URAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& Effe
 	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
 		REffectContext->SetIsCriticalHit(bInIsCriticalHit);
+	}
+}
+
+void URAbilitySystemLibrary::GetTargetsWithinRadius(const UObject* WorldContextObject,
+	TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
+	const FVector& SphereOrigin)
+{
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+
+	TArray<FOverlapResult> Overlaps;
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity, FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects), FCollisionShape::MakeSphere(Radius), SphereParams);
+		for (FOverlapResult& Overlap : Overlaps)
+		{
+			if (Overlap.GetActor()->Implements<URCombatInterface>() && !IRCombatInterface::Execute_IsDead(Overlap.GetActor()))
+			{
+				OutOverlappingActors.AddUnique(IRCombatInterface::Execute_GetAvatar(Overlap.GetActor()));
+			}
+		}
 	}
 }
 
