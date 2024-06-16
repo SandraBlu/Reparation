@@ -173,3 +173,11 @@ void URAbilitySystemLibrary::GetTargetsWithinRadius(const UObject* WorldContextO
 	}
 }
 
+bool URAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
+{
+	const bool bPlayerTeam = FirstActor->ActorHasTag(FName("player")) && SecondActor->ActorHasTag(FName("player"));
+	const bool bEnemyTeam = FirstActor->ActorHasTag(FName("enemy")) && SecondActor->ActorHasTag(FName("enemy"));
+	const bool bFriend = bPlayerTeam || bEnemyTeam;
+	return !bFriend;
+}
+

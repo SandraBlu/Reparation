@@ -54,6 +54,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit);
 
-	UFUNCTION(BlueprintCallable, Category = "AOBFL|GameplayMechanics")
+	UFUNCTION(BlueprintCallable, Category = "AOBFL|GAMelee")
 	static void GetTargetsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
+
+	UFUNCTION(BlueprintPure, Category = "AOBFL|GAMelee")
+	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
+	
 };
