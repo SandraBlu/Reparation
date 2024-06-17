@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
+#include "Framework/RAbilitySystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 AROverlapMissile::AROverlapMissile()
@@ -38,9 +39,15 @@ void AROverlapMissile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		return;
 	}
-	
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactVFX, GetActorLocation());
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+	if (!URAbilitySystemLibrary::IsNotFriend(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
+	{
+		return;
+	}
+	if (!bHit)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactVFX, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+	}
 
 	if (HasAuthority())
 	{
