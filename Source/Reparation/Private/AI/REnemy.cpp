@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
+#include "Perception/PawnSensingComponent.h"
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
 
@@ -25,6 +26,7 @@ AREnemy::AREnemy()
 	HealthBar->SetupAttachment(GetRootComponent());
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -40,6 +42,43 @@ AREnemy::AREnemy()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+}
+
+void AREnemy::BeginPlay()
+{
+	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	InitAbilityActorInfo();
+	if (HasAuthority())
+	{
+		URAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
+	}
+	
+	if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		EnemyHealthUI->SetWidgetController(this);
+	}
+
+	if (const URAttributeSet* AS = Cast<URAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChange.Broadcast(Data.NewValue);
+			}
+		);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChange.Broadcast(Data.NewValue);
+			}
+		);
+		//Call Hit React function
+		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::HitReactTagChanged);
+		//Broadcast Initial Values
+		OnHealthChange.Broadcast(AS->GetHealth());
+		OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
+	}
 }
 
 void AREnemy::PossessedBy(AController* NewController)
@@ -118,42 +157,7 @@ void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	}
 }
 
-void AREnemy::BeginPlay()
-{
-	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	InitAbilityActorInfo();
-	if (HasAuthority())
-	{
-		URAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
-	}
-	
-	if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))
-	{
-		EnemyHealthUI->SetWidgetController(this);
-	}
 
-	if (const URAttributeSet* AS = Cast<URAttributeSet>(AttributeSet))
-	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnHealthChange.Broadcast(Data.NewValue);
-			}
-		);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxHealthChange.Broadcast(Data.NewValue);
-			}
-		);
-		//Call Hit React function
-		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::HitReactTagChanged);
-		//Broadcast Initial Values
-		OnHealthChange.Broadcast(AS->GetHealth());
-		OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
-	}
-}
 
 void AREnemy::InitAbilityActorInfo()
 {

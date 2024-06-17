@@ -8,6 +8,7 @@
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
 #include "REnemy.generated.h"
 
+class UPawnSensingComponent;
 class ARAIController;
 class UBehaviorTree;
 enum class ECharacterClass : uint8;
@@ -78,12 +79,16 @@ protected:
 	int32 Level = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
-	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+	ECharacterClass CharacterClass = ECharacterClass::Ranger;
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	UBehaviorTree* BehaviorTree;
 
 	UPROPERTY()
 	ARAIController* AIC;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPawnSensingComponent* PawnSensingComp;
+	
 	
 };
