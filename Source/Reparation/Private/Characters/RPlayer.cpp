@@ -69,6 +69,7 @@ FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& Com
 
 void ARPlayer::Die()
 {
+	if (!Gear->EquippedWeapon) return;
 	Gear->EquippedWeapon->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	Gear->EquippedWeapon->GetWeaponMesh()->SetSimulatePhysics(true);
 	Gear->EquippedWeapon->GetWeaponMesh()->SetEnableGravity(true);

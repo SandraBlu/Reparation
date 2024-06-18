@@ -123,6 +123,7 @@ void AREnemy::Die()
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	if (AIC) AIC->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
 	Super::Die();
 
 	DissolveMesh();
