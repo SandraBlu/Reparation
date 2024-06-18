@@ -8,6 +8,7 @@
 #include "Interfaces/RCombatInterface.h"
 #include "RCharacterBase.generated.h"
 
+class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
@@ -31,6 +32,7 @@ public:
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	//Combat Interface
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -64,13 +66,15 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category= "Combat")
 	TArray<FTaggedMontage> AttackMontages;
-
-protected:
+	
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName HandRSocket;
     
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName HandLSocket;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	UNiagaraSystem* BloodEffect;
 	
 private:
 	

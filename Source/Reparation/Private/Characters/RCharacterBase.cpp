@@ -42,6 +42,11 @@ TArray<FTaggedMontage> ARCharacterBase::GetAttackMontages_Implementation()
 	return AttackMontages;
 }
 
+UNiagaraSystem* ARCharacterBase::GetBloodEffect_Implementation()
+{
+	return BloodEffect;
+}
+
 void ARCharacterBase::MulticastHandleDeath_Implementation()
 {
 	GetMesh()->SetSimulatePhysics(true);
