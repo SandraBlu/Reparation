@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ARCharacterBase::ARCharacterBase()
@@ -47,8 +48,10 @@ UNiagaraSystem* ARCharacterBase::GetBloodEffect_Implementation()
 	return BloodEffect;
 }
 
+
 void ARCharacterBase::MulticastHandleDeath_Implementation()
 {
+	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
