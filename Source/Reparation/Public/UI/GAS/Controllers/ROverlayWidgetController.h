@@ -7,6 +7,8 @@
 #include "UI/GAS/Controllers/RWidgetController.h"
 #include "ROverlayWidgetController.generated.h"
 
+struct FRAbilityInfo;
+class URAbilitySystemComponent;
 class UAbilityInfo;
 
 USTRUCT(BlueprintType)
@@ -31,6 +33,7 @@ class URUserWidget;
 struct FOnAttributeChangeData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetSignature, FUIMessageRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FRAbilityInfo&, Info);
 
 /**
  * 
@@ -60,6 +63,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FMessageWidgetSignature MessageWidgetDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Ability")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS|Data")
@@ -67,6 +73,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS|Data")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
+
+	void OnInitializeGrantedAbilities(URAbilitySystemComponent* RAbilitySystemComp);
 	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);

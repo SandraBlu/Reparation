@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "RAbilitySystemComponent.generated.h"
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FAbilityGiven, URAbilitySystemComponent*);
+DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
 /**
  * 
  */
@@ -15,16 +18,24 @@ class REPARATION_API URAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 
 public:
+	
 	void AbilityActorInfoSet();
 	FEffectAssetTags EffectAssetTags;
+	FAbilityGiven AbilityGivenDelegate;
 	void AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities);
+	bool bGrantedAbilitiesGiven = false;
 
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
-
+	void ForEachAbility(const FForEachAbility& Delegate);
+	
+	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	
 protected:
 	
 	UFUNCTION(Client, Reliable)
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
-	
+
+	virtual void OnRep_ActivateAbilities() override;
 };

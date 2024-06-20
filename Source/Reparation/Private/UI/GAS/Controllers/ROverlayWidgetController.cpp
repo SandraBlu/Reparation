@@ -5,6 +5,7 @@
 
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
+#include "GAS/Data/AbilityInfo.h"
 
 void UROverlayWidgetController::BroadcastInitialValues()
 {
@@ -22,18 +23,46 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChange.Broadcast(Data.NewValue);});
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnStaminaChange.Broadcast(Data.NewValue);});
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxStaminaChange.Broadcast(Data.NewValue);});
-	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda(
-		[this](const FGameplayTagContainer& AssetTags)
+
+	if (URAbilitySystemComponent* RASC = Cast<URAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		if (RASC->bGrantedAbilitiesGiven)
 		{
-			for (const FGameplayTag& Tag : AssetTags)
-			{
-				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("message"));
-				if (Tag.MatchesTag(MessageTag))
-				{
-					const FUIMessageRow* Row = GetDataTableRowByTag<FUIMessageRow>(MessageWidgetDataTable, Tag);
-					MessageWidgetDelegate.Broadcast(*Row);
-				}
-			}
+			OnInitializeGrantedAbilities(RASC);
 		}
-	);
+		else
+		{
+			RASC->AbilityGivenDelegate.AddUObject(this, &UROverlayWidgetController::OnInitializeGrantedAbilities);
+		}
+		
+    	RASC->EffectAssetTags.AddLambda(
+    		[this](const FGameplayTagContainer& AssetTags)
+    		{
+    			for (const FGameplayTag& Tag : AssetTags)
+    			{
+    				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("message"));
+    				if (Tag.MatchesTag(MessageTag))
+    				{
+    					const FUIMessageRow* Row = GetDataTableRowByTag<FUIMessageRow>(MessageWidgetDataTable, Tag);
+    					MessageWidgetDelegate.Broadcast(*Row);
+    				}
+    			}
+    		}
+    	);	
+	}
+	
+}
+
+void UROverlayWidgetController::OnInitializeGrantedAbilities(URAbilitySystemComponent* RAbilitySystemComp)
+{
+	if (!RAbilitySystemComp->bGrantedAbilitiesGiven) return;
+	
+	FForEachAbility BroadcastDelegate;
+	BroadcastDelegate.BindLambda([this, RAbilitySystemComp](const FGameplayAbilitySpec& AbilitySpec)
+	{
+		FRAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(RAbilitySystemComp->GetAbilityTagFromSpec(AbilitySpec));
+		Info.InputTag = RAbilitySystemComp->GetInputTagFromSpec(AbilitySpec);
+		AbilityInfoDelegate.Broadcast(Info);
+	});
+	RAbilitySystemComp->ForEachAbility(BroadcastDelegate);
 }
