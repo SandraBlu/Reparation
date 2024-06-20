@@ -100,13 +100,13 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	int32 SourceCharacterLevel = 1;
 	if (SourceAvatar->Implements<URCombatInterface>())
 	{
-		SourceCharacterLevel = IRCombatInterface::Execute_GetPLayerLevel(SourceAvatar);
+		SourceCharacterLevel = IRCombatInterface::Execute_GetPlayerLevel(SourceAvatar);
 	}
 
 	int32 TargetCharacterLevel = 1;
 	if (TargetAvatar->Implements<URCombatInterface>())
 	{
-		TargetCharacterLevel = IRCombatInterface::Execute_GetPLayerLevel(TargetAvatar);
+		TargetCharacterLevel = IRCombatInterface::Execute_GetPlayerLevel(TargetAvatar);
 	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();

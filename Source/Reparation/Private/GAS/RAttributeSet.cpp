@@ -7,10 +7,12 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 #include "RGameplayTags.h"
+#include "../../../../../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/Editor/GameplayTagsEditor/Source/GameplayTagsEditor/Private/GameplayTagEditorUtilities.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "Framework/RPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/RCombatInterface.h"
+#include "Interfaces/RPlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -159,6 +161,21 @@ void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Dama
 	}
 }
 
+void URAttributeSet::SendXPEvent(const FEffectProperties& Props)
+{
+	if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(Props.TargetCharacter))
+	{
+		const int32 TargetLevel = CombatInterface->Execute_GetPlayerLevel(Props.TargetCharacter);
+		const ECharacterClass TargetClass = IRCombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
+		const int32 XPReward = URAbilitySystemLibrary::GetXPRewardForEnemySlay(Props.TargetCharacter, TargetClass, TargetLevel);
+		const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
+		FGameplayEventData Payload;
+		Payload.EventTag = GameplayTags.Attributes_meta_xp;
+		Payload.EventMagnitude = XPReward;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_meta_xp, Payload);
+	}
+}
+
 void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -168,7 +185,6 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-		UE_LOG(LogTemp, Warning, TEXT("Changed Health on %s, Health: %f"), *Props.TargetAvatarActor->GetName(), GetHealth());
 	}
 	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
@@ -194,6 +210,7 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 				{
 					CombatInterface->Die();
 				}
+				SendXPEvent(Props);
 			}
 			else
 			{
@@ -206,6 +223,13 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 			const bool bCriticalHit = URAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 			ShowFloatingText(Props, LocalDamage,bBlock, bDodge, bCriticalHit);
 		}
+	}
+	if (Data.EvaluatedData.Attribute == GetXPAttribute())
+	{
+		const float LocalXP = GetXP();
+		SetXP(0.f);
+		//Add to XP
+		IRPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalXP);
 	}
 }
 

@@ -88,7 +88,7 @@ void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObj
 	{
 		if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(ASC->GetAvatarActor()))
 		{
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->Execute_GetPLayerLevel(ASC->GetAvatarActor()));
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->Execute_GetPlayerLevel(ASC->GetAvatarActor()));
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}
@@ -99,6 +99,17 @@ URCharacterClassInfo* URAbilitySystemLibrary::GetCharacterClassInfo(const UObjec
 	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (RGameMode == nullptr) return nullptr;
 	return RGameMode->CharacterClassInfo;
+}
+
+int32 URAbilitySystemLibrary::GetXPRewardForEnemySlay(const UObject* WorldContextObject, ECharacterClass CharacterClass,
+	int32 CharacterLevel)
+{
+	URCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (CharacterClassInfo == nullptr) return 0;
+	const FCharClassInfo& Info = CharacterClassInfo->GetClassInfo(CharacterClass);
+	const float XPReward = Info.XPReward.GetValueAtLevel(CharacterLevel);
+
+	return static_cast<int32>(XPReward);
 }
 
 bool URAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)

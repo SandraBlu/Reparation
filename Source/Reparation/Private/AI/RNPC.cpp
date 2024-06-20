@@ -35,7 +35,7 @@ ARNPC::ARNPC()
 	HealthBar->SetupAttachment(GetRootComponent());
 }
 
-int32 ARNPC::GetPLayerLevel_Implementation()
+int32 ARNPC::GetPlayerLevel_Implementation()
 {
 	return Level;
 }

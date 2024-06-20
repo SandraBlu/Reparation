@@ -27,6 +27,7 @@ void ARPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ARPlayerState, Level);
+	DOREPLIFETIME(ARPlayerState, XP);
 }
 
 UAbilitySystemComponent* ARPlayerState::GetAbilitySystemComponent() const
@@ -34,6 +35,36 @@ UAbilitySystemComponent* ARPlayerState::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void ARPlayerState::AddToXP(int32 InXP)
+{
+	XP += InXP;
+	OnXPChangeDelegate.Broadcast(XP);
+}
+
+void ARPlayerState::AddToLevel(int32 InLevel)
+{
+	Level += InLevel;
+	OnLevelChangeDelegate.Broadcast(Level);
+}
+
+void ARPlayerState::SetXP(int32 InXP)
+{
+	XP = InXP;
+	OnXPChangeDelegate.Broadcast(XP);
+}
+
+void ARPlayerState::SetLevel(int32 InLevel)
+{
+	Level = InLevel;
+	OnLevelChangeDelegate.Broadcast(Level);
+}
+
 void ARPlayerState::OnRep_Level(int32 OldLevel)
 {
+	OnLevelChangeDelegate.Broadcast(Level);
+}
+
+void ARPlayerState::OnRep_XP(int32 OldXP)
+{
+	OnXPChangeDelegate.Broadcast(XP);
 }

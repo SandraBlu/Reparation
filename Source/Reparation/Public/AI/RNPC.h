@@ -21,7 +21,7 @@ public:
 	ARNPC();
 
 	//Combat Interface
-	virtual int32 GetPLayerLevel_Implementation() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 
 	UPROPERTY(BlueprintAssignable)

@@ -23,6 +23,7 @@ public:
 	FEffectAssetTags EffectAssetTags;
 	FAbilityGiven AbilityGivenDelegate;
 	void AddGrantedAbilities(const TArray<TSubclassOf<UGameplayAbility>>& GrantedAbilities);
+	void AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
 	bool bGrantedAbilitiesGiven = false;
 
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);

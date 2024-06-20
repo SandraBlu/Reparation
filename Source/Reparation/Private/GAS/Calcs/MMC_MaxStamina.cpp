@@ -32,7 +32,7 @@ float UMMC_MaxStamina::CalculateBaseMagnitude_Implementation(const FGameplayEffe
 	int32 CharacterLevel = 1;
 	if (Spec.GetContext().GetSourceObject()->Implements<URCombatInterface>())
 	{
-		CharacterLevel = IRCombatInterface::Execute_GetPLayerLevel(Spec.GetContext().GetSourceObject());
+		CharacterLevel = IRCombatInterface::Execute_GetPlayerLevel(Spec.GetContext().GetSourceObject());
 	}
 
 	return 40.f + 2 * Resilience + 10.f * CharacterLevel;

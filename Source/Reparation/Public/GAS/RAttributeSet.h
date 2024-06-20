@@ -75,6 +75,7 @@ public:
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 	void ShowFloatingText(const FEffectProperties& Props, float DamageAmount, bool bBlockedHit, bool bDodgedHit, bool bCriticalHit) const;
+	void SendXPEvent(const FEffectProperties& Props);
 
 public:
 
@@ -95,6 +96,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData Damage;
 	ATTRIBUTE_ACCESSORS(URAttributeSet, Damage)
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData XP;
+	ATTRIBUTE_ACCESSORS(URAttributeSet, XP)
 	
 
 	//Primary Attributes

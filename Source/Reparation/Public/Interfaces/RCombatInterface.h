@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "GAS/Data/RCharacterClassInfo.h"
 #include "UObject/Interface.h"
 #include "RCombatInterface.generated.h"
 
@@ -47,7 +48,7 @@ public:
 	void GetHit(const FVector& ImpactPoint);
 
 	UFUNCTION(BlueprintNativeEvent)
-	int32 GetPLayerLevel();
+	int32 GetPlayerLevel();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetCombatSocketLocation(const FGameplayTag& CombatSocketTag);
@@ -77,4 +78,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UNiagaraSystem* GetBloodEffect();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	ECharacterClass GetCharacterClass();
 };

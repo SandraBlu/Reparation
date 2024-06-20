@@ -48,6 +48,11 @@ UNiagaraSystem* ARCharacterBase::GetBloodEffect_Implementation()
 	return BloodEffect;
 }
 
+ECharacterClass ARCharacterBase::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
+}
+
 
 void ARCharacterBase::MulticastHandleDeath_Implementation()
 {
@@ -94,6 +99,7 @@ void ARCharacterBase::GrantAbilities()
 	URAbilitySystemComponent* RASC = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
 	if (!HasAuthority()) return;
 	RASC->AddGrantedAbilities(GrantedAbilities);
+	RASC->AddPassiveAbilities(GrantedPassiveAbilities);
 }
 	
 

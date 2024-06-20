@@ -4,14 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Characters/RCharacterBase.h"
-#include "GAS/Data/RCharacterClassInfo.h"
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
 #include "REnemy.generated.h"
 
 class UPawnSensingComponent;
 class ARAIController;
 class UBehaviorTree;
-enum class ECharacterClass : uint8;
 class UWidgetComponent;
 /**
  * 
@@ -28,7 +26,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	//Combat Interface
-	virtual int32 GetPLayerLevel_Implementation() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	virtual void Die() override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
@@ -77,9 +75,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
-	ECharacterClass CharacterClass = ECharacterClass::Ranger;
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	UBehaviorTree* BehaviorTree;

@@ -93,7 +93,7 @@ void AREnemy::PossessedBy(AController* NewController)
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
-int32 AREnemy::GetPLayerLevel_Implementation()
+int32 AREnemy::GetPlayerLevel_Implementation()
 {
 	return Level;
 }

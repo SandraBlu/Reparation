@@ -26,6 +26,15 @@ void URAbilitySystemComponent::AddGrantedAbilities(const TArray<TSubclassOf<UGam
 	AbilityGivenDelegate.Broadcast(this);
 }
 
+void URAbilitySystemComponent::AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities)
+{
+	for (TSubclassOf<UGameplayAbility> AbilityClass  : PassiveAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		GiveAbilityAndActivateOnce(AbilitySpec);
+	}
+}
+
 void URAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;

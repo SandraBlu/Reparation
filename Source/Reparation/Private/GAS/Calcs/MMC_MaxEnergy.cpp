@@ -32,7 +32,7 @@ float UMMC_MaxEnergy::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	int32 CharacterLevel = 1;
 	if (Spec.GetContext().GetSourceObject()->Implements<URCombatInterface>())
 	{
-		CharacterLevel = IRCombatInterface::Execute_GetPLayerLevel(Spec.GetContext().GetSourceObject());
+		CharacterLevel = IRCombatInterface::Execute_GetPlayerLevel(Spec.GetContext().GetSourceObject());
 	}
 	
 	return 25.f + 3 * Intelligence + 5.f * CharacterLevel;

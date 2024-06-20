@@ -33,6 +33,7 @@ ARPlayer::ARPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
+	CharacterClass = ECharacterClass::Elementalist;
 }
 
 void ARPlayer::PossessedBy(AController* NewController)
@@ -50,7 +51,7 @@ void ARPlayer::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
-int32 ARPlayer::GetPLayerLevel_Implementation()
+int32 ARPlayer::GetPlayerLevel_Implementation()
 {
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
 	check(RPS);
@@ -75,6 +76,13 @@ void ARPlayer::Die()
 	Gear->EquippedWeapon->GetWeaponMesh()->SetEnableGravity(true);
 	Gear->EquippedWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	Super::Die();
+}
+
+void ARPlayer::AddToXP_Implementation(int32 InXP)
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	RPS->AddToXP(InXP);
 }
 
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)

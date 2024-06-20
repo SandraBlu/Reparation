@@ -32,6 +32,7 @@ struct FUIMessageRow : public FTableRowBase
 class URUserWidget;
 struct FOnAttributeChangeData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangeSignature, int32, NewValue, bool, bLevelUp);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetSignature, FUIMessageRow, Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FRAbilityInfo&, Info);
 
@@ -66,10 +67,18 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Ability")
 	FAbilityInfoSignature AbilityInfoDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
+	FOnAttributeChangeSignature OnXPPercentChangeDelegate;
+	
+	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
+	FOnLevelChangeSignature OnLevelChangeDelegate;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS|Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
+	void OnXPChange(int32 NewXP) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS|Data")
 	TObjectPtr<UAbilityInfo> AbilityInfo;

@@ -29,8 +29,8 @@ struct FCharClassInfo
 	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
-	//FScalableFloat XPReward = FScalableFloat();
+	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
+	FScalableFloat XPReward = FScalableFloat();
 };
 
 /**
@@ -62,8 +62,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shared Class Defaults|Damage")
 	UCurveTable* DamageCalcCoefficients;
-	
-
-	
 	
 };

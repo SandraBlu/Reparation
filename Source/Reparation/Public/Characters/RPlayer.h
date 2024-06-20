@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Characters/RCharacterBase.h"
+#include "Interfaces/RPlayerInterface.h"
 #include "RPlayer.generated.h"
 
 class URInputConfig;
@@ -15,7 +16,7 @@ class URAbilitySystemComponent;
  * 
  */
 UCLASS()
-class REPARATION_API ARPlayer : public ARCharacterBase
+class REPARATION_API ARPlayer : public ARCharacterBase , public IRPlayerInterface
 {
 	GENERATED_BODY()
 
@@ -29,10 +30,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;
 
-	//Combat Interface
-	virtual int32 GetPLayerLevel_Implementation() override;
+	//Interfaces
+	virtual int32 GetPlayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	virtual void Die() override;
+	virtual void AddToXP_Implementation(int32 InXP) override;
 
 	
 	UFUNCTION(BlueprintCallable)

@@ -6,7 +6,9 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/RCombatInterface.h"
+#include "GAS/Data/RCharacterClassInfo.h"
 #include "RCharacterBase.generated.h"
+
 
 class UNiagaraSystem;
 class UGameplayAbility;
@@ -33,6 +35,7 @@ public:
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	//Combat Interface
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -62,6 +65,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>VitalAttributes;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	ECharacterClass CharacterClass = ECharacterClass::Ranger;
+	
 	bool bDead = false;
 	
 	UPROPERTY(EditAnywhere, Category= "Combat")
@@ -83,6 +89,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
+
+	UPROPERTY(EditAnywhere, Category="GAS|Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> GrantedPassiveAbilities;
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	UAnimMontage* HitReactMontage;
