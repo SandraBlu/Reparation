@@ -86,9 +86,9 @@ void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObj
 	const FCharClassInfo& DefaultInfo = CharacterClassInfo->GetClassInfo(CharacterClass);
 	for (auto AbilityClass : DefaultInfo.StartupAbilities)
 	{
-		if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(ASC->GetAvatarActor()))
+		if (ASC->GetAvatarActor()->Implements<URCombatInterface>())
 		{
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->Execute_GetPlayerLevel(ASC->GetAvatarActor()));
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, IRCombatInterface::Execute_GetPlayerLevel(ASC->GetAvatarActor()));
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}

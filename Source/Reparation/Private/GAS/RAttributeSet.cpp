@@ -163,9 +163,9 @@ void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Dama
 
 void URAttributeSet::SendXPEvent(const FEffectProperties& Props)
 {
-	if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(Props.TargetCharacter))
+	if (Props.TargetCharacter->Implements<URCombatInterface>())
 	{
-		const int32 TargetLevel = CombatInterface->Execute_GetPlayerLevel(Props.TargetCharacter);
+		const int32 TargetLevel = IRCombatInterface::Execute_GetPlayerLevel(Props.TargetCharacter);
 		const ECharacterClass TargetClass = IRCombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
 		const int32 XPReward = URAbilitySystemLibrary::GetXPRewardForEnemySlay(Props.TargetCharacter, TargetClass, TargetLevel);
 		const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
@@ -229,6 +229,22 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 		const float LocalXP = GetXP();
 		SetXP(0.f);
 		//Add to XP
+		const int32 CurrentLevel = IRCombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
+		const int32 CurrentXP = IRPlayerInterface::Execute_GetXP(Props.SourceCharacter);
+		const int32 NewLevel = IRPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalXP);
+		const int32 NumLevelUps = NewLevel - CurrentLevel;
+		if (NumLevelUps > 0)
+		{
+			const int32 AttributePtsReward = IRPlayerInterface::Execute_GetAttributePtsReward(Props.SourceCharacter, CurrentLevel);
+			const int32 AbilityPtsReward = IRPlayerInterface::Execute_GetAbilityPtsReward(Props.SourceCharacter, CurrentLevel);
+			IRPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
+			IRPlayerInterface::Execute_AddToAttributePts(Props.SourceCharacter, AttributePtsReward);
+			IRPlayerInterface::Execute_AddToAbilityPts(Props.SourceCharacter, AbilityPtsReward);
+			SetHealth(GetMaxHealth());
+			SetStamina(GetMaxStamina());
+			SetEnergy(GetMaxEnergy());
+			IRPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
+		}
 		IRPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalXP);
 	}
 }

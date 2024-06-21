@@ -22,7 +22,31 @@ class REPARATION_API IRPlayerInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	
+	UFUNCTION(BlueprintNativeEvent)
+	int32 FindLevelForXP(int32 InXP) const;
+	
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetXP() const;
+	
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetAttributePtsReward(int32 Level) const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetAbilityPtsReward(int32 Level) const;
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddToXP(int32 InXP);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void AddToXP(int32 InXP );
+	void AddToPlayerLevel(int32 InPlayerLevel);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddToAttributePts(int32 InAttributePoints);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddToAbilityPts(int32 InAbilityPoints);
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void LevelUp();
 };

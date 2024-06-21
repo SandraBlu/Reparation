@@ -8,6 +8,7 @@
 #include "Interfaces/RPlayerInterface.h"
 #include "RPlayer.generated.h"
 
+class UNiagaraComponent;
 class URInputConfig;
 class UInputMappingContext;
 class UREquipmentComponent;
@@ -35,10 +36,20 @@ public:
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	virtual void Die() override;
 	virtual void AddToXP_Implementation(int32 InXP) override;
-
+	virtual void LevelUp_Implementation() override;
+	virtual int32 GetXP_Implementation() const override;
+	virtual int32 FindLevelForXP_Implementation(int32 InXP) const override;
+	virtual int32 GetAttributePtsReward_Implementation(int32 Level) const override;
+	virtual int32 GetAbilityPtsReward_Implementation(int32 Level) const override;
+	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
+	virtual void AddToAttributePts_Implementation(int32 InAttributePoints) override;
+	virtual void AddToAbilityPts_Implementation(int32 InAbilityPoints) override;
 	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UNiagaraComponent* LevelUpFX;
 
 
 protected:
@@ -68,6 +79,10 @@ private:
 	URAbilitySystemComponent* RAbilitySystemComponent;
 	
 	URAbilitySystemComponent* GetASC();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLevelUpVFX();
+	
 public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

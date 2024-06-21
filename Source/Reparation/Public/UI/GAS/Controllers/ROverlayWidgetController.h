@@ -32,7 +32,7 @@ struct FUIMessageRow : public FTableRowBase
 class URUserWidget;
 struct FOnAttributeChangeData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangeSignature, int32, NewValue, bool, bLevelUp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangeSignature, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetSignature, FUIMessageRow, Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FRAbilityInfo&, Info);
 
@@ -70,8 +70,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangeSignature OnXPPercentChangeDelegate;
 	
-	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
-	FOnLevelChangeSignature OnLevelChangeDelegate;
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnPlayerStatChangeSignature OnLevelChangeDelegate;
 
 protected:
 

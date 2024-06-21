@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraComponent.h"
 #include "RGameplayTags.h"
 #include "Actors/RWeapon.h"
 #include "Camera/CameraComponent.h"
@@ -16,6 +17,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
+#include "GAS/Data/LevelUpInfo.h"
 #include "Input/RInputComponent.h"
 #include "UI/GAS/RHUD.h"
 
@@ -34,6 +36,10 @@ ARPlayer::ARPlayer()
 	
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
 	CharacterClass = ECharacterClass::Elementalist;
+
+	LevelUpFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("VFXComp"));
+	LevelUpFX->SetupAttachment(GetRootComponent());
+	LevelUpFX->bAutoActivate = false;
 }
 
 void ARPlayer::PossessedBy(AController* NewController)
@@ -83,6 +89,69 @@ void ARPlayer::AddToXP_Implementation(int32 InXP)
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
 	check(RPS);
 	RPS->AddToXP(InXP);
+}
+
+void ARPlayer::LevelUp_Implementation()
+{
+	MulticastLevelUpVFX();
+}
+
+void ARPlayer::MulticastLevelUpVFX_Implementation()
+{
+	if (IsValid(LevelUpFX))
+	{
+		LevelUpFX->Activate(true);
+	}
+}
+
+int32 ARPlayer::GetXP_Implementation() const
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	return RPS->GetXP();
+}
+
+int32 ARPlayer::FindLevelForXP_Implementation(int32 InXP) const
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	return RPS->LevelUpInfo->FindLevelForXP(InXP);
+}
+
+int32 ARPlayer::GetAttributePtsReward_Implementation(int32 Level) const
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	return RPS->LevelUpInfo->LevelUpInfo[Level].AttributePointReward;
+}
+
+int32 ARPlayer::GetAbilityPtsReward_Implementation(int32 Level) const
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	return RPS->LevelUpInfo->LevelUpInfo[Level].AbilityPointReward;
+}
+
+void ARPlayer::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	RPS->AddToLevel(InPlayerLevel);
+}
+
+void ARPlayer::AddToAttributePts_Implementation(int32 InAttributePoints)
+{
+	//ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	//check(RPS);
+	//Add Attribute Pts to player state
+}
+
+
+void ARPlayer::AddToAbilityPts_Implementation(int32 InAbilityPoints)
+{
+	//ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	//check(RPS);
+	//Add Ability Pts to player state
 }
 
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)

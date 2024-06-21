@@ -23,7 +23,10 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 	//XP Change
 	ARPlayerState* RPlayerState = CastChecked<ARPlayerState>(PlayerState);
 	RPlayerState->OnXPChangeDelegate.AddUObject(this, &UROverlayWidgetController::OnXPChange);
-
+	RPlayerState->OnLevelChangeDelegate.AddLambda([this](int32 NewLevel)
+	{
+		OnLevelChangeDelegate.Broadcast(NewLevel);
+	});
 	//Attribute Change
 	const URAttributeSet* Attributes = CastChecked<URAttributeSet>(AttributeSet);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnHealthChange.Broadcast(Data.NewValue);});
