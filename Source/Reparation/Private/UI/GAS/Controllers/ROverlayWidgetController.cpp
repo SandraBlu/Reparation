@@ -2,7 +2,6 @@
 
 
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
-
 #include "Framework/RPlayerState.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
@@ -11,43 +10,41 @@
 
 void UROverlayWidgetController::BroadcastInitialValues()
 {
-	const URAttributeSet* Attributes = CastChecked<URAttributeSet>(AttributeSet);
-	OnHealthChange.Broadcast(Attributes->GetHealth());
-	OnMaxHealthChange.Broadcast(Attributes->GetMaxHealth());
-	OnStaminaChange.Broadcast(Attributes->GetStamina());
-	OnMaxStaminaChange.Broadcast(Attributes->GetMaxStamina());
+	
+	OnHealthChange.Broadcast(GetRAS()->GetHealth());
+	OnMaxHealthChange.Broadcast(GetRAS()->GetMaxHealth());
+	OnStaminaChange.Broadcast(GetRAS()->GetStamina());
+	OnMaxStaminaChange.Broadcast(GetRAS()->GetMaxStamina());
 }
 
 void UROverlayWidgetController::BindCallbacksToDependencies()
 {
 	//XP Change
-	ARPlayerState* RPlayerState = CastChecked<ARPlayerState>(PlayerState);
-	RPlayerState->OnXPChangeDelegate.AddUObject(this, &UROverlayWidgetController::OnXPChange);
-	RPlayerState->OnLevelChangeDelegate.AddLambda([this](int32 NewLevel)
+	GetRPS()->OnXPChangeDelegate.AddUObject(this, &UROverlayWidgetController::OnXPChange);
+	GetRPS()->OnLevelChangeDelegate.AddLambda([this](int32 NewLevel)
 	{
 		OnLevelChangeDelegate.Broadcast(NewLevel);
 	});
 	//Attribute Change
-	const URAttributeSet* Attributes = CastChecked<URAttributeSet>(AttributeSet);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnHealthChange.Broadcast(Data.NewValue);});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChange.Broadcast(Data.NewValue);});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnStaminaChange.Broadcast(Data.NewValue);});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxStaminaChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnHealthChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnStaminaChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetMaxStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxStaminaChange.Broadcast(Data.NewValue);});
 
 	//Ability Change
-	if (URAbilitySystemComponent* RASC = Cast<URAbilitySystemComponent>(AbilitySystemComponent))
+	if (GetRASC())
 	{
-		if (RASC->bGrantedAbilitiesGiven)
+		if (GetRASC()->bGrantedAbilitiesGiven)
 		{
-			OnInitializeGrantedAbilities(RASC);
+			BroadcastAbilityInfo();
 		}
 		else
 		{
-			RASC->AbilityGivenDelegate.AddUObject(this, &UROverlayWidgetController::OnInitializeGrantedAbilities);
+			GetRASC()->AbilityGivenDelegate.AddUObject(this, &UROverlayWidgetController::BroadcastAbilityInfo);
 		}
 
 		//Effect Message
-    	RASC->EffectAssetTags.AddLambda(
+    	GetRASC()->EffectAssetTags.AddLambda(
     		[this](const FGameplayTagContainer& AssetTags)
     		{
     			for (const FGameplayTag& Tag : AssetTags)
@@ -65,10 +62,9 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 	
 }
 
-void UROverlayWidgetController::OnXPChange(int32 NewXP) const
+void UROverlayWidgetController::OnXPChange(int32 NewXP)
 {
-	const ARPlayerState* RPlayerState = CastChecked<ARPlayerState>(PlayerState);
-	const ULevelUpInfo* LevelUpInfo = RPlayerState->LevelUpInfo;
+	const ULevelUpInfo* LevelUpInfo = GetRPS()->LevelUpInfo;
 	checkf(LevelUpInfo, TEXT("Unable to find XPinfo, Enter in BP_PlayerState"));
 
 	const int32 CurrentLevel = LevelUpInfo->FindLevelForXP(NewXP);
@@ -86,18 +82,4 @@ void UROverlayWidgetController::OnXPChange(int32 NewXP) const
 
 		OnXPPercentChangeDelegate.Broadcast(XPBarPercent);
 	}
-}
-
-void UROverlayWidgetController::OnInitializeGrantedAbilities(URAbilitySystemComponent* RAbilitySystemComp)
-{
-	if (!RAbilitySystemComp->bGrantedAbilitiesGiven) return;
-	
-	FForEachAbility BroadcastDelegate;
-	BroadcastDelegate.BindLambda([this, RAbilitySystemComp](const FGameplayAbilitySpec& AbilitySpec)
-	{
-		FRAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(RAbilitySystemComp->GetAbilityTagFromSpec(AbilitySpec));
-		Info.InputTag = RAbilitySystemComp->GetInputTagFromSpec(AbilitySpec);
-		AbilityInfoDelegate.Broadcast(Info);
-	});
-	RAbilitySystemComp->ForEachAbility(BroadcastDelegate);
 }

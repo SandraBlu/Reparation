@@ -141,17 +141,31 @@ void ARPlayer::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 
 void ARPlayer::AddToAttributePts_Implementation(int32 InAttributePoints)
 {
-	//ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
-	//check(RPS);
-	//Add Attribute Pts to player state
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	RPS->AddToAttributePts(InAttributePoints);
 }
 
 
 void ARPlayer::AddToAbilityPts_Implementation(int32 InAbilityPoints)
 {
-	//ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
-	//check(RPS);
-	//Add Ability Pts to player state
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	RPS->AddToAbilityPts(InAbilityPoints);
+}
+
+int32 ARPlayer::GetAttributePoints_Implementation() const
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	return RPS->GetAttributePts();
+}
+
+int32 ARPlayer::GetAbilityPoints_Implementation() const
+{
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	check(RPS);
+	return RPS->GetAbilityPts();
 }
 
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)

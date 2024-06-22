@@ -38,13 +38,19 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void AddToXP(int32 InXP);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent)
 	void AddToPlayerLevel(int32 InPlayerLevel);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent)
 	void AddToAttributePts(int32 InAttributePoints);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetAttributePoints() const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetAbilityPoints() const;
+
+	UFUNCTION(BlueprintNativeEvent)
 	void AddToAbilityPts(int32 InAbilityPoints);
 	
 	UFUNCTION(BlueprintNativeEvent)

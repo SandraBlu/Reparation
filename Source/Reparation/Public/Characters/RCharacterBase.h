@@ -63,6 +63,9 @@ protected:
 	TSubclassOf<UGameplayEffect>SecondaryAttributes;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
+	TSubclassOf<UGameplayEffect>ResistanceAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="GAS|Attributes")
 	TSubclassOf<UGameplayEffect>VitalAttributes;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")

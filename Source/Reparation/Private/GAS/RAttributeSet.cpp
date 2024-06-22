@@ -7,7 +7,6 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 #include "RGameplayTags.h"
-#include "../../../../../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/Editor/GameplayTagsEditor/Source/GameplayTagsEditor/Private/GameplayTagEditorUtilities.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "Framework/RPlayerController.h"
 #include "GameFramework/Character.h"
@@ -240,12 +239,35 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 			IRPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
 			IRPlayerInterface::Execute_AddToAttributePts(Props.SourceCharacter, AttributePtsReward);
 			IRPlayerInterface::Execute_AddToAbilityPts(Props.SourceCharacter, AbilityPtsReward);
-			SetHealth(GetMaxHealth());
-			SetStamina(GetMaxStamina());
-			SetEnergy(GetMaxEnergy());
+
+			bRestoreFullHealth = true;
+			bRestoreFullStamina = true;
+			bRestoreFullEnergy = true;
+			
 			IRPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
 		}
 		IRPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalXP);
+	}
+}
+
+void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute() && bRestoreFullHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bRestoreFullHealth = false;
+	}
+	if (Attribute ==GetMaxHealthAttribute() && bRestoreFullHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bRestoreFullStamina = false;
+	}
+	if (Attribute ==GetMaxEnergyAttribute() && bRestoreFullEnergy)
+	{
+		SetEnergy(GetMaxEnergy());
+		bRestoreFullEnergy = false;
 	}
 }
 

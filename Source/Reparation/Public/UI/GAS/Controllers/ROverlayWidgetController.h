@@ -11,7 +11,7 @@ struct FRAbilityInfo;
 class URAbilitySystemComponent;
 class UAbilityInfo;
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, Blueprintable)
 struct FUIMessageRow : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -32,9 +32,8 @@ struct FUIMessageRow : public FTableRowBase
 class URUserWidget;
 struct FOnAttributeChangeData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangeSignature, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetSignature, FUIMessageRow, Row);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FRAbilityInfo&, Info);
+
 
 /**
  * 
@@ -64,9 +63,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FMessageWidgetSignature MessageWidgetDelegate;
 
-	UPROPERTY(BlueprintAssignable, Category="GAS|Ability")
-	FAbilityInfoSignature AbilityInfoDelegate;
-
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangeSignature OnXPPercentChangeDelegate;
 	
@@ -78,12 +74,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS|Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 
-	void OnXPChange(int32 NewXP) const;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS|Data")
-	TObjectPtr<UAbilityInfo> AbilityInfo;
-
-	void OnInitializeGrantedAbilities(URAbilitySystemComponent* RAbilitySystemComp);
+	void OnXPChange(int32 NewXP);
 	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);

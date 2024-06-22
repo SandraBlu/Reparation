@@ -6,11 +6,14 @@
 #include "GameplayEffectTypes.h"
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "UI/GAS/RHUD.h"
 #include "RAbilitySystemLibrary.generated.h"
 
+class URAbilityMenuController;
 class UAbilitySystemComponent;
 class URAttributeMenuController;
 class UROverlayWidgetController;
+struct FWidgetControllerParams;
 /**
  * 
  */
@@ -20,12 +23,17 @@ class REPARATION_API URAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
+	static bool MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD);
 
 	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
 	static UROverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
 	static URAttributeMenuController* GetAttributeMenuController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
+	static URAbilityMenuController* GetAbilityMenuController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);

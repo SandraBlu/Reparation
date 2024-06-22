@@ -4,6 +4,7 @@
 #include "UI/GAS/RHUD.h"
 
 #include "UI/GAS/RUserWidget.h"
+#include "UI/GAS/Controllers/RAbilityMenuController.h"
 #include "UI/GAS/Controllers/RAttributeMenuController.h"
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
 
@@ -27,6 +28,17 @@ URAttributeMenuController* ARHUD::GetAttributeMenuWidgetController(const FWidget
 		AttributeMenuController->BindCallbacksToDependencies();
 	}
 	return AttributeMenuController;
+}
+
+URAbilityMenuController* ARHUD::GetAbilityMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (AbilityMenuController == nullptr)
+	{
+		AbilityMenuController = NewObject<URAbilityMenuController>(this, AbilityMenuControllerClass);
+		AbilityMenuController->SetWidgetControllerParams(WCParams);
+		AbilityMenuController->BindCallbacksToDependencies();
+	}
+	return AbilityMenuController;
 }
 
 void ARHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)

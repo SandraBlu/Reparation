@@ -12,40 +12,64 @@
 #include "UI/GAS/RHUD.h"
 #include "UI/GAS/Controllers/RWidgetController.h"
 
-UROverlayWidgetController* URAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
+bool URAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContextObject,
+                                                        FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD)
 {
 	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+    	{
+		OutRHUD = Cast<ARHUD>(PC->GetHUD());
+    		if (OutRHUD)
+    		{
+    			ARPlayerState* PS = PC->GetPlayerState<ARPlayerState>();
+    			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+    			UAttributeSet* AS = PS->GetAttributeSet();
+    			OutWCParams.AttributeSet = AS;
+    			OutWCParams.AbilitySystemComponent = ASC;
+    			OutWCParams.PlayerState = PS;
+    			OutWCParams.PlayerController= PC;
+    			FWidgetControllerParams(PC, PS, ASC, AS);
+    			return true;
+    		}
+    	}
+    return false;
+}
+
+UROverlayWidgetController* URAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
+{
+
+	FWidgetControllerParams WCParams;
+	ARHUD* RHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, RHUD))
 	{
-		if (ARHUD* RHUD = Cast<ARHUD>(PC->GetHUD()))
-		{
-			ARPlayerState* PS = PC->GetPlayerState<ARPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-			return RHUD->GetOverlayWidgetController(WidgetControllerParams);
-		}
+		return RHUD->GetOverlayWidgetController(WCParams);
 	}
 	return nullptr;
 }
 
 URAttributeMenuController* URAbilitySystemLibrary::GetAttributeMenuController(const UObject* WorldContextObject)
 {
-	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	FWidgetControllerParams WCParams;
+	ARHUD* RHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, RHUD))
 	{
-		if (ARHUD* RHUD = Cast<ARHUD>(PC->GetHUD()))
-		{
-			ARPlayerState* PS = PC->GetPlayerState<ARPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-			return RHUD->GetAttributeMenuWidgetController(WidgetControllerParams);
-		}
+		return RHUD->GetAttributeMenuWidgetController(WCParams);
+	}
+	return nullptr;
+}
+
+URAbilityMenuController* URAbilitySystemLibrary::GetAbilityMenuController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	ARHUD* RHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, RHUD))
+	{
+			return RHUD->GetAbilityMenuWidgetController(WCParams);
 	}
 	return nullptr;
 }
 
 void URAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
-	ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
+                                                         ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
 	AActor* AvatarActor = ASC->GetAvatarActor();
 	

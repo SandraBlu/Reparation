@@ -44,6 +44,8 @@ public:
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
 	virtual void AddToAttributePts_Implementation(int32 InAttributePoints) override;
 	virtual void AddToAbilityPts_Implementation(int32 InAbilityPoints) override;
+	virtual int32 GetAttributePoints_Implementation() const override;
+	virtual int32 GetAbilityPoints_Implementation() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);

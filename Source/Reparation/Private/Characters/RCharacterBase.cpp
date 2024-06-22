@@ -91,6 +91,7 @@ void ARCharacterBase::InitializeAttributes() const
 {
 	ApplyEffectToSelf(PrimaryAttributes, 1.f);
 	ApplyEffectToSelf(SecondaryAttributes, 1.f);
+	ApplyEffectToSelf(ResistanceAttributes, 1.f);
 	ApplyEffectToSelf(VitalAttributes, 1.f);
 }
 

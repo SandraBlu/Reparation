@@ -3,8 +3,9 @@
 
 #include "GAS/RAbilitySystemComponent.h"
 
-#include "RGameplayTags.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GAS/Ability/RGameplayAbility.h"
+#include "Interfaces/RPlayerInterface.h"
 
 void URAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -23,7 +24,7 @@ void URAbilitySystemComponent::AddGrantedAbilities(const TArray<TSubclassOf<UGam
 		}
 	}
 	bGrantedAbilitiesGiven = true;
-	AbilityGivenDelegate.Broadcast(this);
+	AbilityGivenDelegate.Broadcast();
 }
 
 void URAbilitySystemComponent::AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities)
@@ -104,13 +105,37 @@ FGameplayTag URAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilit
 	return FGameplayTag();
 }
 
+void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	if (GetAvatarActor()->Implements<URPlayerInterface>())
+	{
+		if (IRPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
+		{
+			ServerUpgradeAttribute(AttributeTag);
+		}
+	}
+}
+
+void URAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData Payload;
+	Payload.EventTag = AttributeTag;
+	Payload.EventMagnitude = 1.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
+	if (GetAvatarActor()->Implements<URPlayerInterface>())
+	{
+		IRPlayerInterface::Execute_AddToAttributePts(GetAvatarActor(), -1);
+	}
+}
+
 void URAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();
 	if (!bGrantedAbilitiesGiven)
 	{
 		bGrantedAbilitiesGiven = true;
-		AbilityGivenDelegate.Broadcast(this);
+		AbilityGivenDelegate.Broadcast();
 	}
 }
 
