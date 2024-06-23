@@ -50,6 +50,7 @@ public:
 	FGameplayTag InputTag_Passive01;
 	FGameplayTag InputTag_Passive02;
 	FGameplayTag InputTag_Passive03;
+	FGameplayTag InputTag_Passive04;
 
 	//meta
 	FGameplayTag Attributes_meta_xp;

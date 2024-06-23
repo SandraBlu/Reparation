@@ -5,7 +5,7 @@
 
 void URAbilityMenuController::BroadcastInitialValues()
 {
-	
+	BroadcastAbilityInfo();
 }
 
 void URAbilityMenuController::BindCallbacksToDependencies()

@@ -42,7 +42,8 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.InputTag_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.2"), FString("2"));
 	GameplayTags.InputTag_Passive01 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive01"), FString("Passive01"));
 	GameplayTags.InputTag_Passive02 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive02"), FString("Passive02"));
-	GameplayTags.InputTag_Passive03 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive02"), FString("Passive03"));
+	GameplayTags.InputTag_Passive03 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive03"), FString("Passive03"));
+	GameplayTags.InputTag_Passive04 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive04"), FString("Passive04"));
 
 	//Damage Meta Att
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage"), FString("Damage"));

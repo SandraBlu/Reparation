@@ -23,16 +23,16 @@ class REPARATION_API URAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static bool MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD);
 
-	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static UROverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static URAttributeMenuController* GetAttributeMenuController(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static URAbilityMenuController* GetAbilityMenuController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
