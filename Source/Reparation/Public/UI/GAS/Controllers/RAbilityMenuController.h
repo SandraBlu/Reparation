@@ -14,7 +14,7 @@ struct FSelectedAbility
 	FGameplayTag Status = FGameplayTag();
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAbilitySelectedSignature, bool, bEnableSpendPointBtn, bool, bEnableEquipBtn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FAbilitySelectedSignature, bool, bEnableSpendPointBtn, bool, bEnableEquipBtn, FString, DescriptionString, FString, NextLevelDescriptionString);
 /**
  * 
  */

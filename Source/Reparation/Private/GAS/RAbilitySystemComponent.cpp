@@ -204,6 +204,24 @@ void URAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGame
 	}
 }
 
+bool URAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription,
+	FString& OutNextLevelDescription)
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (URGameplayAbility* RAbility = Cast<URGameplayAbility>(AbilitySpec->Ability))
+		{
+			OutDescription = RAbility->GetDescription(AbilitySpec->Level);
+			OutNextLevelDescription = RAbility->GetNextLevelDescription(AbilitySpec->Level + 1);
+			return true;
+		}
+	}
+	const	UAbilityInfo* AbilityInfo = URAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	OutDescription = URGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement);
+	OutNextLevelDescription = FString();
+	return false;
+}
+
 void URAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();

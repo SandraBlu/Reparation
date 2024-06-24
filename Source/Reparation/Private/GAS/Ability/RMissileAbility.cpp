@@ -16,9 +16,28 @@ URMissileAbility::URMissileAbility()
 	SweepDistanceFallback = 5000;
 }
 
+FString URMissileAbility::GetDescription(int32 Level)
+{
+	const int32 Damage = DamageTypes[FRGameplayTags::Get().Damage_Elemental_Electric].GetValueAtLevel(Level);
+	if (Level == 1)
+	{
+		return FString::Printf(TEXT("<Title>Electric Bolt</>\n\n<Default>Launches a shocking bolt, spreading on impact and dealing: </><Damage>%d</><Default> electric damage with a chance to burn</>\n\n<Small>Level: </><Level>%d</>"), Damage, Level);
+	}
+	else
+	{
+		return FString::Printf(TEXT("<Title>Electric Bolt</>\n\n<Default>Launches %d bolts of electricity, spreading on impact and dealing: </><Damage>%d</><Default> electric damage with a chance to burn</>\n\n<Small>Level: </><Level>%d</>"), FMath::Min(Level, NumProjectiles), Damage, Level);
+	}
+}
+
+FString URMissileAbility::GetNextLevelDescription(int32 Level)
+{
+	const int32 Damage = DamageTypes[FRGameplayTags::Get().Damage_Elemental_Electric].GetValueAtLevel(Level);
+	return FString::Printf(TEXT("<Title>NEXT LEVEL: </>\n\n<Default>Launches %d bolts of electricity, spreading on impact and dealing: </><Damage>%d</><Default> electric damage with a chance to burn</>\n\n<Small>Level: </><Level>%d</>"), FMath::Min(Level, NumProjectiles), Damage, Level);
+}
+
 void URMissileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                       const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	const bool bIsServer = HasAuthority(&ActivationInfo);

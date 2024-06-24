@@ -48,6 +48,8 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpendAbilityPoint(const FGameplayTag& AbilityTag);
+
+	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
 	
 protected:
 
