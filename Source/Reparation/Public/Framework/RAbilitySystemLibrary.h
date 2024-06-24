@@ -9,6 +9,7 @@
 #include "UI/GAS/RHUD.h"
 #include "RAbilitySystemLibrary.generated.h"
 
+class UAbilityInfo;
 class URAbilityMenuController;
 class UAbilitySystemComponent;
 class URAttributeMenuController;
@@ -44,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
 	static URCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
+	UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
+	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
+	
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
 	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
 	

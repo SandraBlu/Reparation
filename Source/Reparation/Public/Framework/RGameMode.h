@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "RGameMode.generated.h"
 
+class UAbilityInfo;
 class URCharacterClassInfo;
 /**
  * 
@@ -19,5 +20,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
 	URCharacterClassInfo* CharacterClassInfo;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
+	UAbilityInfo* AbilityInfo;
 	
 };

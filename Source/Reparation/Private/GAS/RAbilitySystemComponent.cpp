@@ -4,7 +4,10 @@
 #include "GAS/RAbilitySystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "RGameplayTags.h"
+#include "Framework/RAbilitySystemLibrary.h"
 #include "GAS/Ability/RGameplayAbility.h"
+#include "GAS/Data/AbilityInfo.h"
 #include "Interfaces/RPlayerInterface.h"
 
 void URAbilitySystemComponent::AbilityActorInfoSet()
@@ -20,6 +23,7 @@ void URAbilitySystemComponent::AddGrantedAbilities(const TArray<TSubclassOf<UGam
 		if (const URGameplayAbility* RAbility = Cast<URGameplayAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.DynamicAbilityTags.AddTag(RAbility->StartupInputTag);
+			AbilitySpec.DynamicAbilityTags.AddTag(FRGameplayTags::Get().ability_status_equipped);
 			GiveAbility(AbilitySpec);	
 		}
 	}
@@ -105,6 +109,34 @@ FGameplayTag URAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilit
 	return FGameplayTag();
 }
 
+FGameplayTag URAbilitySystemComponent::GetStatusFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for (FGameplayTag StatusTag : AbilitySpec.DynamicAbilityTags)
+	{
+		if (StatusTag.MatchesTag(FGameplayTag::RequestGameplayTag("ability.status")))
+		{
+			return StatusTag;
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayAbilitySpec* URAbilitySystemComponent::GetSpecFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		for(FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(AbilityTag))
+			{
+				return &AbilitySpec;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
 	if (GetAvatarActor()->Implements<URPlayerInterface>())
@@ -112,6 +144,24 @@ void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag
 		if (IRPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
 		{
 			ServerUpgradeAttribute(AttributeTag);
+		}
+	}
+}
+
+void URAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
+{
+	UAbilityInfo* AbilityInfo = URAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	for (const FRAbilityInfo& Info : AbilityInfo->AbilityInfo)
+	{
+		if (!Info.AbilityTag.IsValid())continue;
+		if (Level < Info.LevelRequirement) continue;
+		if (GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
+			AbilitySpec.DynamicAbilityTags.AddTag(FRGameplayTags::Get().ability_status_available);
+			GiveAbility(AbilitySpec);
+			MarkAbilitySpecDirty(AbilitySpec);
+			ClientUpdateAbilityStatus(Info.AbilityTag, FRGameplayTags::Get().ability_status_available);
 		}
 	}
 }
@@ -137,6 +187,11 @@ void URAbilitySystemComponent::OnRep_ActivateAbilities()
 		bGrantedAbilitiesGiven = true;
 		AbilityGivenDelegate.Broadcast();
 	}
+}
+
+void URAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag)
+{
+	AbilityStatusChangeDelegate.Broadcast(AbilityTag, StatusTag);
 }
 
 void URAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,

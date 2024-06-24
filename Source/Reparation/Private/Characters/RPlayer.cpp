@@ -137,6 +137,10 @@ void ARPlayer::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
 	check(RPS);
 	RPS->AddToLevel(InPlayerLevel);
+	if (URAbilitySystemComponent* RASC = Cast<URAbilitySystemComponent>(GetAbilitySystemComponent()))
+	{
+		RASC->UpdateAbilityStatus(RPS->GetPlayerLevel());
+	}
 }
 
 void ARPlayer::AddToAttributePts_Implementation(int32 InAttributePoints)

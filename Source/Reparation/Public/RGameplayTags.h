@@ -103,7 +103,7 @@ public:
 	FGameplayTag ability_status_locked;
 	FGameplayTag ability_status_unlocked;
 	FGameplayTag ability_status_available;
-	FGameplayTag ability_status_active;
+	FGameplayTag ability_status_equipped;
 
 	FGameplayTag ability_type_dynamic;
 	FGameplayTag ability_type_passive;

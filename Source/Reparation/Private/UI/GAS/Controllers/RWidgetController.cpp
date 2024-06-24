@@ -34,6 +34,7 @@ void URWidgetController::BroadcastAbilityInfo()
 	{
 		FRAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(RASC->GetAbilityTagFromSpec(AbilitySpec));
 		Info.InputTag = RASC->GetInputTagFromSpec(AbilitySpec);
+		Info.StatusTag = RASC->GetStatusFromSpec(AbilitySpec);
 		AbilityInfoDelegate.Broadcast(Info);
 	});
 	GetRASC()->ForEachAbility(BroadcastDelegate);

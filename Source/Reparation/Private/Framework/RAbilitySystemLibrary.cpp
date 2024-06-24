@@ -120,13 +120,20 @@ void URAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObj
 
 URCharacterClassInfo* URAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
-	ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	const ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (RGameMode == nullptr) return nullptr;
 	return RGameMode->CharacterClassInfo;
 }
 
+UAbilityInfo* URAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContextObject)
+{
+	const ARGameMode* RGameMode = Cast<ARGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (RGameMode == nullptr) return nullptr;
+	return RGameMode->AbilityInfo;
+}
+
 int32 URAbilitySystemLibrary::GetXPRewardForEnemySlay(const UObject* WorldContextObject, ECharacterClass CharacterClass,
-	int32 CharacterLevel)
+                                                      int32 CharacterLevel)
 {
 	URCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	if (CharacterClassInfo == nullptr) return 0;

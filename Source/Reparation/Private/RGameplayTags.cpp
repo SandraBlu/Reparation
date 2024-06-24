@@ -92,7 +92,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ability_status_locked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.locked"), FString("Locked Status"));;
 	GameplayTags.ability_status_unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.unlocked"), FString("Unlocked Status"));;
 	GameplayTags.ability_status_available = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.available"), FString("Available Status"));;
-	GameplayTags.ability_status_active = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.active"), FString("Active Status"));;
+	GameplayTags.ability_status_equipped = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.equipped"), FString("Equipped Status"));;
 
 	GameplayTags.ability_type_dynamic = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.dynamic"), FString("Dynamic"));;
 	GameplayTags.ability_type_passive = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.passive"), FString("Passive"));;
