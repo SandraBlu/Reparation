@@ -3,9 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "RGameplayTags.h"
 #include "UI/GAS/Controllers/RWidgetController.h"
 #include "RAbilityMenuController.generated.h"
 
+struct FSelectedAbility
+{
+	FGameplayTag Ability = FGameplayTag();
+	FGameplayTag Status = FGameplayTag();
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAbilitySelectedSignature, bool, bEnableSpendPointBtn, bool, bEnableEquipBtn);
 /**
  * 
  */
@@ -18,5 +27,25 @@ public:
 	
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies()override;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStatChangeSignature AbilityPointsChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FAbilitySelectedSignature AbilitySelectedDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void AbilitySelected(const FGameplayTag& AbilityTag);
+
+	UFUNCTION(BlueprintCallable)
+	void SpendPointButtonPressed();
+
+private:
+
+	static void ShouldEnableButtons(const FGameplayTag& AbilityStatus,
+		int32 AbilityPoints, bool& bEnableSpendPointButton, bool& bEnableEquipButton);
+
+	FSelectedAbility SelectedAbility = { FRGameplayTags::Get().ability_none, FRGameplayTags::Get().ability_status_locked};
+	int32 CurrentAbilityPoints = 0;
 	
 };

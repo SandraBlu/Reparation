@@ -161,8 +161,33 @@ void URAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 			AbilitySpec.DynamicAbilityTags.AddTag(FRGameplayTags::Get().ability_status_available);
 			GiveAbility(AbilitySpec);
 			MarkAbilitySpecDirty(AbilitySpec);
-			ClientUpdateAbilityStatus(Info.AbilityTag, FRGameplayTags::Get().ability_status_available);
+			ClientUpdateAbilityStatus(Info.AbilityTag, FRGameplayTags::Get().ability_status_available, 1);
 		}
+	}
+}
+
+void URAbilitySystemComponent::ServerSpendAbilityPoint_Implementation(const FGameplayTag& AbilityTag)
+{
+	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (GetAvatarActor()->Implements<URPlayerInterface>())
+		{
+			IRPlayerInterface::Execute_AddToAbilityPts(GetAvatarActor(), -1);
+		}
+		const FRGameplayTags GameplayTags = FRGameplayTags::Get();
+		FGameplayTag Status = GetStatusFromSpec(*AbilitySpec);
+		if (Status.MatchesTagExact(GameplayTags.ability_status_available))
+		{
+			AbilitySpec->DynamicAbilityTags.RemoveTag(GameplayTags.ability_status_available);
+			AbilitySpec->DynamicAbilityTags.AddTag(GameplayTags.ability_status_unlocked);
+			Status = GameplayTags.ability_status_unlocked;
+		}
+		else if (Status.MatchesTagExact(GameplayTags.ability_status_equipped) || Status.MatchesTagExact(GameplayTags.ability_status_unlocked))
+		{
+			AbilitySpec->Level += 1;
+		}
+		ClientUpdateAbilityStatus(AbilityTag, Status, AbilitySpec->Level);
+		MarkAbilitySpecDirty(*AbilitySpec);
 	}
 }
 
@@ -189,9 +214,9 @@ void URAbilitySystemComponent::OnRep_ActivateAbilities()
 	}
 }
 
-void URAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag)
+void URAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel)
 {
-	AbilityStatusChangeDelegate.Broadcast(AbilityTag, StatusTag);
+	AbilityStatusChangeDelegate.Broadcast(AbilityTag, StatusTag, AbilityLevel);
 }
 
 void URAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
