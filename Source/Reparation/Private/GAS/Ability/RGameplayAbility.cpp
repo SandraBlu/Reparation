@@ -3,10 +3,12 @@
 
 #include "GAS/Ability/RGameplayAbility.h"
 
+#include "GAS/RAttributeSet.h"
+
 FString URGameplayAbility::GetDescription(int32 Level)
 {
 	return FString::Printf(TEXT("<Default>%s, </><Level>%d</>"),
-	L"Default Ability Name - LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum", Level);
+	L"Default Ability Name - LoremIpsum ", Level);
 }
 
 FString URGameplayAbility::GetNextLevelDescription(int32 Level)
@@ -17,4 +19,31 @@ FString URGameplayAbility::GetNextLevelDescription(int32 Level)
 FString URGameplayAbility::GetLockedDescription(int32 Level)
 {
 	return FString::Printf(TEXT("<Default>Ability Locked Until Level: %d</>"), Level);
+}
+
+float URGameplayAbility::GetEnergyCost(float InLevel) const
+{
+	float EnergyCost = 0.f;
+	if (const UGameplayEffect* CostEffect = GetCostGameplayEffect())
+	{
+		for (FGameplayModifierInfo Mod : CostEffect->Modifiers)
+		{
+			if (Mod.Attribute == URAttributeSet::GetEnergyAttribute())
+			{
+				Mod.ModifierMagnitude.GetStaticMagnitudeIfPossible(InLevel, EnergyCost);
+				break;
+			}
+		}
+	}
+	return EnergyCost;
+}
+
+float URGameplayAbility::GetCooldown(float InLevel) const
+{
+	float Cooldown = 0.f;
+	if (const UGameplayEffect* CooldownEffect = GetCooldownGameplayEffect())
+	{
+		CooldownEffect->DurationMagnitude.GetStaticMagnitudeIfPossible(InLevel, Cooldown);
+	}
+	return Cooldown;
 }
