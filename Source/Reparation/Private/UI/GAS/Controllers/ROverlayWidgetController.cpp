@@ -2,6 +2,8 @@
 
 
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
+
+#include "RGameplayTags.h"
 #include "Framework/RPlayerState.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
@@ -34,6 +36,7 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 	//Ability Change
 	if (GetRASC())
 	{
+		GetRASC()->AbilityEquippedDelegate.AddUObject(this, &UROverlayWidgetController::OnAbilityEquipped);
 		if (GetRASC()->bGrantedAbilitiesGiven)
 		{
 			BroadcastAbilityInfo();
@@ -82,4 +85,21 @@ void UROverlayWidgetController::OnXPChange(int32 NewXP)
 
 		OnXPPercentChangeDelegate.Broadcast(XPBarPercent);
 	}
+}
+
+void UROverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PrevSlot) const
+{
+	//Clear Out Old Slot
+	const FRGameplayTags Tag = FRGameplayTags::Get();
+	FRAbilityInfo PrevSlotInfo;
+	PrevSlotInfo.StatusTag = Tag.ability_status_unlocked;
+	PrevSlotInfo.InputTag = PrevSlot;
+	PrevSlotInfo.AbilityTag =Tag.ability_none;
+	AbilityInfoDelegate.Broadcast(PrevSlotInfo);
+	
+	//Fill new slot
+	FRAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+	Info.StatusTag = Status;
+	Info.InputTag = Slot;
+	AbilityInfoDelegate.Broadcast(Info);
 }
