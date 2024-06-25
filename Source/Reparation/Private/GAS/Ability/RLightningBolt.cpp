@@ -7,7 +7,8 @@
 
 FString URLightningBolt::GetDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FRGameplayTags::Get().Damage_Elemental_Electric);
+	
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float EnergyCost = FMath::Abs(GetEnergyCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	if (Level == 1)
@@ -26,7 +27,7 @@ FString URLightningBolt::GetDescription(int32 Level)
 		//Debuff
 		" <Default> Chance to burn</>\n\n"),
 		//Values
-		Level, EnergyCost, Cooldown, Damage);
+		Level, EnergyCost, Cooldown, ScaledDamage);
 	}
 	else
 	{
@@ -44,13 +45,13 @@ FString URLightningBolt::GetDescription(int32 Level)
 		//Debuff
 		" <Default> Chance to burn</>\n\n"),
 		//Values
-		Level, EnergyCost, Cooldown, FMath::Min(Level, NumProjectiles), Damage);
+		Level, EnergyCost, Cooldown, FMath::Min(Level, NumProjectiles), ScaledDamage);
 	}
 }
 
 FString URLightningBolt::GetNextLevelDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FRGameplayTags::Get().Damage_Elemental_Electric);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float EnergyCost = FMath::Abs(GetEnergyCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	return FString::Printf(TEXT(
@@ -67,5 +68,5 @@ FString URLightningBolt::GetNextLevelDescription(int32 Level)
 		//Debuff
 		" <Default> Chance to burn</>\n\n"),
 		//Values
-		Level, EnergyCost, Cooldown, FMath::Min(Level, NumProjectiles), Damage);
+		Level, EnergyCost, Cooldown, FMath::Min(Level, NumProjectiles), ScaledDamage);
 }
