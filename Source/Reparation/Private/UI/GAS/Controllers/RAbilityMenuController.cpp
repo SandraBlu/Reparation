@@ -90,6 +90,21 @@ void URAbilityMenuController::SpendPointButtonPressed()
 	}
 }
 
+void URAbilityMenuController::AbilityDeselect()
+{
+	SelectedAbility.Ability = FRGameplayTags::Get().ability_none;
+	SelectedAbility.Status = FRGameplayTags::Get().ability_status_locked;
+	AbilitySelectedDelegate.Broadcast(false, false, FString(), FString());
+}
+
+void URAbilityMenuController::EquipButtonPressed()
+{
+	const FGameplayTag AbilityType = AbilityInfo->FindAbilityInfoForTag(SelectedAbility.Ability).AbilityType;
+
+	WaitEquipDelegate.Broadcast(AbilityType);
+	bWaitingForEquipSelection =true;
+}
+
 void URAbilityMenuController::ShouldEnableButtons(const FGameplayTag& AbilityStatus, int32 AbilityPoints,
                                                   bool& bEnableSpendPointButton, bool& bEnableEquipButton)
 {

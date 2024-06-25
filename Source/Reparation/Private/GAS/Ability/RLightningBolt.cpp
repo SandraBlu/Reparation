@@ -55,7 +55,7 @@ FString URLightningBolt::GetNextLevelDescription(int32 Level)
 	const float Cooldown = GetCooldown(Level);
 	return FString::Printf(TEXT(
 		//Title
-		"<Title>Electric Bolt</>\n\n"
+		"<Title>Next Level:</>\n\n"
 		//Details: Level, EnergyCost, Cooldown
 		"<Small>Level: </><Level>%d</>\n\n"
 		"<Small>EnergyCost: </><EnergyCost>%.1f</>\n"

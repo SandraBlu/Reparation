@@ -15,6 +15,7 @@ struct FSelectedAbility
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FAbilitySelectedSignature, bool, bEnableSpendPointBtn, bool, bEnableEquipBtn, FString, DescriptionString, FString, NextLevelDescriptionString);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitEquipSelectionSignature,  const FGameplayTag&, AbilityType);
 /**
  * 
  */
@@ -34,11 +35,20 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FAbilitySelectedSignature AbilitySelectedDelegate;
 
+	UPROPERTY(BlueprintAssignable)
+	FWaitEquipSelectionSignature WaitEquipDelegate;
+
 	UFUNCTION(BlueprintCallable)
 	void AbilitySelected(const FGameplayTag& AbilityTag);
 
 	UFUNCTION(BlueprintCallable)
 	void SpendPointButtonPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void AbilityDeselect();
+
+	UFUNCTION(BlueprintCallable)
+	void EquipButtonPressed();
 
 private:
 
@@ -47,5 +57,7 @@ private:
 
 	FSelectedAbility SelectedAbility = { FRGameplayTags::Get().ability_none, FRGameplayTags::Get().ability_status_locked};
 	int32 CurrentAbilityPoints = 0;
+
+	bool bWaitingForEquipSelection = false;
 	
 };
