@@ -11,17 +11,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9c72c529-1c1b-426e-b26d-177f8e645926" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Katana.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Katana.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Staff.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_Staff.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/BPWeapons/BP_WeaponBase.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/Gear/Pants.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Inventory/Weapons/Staff.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Inventory/Weapons/Staff.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Phelan/Meshes/NakedPhelan.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Phelan/Meshes/NakedPhelan.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Phelan/UE5Phelan/PhelanBlue_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Phelan/UE5Phelan/PhelanBlue_Skeleton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/BP_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/BP_EnemyBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Attributes/Player/GE_ResistanceAttributes.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Attributes/Player/GE_ResistanceAttributes.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Reparation.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Reparation.uproject" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Weapon/RWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Weapon/RWeapon.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Reparation.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Reparation.Build.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/ROverlapMissile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/ROverlapMissile.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Framework/RAbilitySystemLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Framework/RAbilitySystemLibrary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RDamageAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RDamageAbility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RLightningBolt.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RLightningBolt.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RMissileAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RMissileAbility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Calcs/GEC_Damage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Calcs/GEC_Damage.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAttributeSet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAttributeSet.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/RAbillityTypes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/RAbillityTypes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/RGameplayTags.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/RGameplayTags.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/ROverlapMissile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/ROverlapMissile.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Framework/RAbilitySystemLibrary.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Framework/RAbilitySystemLibrary.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RDamageAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RDamageAbility.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Calcs/GEC_Damage.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Calcs/GEC_Damage.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/RAttributeSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/RAttributeSet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/RAbilityTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/RAbilityTypes.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/RGameplayTags.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/RGameplayTags.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,6 +228,7 @@
       <updated>1715907365852</updated>
       <workItem from="1715907367578" duration="36582000" />
       <workItem from="1716055997118" duration="821000" />
+      <workItem from="1719368951246" duration="76000" />
     </task>
     <servers />
   </component>

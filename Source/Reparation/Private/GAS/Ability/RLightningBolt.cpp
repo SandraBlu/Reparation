@@ -3,8 +3,6 @@
 
 #include "GAS/Ability/RLightningBolt.h"
 
-#include "RGameplayTags.h"
-
 FString URLightningBolt::GetDescription(int32 Level)
 {
 	

@@ -45,9 +45,29 @@ bool FRGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool&
 		{
 			RepBits |= 1 << 9;
 		}
+		if (bIsSuccessfulDebuff)
+		{
+			RepBits |= 1 << 10;
+		}
+		if (DebuffDamage > 0)
+		{
+			RepBits |= 1 << 11;
+		}
+		if (DebuffDuration > 0)
+		{
+			RepBits |= 1 << 12;
+		}
+		if (DebuffFrequency > 0)
+		{
+			RepBits |= 1 << 13;
+		}
+		if (DamageType.IsValid())
+		{
+			RepBits |= 1 << 14;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 9);
+	Ar.SerializeBits(&RepBits, 14);
 
 	if (RepBits & (1 << 0))
 	{
@@ -101,7 +121,33 @@ bool FRGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool&
 	{
 		Ar << bIsDodgedHit;
 	}
-	
+	if (RepBits & (1 << 10))
+	{
+		Ar << bIsSuccessfulDebuff;
+	}
+	if (RepBits & (1 << 11))
+	{
+		Ar << DebuffDamage;
+	}
+	if (RepBits & (1 << 12))
+	{
+		Ar << DebuffDuration;
+	}
+	if (RepBits & (1 << 13))
+	{
+		Ar << DebuffFrequency;
+	}
+	if (RepBits & (1 << 14))
+	{
+		if (Ar.IsLoading())
+		{
+			if (!DamageType.IsValid())
+			{
+				DamageType = TSharedPtr<FGameplayTag>(new FGameplayTag());
+			}
+		}
+		DamageType->NetSerialize(Ar, Map, bOutSuccess);
+	}
 	if (Ar.IsLoading())
 	{
 		AddInstigator(Instigator.Get(), EffectCauser.Get()); // Just to initialize InstigatorAbilitySystemComponent

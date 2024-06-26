@@ -73,10 +73,9 @@ public:
 	FGameplayTag Attributes_Resistance_Electric;
 	FGameplayTag Attributes_Resistance_Fire;
 	FGameplayTag Attributes_Resistance_Ice;
-
+	
 	//De-buff
 	FGameplayTag Debuff_KnockOut;
-	FGameplayTag Debuff_Paralyze;
 	FGameplayTag Debuff_Dark;
 	FGameplayTag Debuff_Stun;
 	FGameplayTag Debuff_Burn;

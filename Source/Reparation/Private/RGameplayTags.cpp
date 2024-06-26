@@ -63,8 +63,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attributes_Resistance_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("attributes.resistance.ice"), FString("Resistance to Cold damage"));
 
 	//De-buffs
-	GameplayTags.Debuff_KnockOut = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.knockout"), FString("De-buff to Physical damage"));
-	GameplayTags.Debuff_Paralyze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.paralyze"), FString("De-buff to Poison"));
+	GameplayTags.Debuff_KnockOut = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.knockout"), FString("De-buff to Physical or Poison damage"));
 	GameplayTags.Debuff_Dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.dark"), FString("De-buff to Dark Damage"));
 	GameplayTags.Debuff_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.stun"), FString("De-buff to Electric damage"));
 	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.burn"), FString("De-buff to fire damage"));
@@ -132,7 +131,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	 * Map of Damage Types to De-buffs
 	 */
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Physical, GameplayTags.Debuff_KnockOut);
-	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Poison, GameplayTags.Debuff_Paralyze);
+	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Poison, GameplayTags.Debuff_KnockOut);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Dark, GameplayTags.Debuff_Dark);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Electric, GameplayTags.Debuff_Stun);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Fire, GameplayTags.Debuff_Burn);

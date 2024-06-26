@@ -58,20 +58,6 @@ void URMissileAbility::SpawnProjectile(ACharacter* InstigatorCharacter)
 	AROverlapMissile* Missile = GetWorld()->SpawnActorDeferred<AROverlapMissile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
 	ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
-	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
-	EffectContextHandle.SetAbility(this);
-	EffectContextHandle.AddSourceObject(Missile);
-	FHitResult HitResult;
-	HitResult.Location = TraceEnd;
-	EffectContextHandle.AddHitResult(HitResult);
-	
-	const FGameplayEffectSpecHandle SpecHandle  = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
-	FRGameplayTags GameplayTags = FRGameplayTags::Get();
-	
-	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ScaledDamage);
-	
-	Missile->DamageEffectSpecHandle = SpecHandle;
+	Missile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 	Missile->FinishSpawning(SpawnTransform);
 }

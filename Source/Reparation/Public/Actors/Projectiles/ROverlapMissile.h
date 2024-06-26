@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayEffectTypes.h"
+#include "RAbilityTypes.h"
 #include "Actors/Projectiles/RProjectile.h"
 #include "ROverlapMissile.generated.h"
 
@@ -20,7 +20,7 @@ public:
 	AROverlapMissile();
 	
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
-	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+	FDamageEffectParams DamageEffectParams;
 
 protected:
 	
@@ -28,7 +28,8 @@ protected:
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	virtual void PostInitializeComponents() override;
-	
+	void OnHit();
+
 	bool bHit = false;
 	virtual void Destroyed() override;
 	

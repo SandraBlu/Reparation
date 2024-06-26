@@ -75,8 +75,12 @@ public:
 	
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
+	void HandleIncomingDamage(const FEffectProperties& Props);
+	void HandleIncomingXP(const FEffectProperties& Props);
+	void Debuff(const FEffectProperties& Props);
 	void ShowFloatingText(const FEffectProperties& Props, float DamageAmount, bool bBlockedHit, bool bDodgedHit, bool bCriticalHit) const;
 	void SendXPEvent(const FEffectProperties& Props);
+	
 	bool bRestoreFullHealth = false;
 	bool bRestoreFullStamina = false;
 	bool bRestoreFullEnergy = false;
