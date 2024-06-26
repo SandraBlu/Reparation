@@ -10,6 +10,7 @@
 #include "Framework/RAbilitySystemLibrary.h"
 #include "Framework/RPlayerController.h"
 #include "GameFramework/Character.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "Interfaces/RCombatInterface.h"
 #include "Interfaces/RPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
@@ -219,7 +220,7 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		{
 			if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(Props.TargetAvatarActor))
 			{
-				CombatInterface->Die();
+				CombatInterface->Die(URAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
 			}
 			SendXPEvent(Props);
 		}
@@ -259,7 +260,10 @@ void URAttributeSet::Debuff(const FEffectProperties& Props)
 	Effect->Period = DebuffFrequency;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
 
-	Effect->InheritableOwnedTagsContainer.AddTag(Tag.DamageTypeToDebuff[DamageType]);
+	UTargetTagsGameplayEffectComponent& AssetTagsComponent = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
+	FInheritedTagContainer InheritedTagContainer;
+	InheritedTagContainer.Added.AddTag(Tag.DamageTypeToDebuff[DamageType]);
+	AssetTagsComponent.SetAndApplyTargetTagChanges(InheritedTagContainer);
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
 	Effect->StackLimitCount = 1;
 

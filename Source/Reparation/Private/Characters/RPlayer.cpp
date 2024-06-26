@@ -11,6 +11,7 @@
 #include "Actors/RWeapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/REquipmentComponent.h"
 #include "Framework/RPlayerController.h"
 #include "Framework/RPlayerState.h"
@@ -19,6 +20,7 @@
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/Data/LevelUpInfo.h"
 #include "Input/RInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/GAS/RHUD.h"
 
 ARPlayer::ARPlayer()
@@ -74,14 +76,30 @@ FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& Com
 	return FVector();
 }
 
-void ARPlayer::Die()
+void ARPlayer::Die(const FVector& DeathImpulse)
+{
+	MulticastHandleDeath(DeathImpulse);
+}
+
+void ARPlayer::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
 	if (!Gear->EquippedWeapon) return;
 	Gear->EquippedWeapon->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	Gear->EquippedWeapon->GetWeaponMesh()->SetSimulatePhysics(true);
 	Gear->EquippedWeapon->GetWeaponMesh()->SetEnableGravity(true);
 	Gear->EquippedWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	Super::Die();
+	Gear->EquippedWeapon->GetWeaponMesh()->AddImpulse(DeathImpulse);
+
+	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	bDead = true;
+	OnDeath.Broadcast(this);
 }
 
 void ARPlayer::AddToXP_Implementation(int32 InXP)
@@ -202,6 +220,8 @@ void ARPlayer::InitAbilityActorInfo()
 	Cast<URAbilitySystemComponent>(RPS->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = RPS->GetAbilitySystemComponent();
 	AttributeSet = RPS->GetAttributeSet();
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
+	
 	if (ARPlayerController* RPC = Cast<ARPlayerController>(GetController()))
 	{
 		if (ARHUD* RHUD = Cast<ARHUD>(RPC->GetHUD()))

@@ -3,14 +3,18 @@
 
 #include "Characters/RCharacterBase.h"
 #include "AbilitySystemComponent.h"
-#include "Components/CapsuleComponent.h"
+#include "RGameplayTags.h"
 #include "GAS/RAbilitySystemComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "GAS/Debuff/DebuffNiagaraComponent.h"
+
 
 // Sets default values
 ARCharacterBase::ARCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	EffectDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("EffectDebuffComponent");
+	EffectDebuffComponent->SetupAttachment(GetRootComponent());
+	EffectDebuffComponent->DebuffTag = FRGameplayTags::Get().Debuff_Stun;
 }
 
 UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
@@ -21,11 +25,6 @@ UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
 UAnimMontage* ARCharacterBase::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;
-}
-
-void ARCharacterBase::Die()
-{
-	MulticastHandleDeath();
 }
 
 bool ARCharacterBase::IsDead_Implementation() const
@@ -53,20 +52,20 @@ ECharacterClass ARCharacterBase::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
-
-void ARCharacterBase::MulticastHandleDeath_Implementation()
+FOnASCRegistered ARCharacterBase::GetOnASCRegisteredDelegate()
 {
-	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetEnableGravity(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
-	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-	
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	bDead = true;
+	return OnASCRegistered;
 }
 
-// Called when the game starts or when spawned
+FOnDeath ARCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeath;
+}
+
+void ARCharacterBase::Die(const FVector& DeathImpulse)
+{
+}
+
 void ARCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

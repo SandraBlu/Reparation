@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
@@ -116,17 +117,30 @@ FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& Comb
 	return FVector();
 }
 
-void AREnemy::Die()
+void AREnemy::Die(const FVector& DeathImpulse)
 {
 	SetLifeSpan(LifeSpan);
-	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath(DeathImpulse);
+	if (AIC) AIC->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
+	DissolveMesh();
+}
+
+void AREnemy::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
+{
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
-	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	if (AIC) AIC->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
-	Super::Die();
-
-	DissolveMesh();
+	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	Weapon->AddImpulse(DeathImpulse);
+	
+	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	bDead = true;
+	OnDeath.Broadcast(this);
 }
 
 void AREnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
@@ -139,15 +153,6 @@ AActor* AREnemy::GetCombatTarget_Implementation() const
 	return CombatTarget;
 }
 
-void AREnemy::MulticastHandleDeath()
-{
-	Super::MulticastHandleDeath();
-	Weapon->SetSimulatePhysics(true);
-	Weapon->SetEnableGravity(true);
-	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
-	
-}
-
 void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
@@ -158,8 +163,6 @@ void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	}
 }
 
-
-
 void AREnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
@@ -168,6 +171,7 @@ void AREnemy::InitAbilityActorInfo()
 	{
 		InitializeAttributes();
 	}
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
 }
 
 void AREnemy::InitializeAttributes() const

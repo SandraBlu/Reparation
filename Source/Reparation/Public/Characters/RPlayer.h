@@ -34,7 +34,7 @@ public:
 	//Interfaces
 	virtual int32 GetPlayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual void LevelUp_Implementation() override;
 	virtual int32 GetXP_Implementation() const override;
@@ -52,6 +52,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UNiagaraComponent* LevelUpFX;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 
 protected:

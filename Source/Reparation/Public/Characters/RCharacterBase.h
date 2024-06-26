@@ -9,7 +9,7 @@
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "RCharacterBase.generated.h"
 
-
+class UDebuffNiagaraComponent;
 class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
@@ -30,16 +30,18 @@ public:
 
 	//Combat Interface
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-	virtual void Die() override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
+	virtual FOnASCRegistered GetOnASCRegisteredDelegate() override;
+	virtual FOnDeath GetOnDeathDelegate() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	//Combat Interface
 
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
+	FOnASCRegistered OnASCRegistered;
+	FOnDeath OnDeath;
 	
 protected:
 	
@@ -87,6 +89,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	USoundBase* DeathCry;
+
+	UPROPERTY(VisibleAnywhere)
+	UDebuffNiagaraComponent* EffectDebuffComponent;
 	
 private:
 	

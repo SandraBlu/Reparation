@@ -8,6 +8,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
+#include "GAS/Debuff/DebuffNiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 AROverlapMissile::AROverlapMissile()
@@ -46,6 +47,8 @@ void AROverlapMissile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
+			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
+			DamageEffectParams.DeathImpulse = DeathImpulse;
 			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
 			URAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}

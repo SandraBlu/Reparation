@@ -152,6 +152,7 @@ FGameplayEffectContextHandle URAbilitySystemLibrary::ApplyDamageEffect(const FDa
 
 	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
+	SetDeathImpulse(EffectContextHandle, DamageEffectParams.DeathImpulse);
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
 
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
@@ -239,6 +240,16 @@ FGameplayTag URAbilitySystemLibrary::GetDamageType(const FGameplayEffectContextH
 	return FGameplayTag();
 }
 
+FVector URAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	
+	if (const FRGameplayEffectContext* REffectContext = static_cast<const FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return REffectContext->GetDeathImpulse();
+	}
+	return FVector::ZeroVector;
+}
+
 void URAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit)
 {
 	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
@@ -295,8 +306,7 @@ void URAbilitySystemLibrary::SetDebuffFrequency(FGameplayEffectContextHandle& Ef
 	}
 }
 
-void URAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& EffectContextHandle,
-	const FGameplayTag& InDamageType)
+void URAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InDamageType)
 {
 	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
@@ -305,9 +315,16 @@ void URAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& EffectC
 	}
 }
 
-void URAbilitySystemLibrary::GetTargetsWithinRadius(const UObject* WorldContextObject,
-                                                    TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
-                                                    const FVector& SphereOrigin)
+void URAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& EffectContextHandle,	const FVector& InImpulse)
+{
+	if (FRGameplayEffectContext* REffectContext = static_cast<FRGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		REffectContext->SetDeathImpulse(InImpulse);
+	}
+}
+
+void URAbilitySystemLibrary::GetTargetsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors,
+	const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin)
 {
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActors(ActorsToIgnore);
