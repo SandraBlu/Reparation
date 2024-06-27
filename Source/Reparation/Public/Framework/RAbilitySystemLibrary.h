@@ -106,4 +106,7 @@ public:
 	static TArray<FRotator> EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators);
 	UFUNCTION(BlueprintPure, Category = "RBFL|GAS")
 	static TArray<FVector> EvenlyRotatedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors);
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "RBFL|ABP")
+	void SetInShockLoop(bool bInShockLoop);
 };

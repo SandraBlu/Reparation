@@ -234,7 +234,7 @@ void ARPlayer::InitAbilityActorInfo()
 
 void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+	if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
@@ -245,8 +245,11 @@ void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (GetASC() == nullptr) return;
-	GetASC()->AbilityInputTagHeld(InputTag);
+	//if (Gear->EquippedWeapon)
+	//{
+		if (GetASC() == nullptr) return;
+        	GetASC()->AbilityInputTagHeld(InputTag);
+	//}
 }
 
 URAbilitySystemComponent* ARPlayer::GetASC()
