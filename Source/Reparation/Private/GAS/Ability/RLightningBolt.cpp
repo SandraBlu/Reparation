@@ -3,6 +3,12 @@
 
 #include "GAS/Ability/RLightningBolt.h"
 
+#include "RGameplayTags.h"
+#include "Actors/Projectiles/ROverlapMissile.h"
+#include "Framework/RAbilitySystemLibrary.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+
 FString URLightningBolt::GetDescription(int32 Level)
 {
 	
@@ -67,4 +73,58 @@ FString URLightningBolt::GetNextLevelDescription(int32 Level)
 		" <Default> Chance to burn</>\n\n"),
 		//Values
 		Level, EnergyCost, Cooldown, FMath::Min(Level, NumProjectiles), ScaledDamage);
+}
+
+void URLightningBolt::SpawnProjectiles(ACharacter* InstigatorCharacter, bool bOverridePitch, float PitchOverride, AActor* HomingTarget)
+{
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!bIsServer) return;
+	
+	const FVector SocketLocation = IRCombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FRGameplayTags::Get().combatSocket_weapon);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(InstigatorCharacter);
+	FCollisionShape Shape;
+	Shape.SetSphere(SweepRadius);
+	
+	FVector TraceDirection = InstigatorCharacter->GetControlRotation().Vector();
+	FVector TraceStart = InstigatorCharacter->GetPawnViewLocation() + (TraceDirection * SweepRadius);
+	FVector TraceEnd = TraceStart + (TraceDirection * SweepDistanceFallback);
+	FHitResult Hit;
+	if (GetWorld()->SweepSingleByChannel(Hit, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, Shape, Params))
+	{
+		TraceEnd = Hit.Location;
+	}
+	FRotator Rotation = (TraceEnd - SocketLocation).Rotation();
+	if (bOverridePitch) Rotation.Pitch = PitchOverride;
+	
+	const FVector Forward = Rotation.Vector();
+	const int32 EffectiveNumMissiles = FMath::Min(NumProjectiles, GetAbilityLevel());
+	
+	TArray<FRotator> Rotations = URAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, SweepRadius, EffectiveNumMissiles);
+
+	for (const FRotator& Rot : Rotations)
+	{
+		FTransform SpawnTransform = FTransform(Rot, SocketLocation);
+		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rot.Quaternion());
+		
+		AROverlapMissile* Missile = GetWorld()->SpawnActorDeferred<AROverlapMissile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
+		Missile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+		if (HomingTarget && HomingTarget->Implements<URCombatInterface>())
+		{
+			Missile->MovementComp->HomingTargetComponent = HomingTarget->GetRootComponent();
+		}
+		else
+		{
+			Missile->HomingTarget = NewObject<USceneComponent>(USceneComponent::StaticClass());
+			Missile->HomingTarget->SetWorldLocation(TraceEnd);
+			Missile->MovementComp->HomingTargetComponent = Missile->HomingTarget;
+		}
+		Missile->MovementComp->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
+		Missile->MovementComp->bIsHomingProjectile = bLaunchHomingProjectiles;
+		Missile->FinishSpawning(SpawnTransform);
+	}
+	
 }

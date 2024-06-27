@@ -11,26 +11,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9c72c529-1c1b-426e-b26d-177f8e645926" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Content/AI/BP_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/BP_EnemyBase.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/Attributes/Player/GE_ResistanceAttributes.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Attributes/Player/GE_ResistanceAttributes.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_Phelan.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_Phelan.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/Projectiles/BP_ElectricMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Actors/Projectiles/BP_ElectricMissile.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Effects/Projectile/GE_MissileCost.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Effects/Projectile/GE_MissileCost.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/GA_HitReact.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/GA_HitReact.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_DarkDagger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_DarkDagger.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCMelee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCMelee.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCRangedAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCRangedAttack.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Reparation.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Reparation.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_Melee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_Melee.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/ROverlapMissile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/ROverlapMissile.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Framework/RAbilitySystemLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Framework/RAbilitySystemLibrary.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RDamageAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RDamageAbility.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RLightningBolt.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RLightningBolt.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RMissileAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RMissileAbility.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Calcs/GEC_Damage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Calcs/GEC_Damage.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Debuff/DebuffNiagaraComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Debuff/DebuffNiagaraComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAbilitySystemComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAbilitySystemComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAttributeSet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAttributeSet.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/RAbillityTypes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/RAbillityTypes.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/RGameplayTags.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/RGameplayTags.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/ROverlapMissile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/ROverlapMissile.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/RProjectile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/RProjectile.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Characters/RPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Characters/RPlayer.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Framework/RAbilitySystemLibrary.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Framework/RAbilitySystemLibrary.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RDamageAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RDamageAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Calcs/GEC_Damage.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Calcs/GEC_Damage.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/RAttributeSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/RAttributeSet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RLightningBolt.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RLightningBolt.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RMissileAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RMissileAbility.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/RAbilityTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/RAbilityTypes.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/RGameplayTags.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/RGameplayTags.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -229,6 +236,7 @@
       <workItem from="1715907367578" duration="36582000" />
       <workItem from="1716055997118" duration="821000" />
       <workItem from="1719368951246" duration="76000" />
+      <workItem from="1719502777263" duration="55000" />
     </task>
     <servers />
   </component>

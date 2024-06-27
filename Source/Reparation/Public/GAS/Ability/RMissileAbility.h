@@ -31,14 +31,14 @@ protected:
 	/* Fallback distance when sweep finds no collision under crosshair. Adjusts final projectile direction */
 	UPROPERTY(EditAnywhere, Category="Targeting")
 	float SweepDistanceFallback;
-
+	
+	UPROPERTY(EditDefaultsOnly)
+	int32 NumProjectiles = 5;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AROverlapMissile> ProjectileClass;
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	void SpawnProjectile(ACharacter* InstigatorCharacter);
-
-	UPROPERTY(EditDefaultsOnly)
-	int32 NumProjectiles = 3;
 	
 };

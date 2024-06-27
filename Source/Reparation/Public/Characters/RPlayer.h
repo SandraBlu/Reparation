@@ -56,7 +56,6 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
-
 protected:
 	
 	virtual void BeginPlay() override;
@@ -69,7 +68,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* PlayerMappingContext;
-
+	
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	AActor* CombatTarget;
+	
 private:
 	virtual void InitAbilityActorInfo() override;
 

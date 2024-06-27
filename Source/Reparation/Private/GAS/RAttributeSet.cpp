@@ -229,6 +229,11 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FRGameplayTags::Get().ability_HitReact);
 			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			const FVector& KnockbackForce = URAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
+			if (!KnockbackForce.IsNearlyZero(1.f))
+			{
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
+			}
 		}
 		const bool bBlock = URAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 		const bool bDodge = URAbilitySystemLibrary::IsDodgedHit(Props.EffectContextHandle);

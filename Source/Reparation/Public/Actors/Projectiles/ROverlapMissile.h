@@ -22,6 +22,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FDamageEffectParams DamageEffectParams;
 
+	UPROPERTY()
+	USceneComponent* HomingTarget;
+	
 protected:
 	
 	UFUNCTION()
