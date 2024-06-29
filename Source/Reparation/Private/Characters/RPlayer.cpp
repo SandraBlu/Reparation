@@ -190,6 +190,15 @@ int32 ARPlayer::GetAbilityPoints_Implementation() const
 	return RPS->GetAbilityPts();
 }
 
+ARWeapon* ARPlayer::GetCurrentWeapon_Implementation()
+{
+	if (Gear->EquippedWeapon)
+	{
+		return Gear->EquippedWeapon;
+	}
+	return nullptr;
+}
+
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())
@@ -245,11 +254,9 @@ void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	//if (Gear->EquippedWeapon)
-	//{
-		if (GetASC() == nullptr) return;
-        	GetASC()->AbilityInputTagHeld(InputTag);
-	//}
+	if (Gear->EquippedWeapon == nullptr) return;
+	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
 URAbilitySystemComponent* ARPlayer::GetASC()

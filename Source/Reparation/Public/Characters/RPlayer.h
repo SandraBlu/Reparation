@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "Characters/RCharacterBase.h"
 #include "Interfaces/RPlayerInterface.h"
+#include "Actors/RWeapon.h"
 #include "RPlayer.generated.h"
 
 class UNiagaraComponent;
@@ -13,6 +14,7 @@ class URInputConfig;
 class UInputMappingContext;
 class UREquipmentComponent;
 class URAbilitySystemComponent;
+
 /**
  * 
  */
@@ -46,10 +48,11 @@ public:
 	virtual void AddToAbilityPts_Implementation(int32 InAbilityPoints) override;
 	virtual int32 GetAttributePoints_Implementation() const override;
 	virtual int32 GetAbilityPoints_Implementation() const override;
+	virtual ARWeapon* GetCurrentWeapon_Implementation() override;
 	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UNiagaraComponent* LevelUpFX;
 	

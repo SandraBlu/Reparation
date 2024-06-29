@@ -55,4 +55,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	ARWeapon* GetCurrentWeapon();
 };

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/RDamageAbility.h"
-#include "RMissileAbility.generated.h"
+#include "RProjectileAbility.generated.h"
 
 class UGameplayEffect;
 class AROverlapMissile;
@@ -12,16 +12,13 @@ class AROverlapMissile;
  * 
  */
 UCLASS()
-class REPARATION_API URMissileAbility : public URDamageAbility
+class REPARATION_API URProjectileAbility : public URDamageAbility
 {
 	GENERATED_BODY()
 
 public:
-	
-	URMissileAbility();
 
-	virtual FString GetDescription(int32 Level) override;
-	virtual FString GetNextLevelDescription(int32 Level) override;
+	URProjectileAbility();
 
 protected:
 	
@@ -41,21 +38,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AROverlapMissile> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly)
-	int32 MaxNumProjectiles = 5;
+	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	void SpawnProjectile(ACharacter* InstigatorCharacter);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	float HomingAccelerationMin = 1600.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	float HomingAccelerationMax = 3200.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	bool bLaunchHomingProjectiles = true;
-
-	UFUNCTION(BlueprintCallable, Category = "Projectile")
-	void SpawnProjectiles(ACharacter* InstigatorCharacter, bool bOverridePitch, float PitchOverride, AActor* HomingTarget);
-
-	UFUNCTION(BlueprintCallable, Category = "Projectile")
-	static FHitResult GetHit(bool bBlockingHit, class AActor* HitActor);
 };

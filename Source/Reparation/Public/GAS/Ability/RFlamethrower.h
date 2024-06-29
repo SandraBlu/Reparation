@@ -3,15 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Ability/RDamageAbility.h"
+#include "RMissileAbility.h"
 #include "RFlamethrower.generated.h"
 
+class AROverlapMissile;
 /**
  * 
  */
 UCLASS()
-class REPARATION_API URFlamethrower : public URDamageAbility
+class REPARATION_API URFlamethrower : public URMissileAbility
 {
 	GENERATED_BODY()
+
+public:
+	
+	UFUNCTION(BlueprintCallable)
+	void GetOwnerInfo();
+	
+	UFUNCTION(BlueprintCallable)
+	void FindTarget(FVector& TargetLocation);
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, Category = "GAS")
+	ACharacter* OwnerCharacter;
+	
+	UPROPERTY(BlueprintReadWrite, Category = "Beam")
+	AActor* CurrentTarget;
+
+	
 	
 };

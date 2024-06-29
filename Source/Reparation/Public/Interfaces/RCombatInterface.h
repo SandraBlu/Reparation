@@ -8,6 +8,7 @@
 #include "UObject/Interface.h"
 #include "RCombatInterface.generated.h"
 
+class ARWeapon;
 class UNiagaraSystem;
 class UAbilitySystemComponent;
 
@@ -88,4 +89,4 @@ public:
 	
 	virtual FOnASCRegistered GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath GetOnDeathDelegate() = 0;
-};
+	};

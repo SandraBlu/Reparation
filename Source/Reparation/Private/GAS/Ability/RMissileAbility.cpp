@@ -7,12 +7,25 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "Actors/Projectiles/ROverlapMissile.h"
+#include "Framework/RAbilitySystemLibrary.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Interfaces/RCombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 URMissileAbility::URMissileAbility()
 {
 	SweepRadius = 20.0f;
 	SweepDistanceFallback = 5000;
+}
+
+FString URMissileAbility::GetDescription(int32 Level)
+{
+	return FString();
+}
+
+FString URMissileAbility::GetNextLevelDescription(int32 Level)
+{
+	return FString();
 }
 
 void URMissileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -25,38 +38,65 @@ void URMissileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 }
 
-void URMissileAbility::SpawnProjectile(ACharacter* InstigatorCharacter)
+void URMissileAbility::SpawnProjectiles(ACharacter* InstigatorCharacter, bool bOverridePitch, float PitchOverride,
+	AActor* HomingTarget)
 {
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!bIsServer) return;
+	
 	const FVector SocketLocation = IRCombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FRGameplayTags::Get().combatSocket_weapon);
-	// Ignore Player
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(InstigatorCharacter);
 	FCollisionShape Shape;
 	Shape.SetSphere(SweepRadius);
+	
 	FVector TraceDirection = InstigatorCharacter->GetControlRotation().Vector();
-
-	// We trace against the environment first to find whats under the player crosshair.
-	// We use the hit location to adjust the projectile launch direction so it will hit what is under the crosshair rather than shoot straight forward from the socket
-	// Add sweep radius onto start to avoid the sphere clipping into floor/walls the camera is directly against.
 	FVector TraceStart = InstigatorCharacter->GetPawnViewLocation() + (TraceDirection * SweepRadius);
-	// endpoint far into the look-at distance (not too far, still adjust somewhat towards crosshair on a miss)
 	FVector TraceEnd = TraceStart + (TraceDirection * SweepDistanceFallback);
-
 	FHitResult Hit;
-	// returns true if we got to a blocking hit (Channel1="Projectile" defined in DefaultGame.ini)
 	if (GetWorld()->SweepSingleByChannel(Hit, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, Shape, Params))
 	{
-		// Overwrite trace end with impact point in world
-		TraceEnd = Hit.ImpactPoint;
+		TraceEnd = Hit.Location;
 	}
-	// find new direction/rotation from Hand pointing to impact point in world.
-	FRotator ProjRotation = (TraceEnd - SocketLocation).Rotation();
-	FTransform SpawnTransform = FTransform(ProjRotation, SocketLocation);
-	SpawnTransform.SetLocation(SocketLocation);
-
-	AROverlapMissile* Missile = GetWorld()->SpawnActorDeferred<AROverlapMissile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
-	ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	FRotator Rotation = (TraceEnd - SocketLocation).Rotation();
+	if (bOverridePitch) Rotation.Pitch = PitchOverride;
 	
-	Missile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
-	Missile->FinishSpawning(SpawnTransform);
+	const FVector Forward = Rotation.Vector();
+	const int32 EffectiveNumMissiles = FMath::Min(NumProjectiles, GetAbilityLevel());
+	
+	TArray<FRotator> Rotations = URAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, SweepRadius, EffectiveNumMissiles);
+
+	for (const FRotator& Rot : Rotations)
+	{
+		FTransform SpawnTransform = FTransform(Rot, SocketLocation);
+		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rot.Quaternion());
+		
+		AROverlapMissile* Missile = GetWorld()->SpawnActorDeferred<AROverlapMissile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
+		Missile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+		if (HomingTarget && HomingTarget->Implements<URCombatInterface>())
+		{
+			Missile->MovementComp->HomingTargetComponent = HomingTarget->GetRootComponent();
+		}
+		else
+		{
+			Missile->HomingTarget = NewObject<USceneComponent>(USceneComponent::StaticClass());
+			Missile->HomingTarget->SetWorldLocation(TraceEnd);
+			Missile->MovementComp->HomingTargetComponent = Missile->HomingTarget;
+		}
+		Missile->MovementComp->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
+		Missile->MovementComp->bIsHomingProjectile = bLaunchHomingProjectiles;
+		Missile->FinishSpawning(SpawnTransform);
+	}
 }
+
+FHitResult URMissileAbility::GetHit(bool bBlockingHit, AActor* HitActor)
+{
+	FHitResult Hit;
+	Hit.bBlockingHit = bBlockingHit;
+	Hit.HitObjectHandle = FActorInstanceHandle(HitActor);
+	return Hit;
+}
+
