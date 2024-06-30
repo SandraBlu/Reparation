@@ -88,14 +88,22 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ability_dart_knockout = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.dart.knockout"), FString("Knockout Dart tag"));
 
 	//Ability Menu Tags
-	GameplayTags.ability_status_locked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.locked"), FString("Locked Status"));;
-	GameplayTags.ability_status_unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.unlocked"), FString("Unlocked Status"));;
-	GameplayTags.ability_status_available = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.available"), FString("Available Status"));;
-	GameplayTags.ability_status_equipped = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.equipped"), FString("Equipped Status"));;
+	GameplayTags.ability_status_locked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.locked"), FString("Locked Status"));
+	GameplayTags.ability_status_unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.unlocked"), FString("Unlocked Status"));
+	GameplayTags.ability_status_available = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.available"), FString("Available Status"));
+	GameplayTags.ability_status_equipped = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.equipped"), FString("Equipped Status"));
 
-	GameplayTags.ability_type_dynamic = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.dynamic"), FString("Dynamic"));;
-	GameplayTags.ability_type_passive = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.passive"), FString("Passive"));;
-	GameplayTags.ability_type_none = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.none"), FString("None"));;
+	GameplayTags.ability_type_dynamic = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.dynamic"), FString("Dynamic"));
+	GameplayTags.ability_type_passive = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.passive"), FString("Passive"));
+	GameplayTags.ability_type_none = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.type.none"), FString("None"));
+
+	//PassiveAbiilties
+	GameplayTags.ability_passive_protectiveCloak= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.passive.protectiveCloak"), FString("Protective Cloak"));
+	GameplayTags.ability_passive_lifeSiphon= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.passive.lifeSiphon"), FString("Life Siphon"));
+	GameplayTags.ability_passive_lifeForce= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.passive.lifeForce"), FString("Life Force"));
+	GameplayTags.ability_passive_healthRegen= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.passive.healthRegen"), FString("Health Regen"));
+	GameplayTags.ability_passive_staminaSiphon= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.passive.staminaSiphon"), FString("Stamina Siphon"));
+	GameplayTags.ability_passive_staminaRegen= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.passive.staminaRegen"), FString("Stamina Regen"));
 
 	//cooldown//
 	GameplayTags.cooldown_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.melee"), FString("Melee cooldown tag"));

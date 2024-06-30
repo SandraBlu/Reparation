@@ -6,15 +6,31 @@
 #include "RGameplayTags.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/Debuff/DebuffNiagaraComponent.h"
+#include "GAS/Passive/PassiveNiagaraComponent.h"
 
 
 // Sets default values
 ARCharacterBase::ARCharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	EffectDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("EffectDebuffComponent");
 	EffectDebuffComponent->SetupAttachment(GetRootComponent());
 	EffectDebuffComponent->DebuffTag = FRGameplayTags::Get().Debuff_Stun;
+
+	EffectAttachComp = CreateDefaultSubobject<USceneComponent>("EffectAttachPoint");
+	EffectAttachComp->SetupAttachment(GetRootComponent());
+	PassiveCloak = CreateDefaultSubobject<UPassiveNiagaraComponent>("CloakComponent");
+	PassiveCloak->SetupAttachment(EffectAttachComp);
+	PassiveLifeSiphon = CreateDefaultSubobject<UPassiveNiagaraComponent>("LifeSiphonComponent");
+	PassiveLifeSiphon->SetupAttachment(EffectAttachComp);
+	PassiveStaminaSiphon = CreateDefaultSubobject<UPassiveNiagaraComponent>("StaminaSiphonComponent");
+	PassiveStaminaSiphon->SetupAttachment(EffectAttachComp);
+}
+
+void ARCharacterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	EffectAttachComp->SetWorldRotation((FRotator::ZeroRotator));
 }
 
 UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const

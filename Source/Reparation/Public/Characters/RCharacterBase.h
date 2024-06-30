@@ -9,6 +9,7 @@
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "RCharacterBase.generated.h"
 
+class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
 class UNiagaraSystem;
 class UGameplayAbility;
@@ -24,6 +25,7 @@ class REPARATION_API ARCharacterBase : public ACharacter, public IAbilitySystemI
 public:
 	
 	ARCharacterBase();
+	virtual void Tick(float DeltaSeconds) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
@@ -103,6 +105,16 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	UAnimMontage* HitReactMontage;
+	
+	//Passive Effects Niagara
+	UPROPERTY(VisibleAnywhere, Category="PassiveEffects")
+	UPassiveNiagaraComponent* PassiveCloak;
+	UPROPERTY(VisibleAnywhere, Category="PassiveEffects")
+	UPassiveNiagaraComponent* PassiveLifeSiphon;
+	UPROPERTY(VisibleAnywhere, Category="PassiveEffects")
+	UPassiveNiagaraComponent* PassiveStaminaSiphon;
+	UPROPERTY(VisibleAnywhere, Category="PassiveEffects")
+	USceneComponent* EffectAttachComp;
 
 	
 };

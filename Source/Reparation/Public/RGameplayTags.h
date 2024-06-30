@@ -108,6 +108,17 @@ public:
 	FGameplayTag ability_type_passive;
 	FGameplayTag ability_type_none;
 
+	//Passive Abilities
+	FGameplayTag ability_passive_protectiveCloak;
+	FGameplayTag ability_passive_lifeSiphon;
+	FGameplayTag ability_passive_lifeForce;
+	FGameplayTag ability_passive_healthRegen;
+	FGameplayTag ability_passive_staminaSiphon;
+	FGameplayTag ability_passive_staminaRegen;
+	
+	
+	
+
 	
 	//cooldown
 	FGameplayTag cooldown_Melee;

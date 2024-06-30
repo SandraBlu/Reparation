@@ -300,9 +300,17 @@ void URAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 	const int32 NumLevelUps = NewLevel - CurrentLevel;
 	if (NumLevelUps > 0)
 	{
-		const int32 AttributePtsReward = IRPlayerInterface::Execute_GetAttributePtsReward(Props.SourceCharacter, CurrentLevel);
-		const int32 AbilityPtsReward = IRPlayerInterface::Execute_GetAbilityPtsReward(Props.SourceCharacter, CurrentLevel);
 		IRPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
+		
+		int32 AttributePtsReward = 0;
+		int32 AbilityPtsReward = 0;
+
+		for (int32 i=0; i < NumLevelUps; ++i)
+		{
+			AttributePtsReward += IRPlayerInterface::Execute_GetAttributePtsReward(Props.SourceCharacter, CurrentLevel + i);
+			AbilityPtsReward += IRPlayerInterface::Execute_GetAbilityPtsReward(Props.SourceCharacter, CurrentLevel + i);	
+		}
+		
 		IRPlayerInterface::Execute_AddToAttributePts(Props.SourceCharacter, AttributePtsReward);
 		IRPlayerInterface::Execute_AddToAbilityPts(Props.SourceCharacter, AbilityPtsReward);
 
