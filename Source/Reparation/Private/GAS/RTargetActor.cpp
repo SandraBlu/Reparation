@@ -4,6 +4,7 @@
 #include "GAS/RTargetActor.h"
 
 #include "Abilities/GameplayAbility.h"
+#include "Framework/RPlayerController.h"
 
 ARTargetActor::ARTargetActor()
 {
@@ -14,15 +15,35 @@ ARTargetActor::ARTargetActor()
 	ReticleActor = nullptr;
 }
 
+void ARTargetActor::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	LineTraceFN(TraceHitResults);
+
+	if (ReticleActor)
+	{
+		if (TraceHitResults.bBlockingHit)
+		{
+			ReticleActor->SetActorLocation(TraceHitResults.ImpactPoint, false, nullptr, ETeleportType::None);
+		}
+		else
+		{
+			ReticleActor->SetActorLocation(TraceHitResults.TraceEnd, false, nullptr, ETeleportType::None);
+		}
+	}
+}
+
 bool ARTargetActor::LineTraceFN(FHitResult& TraceHitResult) const
 {
+	
+	ARPlayerController* RPC = Cast<ARPlayerController>(GetOwner()->GetInstigatorController());
 	FVector ViewPoint;
 	FRotator ViewRotation;
-	PrimaryPC->GetPlayerViewPoint(ViewPoint, ViewRotation);
+	RPC->GetPlayerViewPoint(ViewPoint, ViewRotation);
 	FCollisionQueryParams QueryParams;
 	QueryParams.bTraceComplex = true;
 	
-	if (APawn* MasterPawn = PrimaryPC->GetPawn())
+	if (APawn* MasterPawn = RPC->GetPawn())
 	{
 		QueryParams.AddIgnoredActor(MasterPawn->GetUniqueID());
 	}
@@ -35,15 +56,15 @@ bool ARTargetActor::LineTraceFN(FHitResult& TraceHitResult) const
 void ARTargetActor::StartTargeting(UGameplayAbility* Ability)
 {
 	OwningAbility = Ability;
-	PrimaryPC = Cast<APlayerController>(Ability->GetOwningActorFromActorInfo()->GetInstigatorController());
+	PrimaryPC = Cast<ARPlayerController>(Ability->GetOwningActorFromActorInfo()->GetInstigatorController());
 	ReticleActor = SpawnReticleActor(GetActorLocation(), GetActorRotation());
 }
 
 void ARTargetActor::ConfirmTargetingAndContinue()
 {
-	FHitResult Hit;
-	bool HitResult = LineTraceFN(Hit);
-	FGameplayAbilityTargetDataHandle TargetData = StartLocation.MakeTargetDataHandleFromHitResult(OwningAbility, Hit);
+	FHitResult HitResult;
+	bool TryTrace = LineTraceFN(HitResult);
+	FGameplayAbilityTargetDataHandle TargetData = StartLocation.MakeTargetDataHandleFromHitResult(OwningAbility, HitResult);
 	if (TargetData != nullptr)
 	{
 		TargetDataReadyDelegate.Broadcast(TargetData);
@@ -69,7 +90,8 @@ AGameplayAbilityWorldReticle* ARTargetActor::SpawnReticleActor(FVector Location,
 		{
 			if (AGameplayAbilityWorldReticle* SpawnedReticleActor = GetWorld()->SpawnActor<AGameplayAbilityWorldReticle>(ReticleClass, Location, Rotation))
 			{
-				SpawnedReticleActor->InitializeReticle(this, PrimaryPC, ReticleParams);
+				ARPlayerController* RPC = Cast<ARPlayerController>(GetOwner()->GetInstigatorController());
+				SpawnedReticleActor->InitializeReticle(this, RPC, ReticleParams);
 				//SpawnedReticleActor->SetReplicates(false);
 				return SpawnedReticleActor;
 			}

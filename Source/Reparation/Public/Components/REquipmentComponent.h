@@ -82,7 +82,7 @@ public:
 	TMap<EEquipSlot, UREquipItem*> EquippedItems;
 	
 	UFUNCTION()
-	void OnWeaponEquipped();
+	void OnWeaponEquipped() const;
 	
 	 UPROPERTY(EditAnywhere, Category = "Weapon")
 	 class ARWeapon* EquippedWeapon;

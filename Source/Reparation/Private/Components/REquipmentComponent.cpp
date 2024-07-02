@@ -90,7 +90,7 @@ void UREquipmentComponent::UnequipItem(class UREquipItem* Equippable)
 	}
 }
 
-void UREquipmentComponent::OnWeaponEquipped()
+void UREquipmentComponent::OnWeaponEquipped() const
 {
 	if (EquippedWeapon)
 	{

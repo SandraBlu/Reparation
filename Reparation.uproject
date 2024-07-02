@@ -63,6 +63,15 @@
 		{
 			"Name": "MotionWarping",
 			"Enabled": true
+		},
+		{
+			"Name": "ReplicatedToss",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/7b5bbd855b8243fe885ed35f0bf6a873"
+		},
+		{
+			"Name": "SkeletalMeshModelingTools",
+			"Enabled": true
 		}
 	]
 }

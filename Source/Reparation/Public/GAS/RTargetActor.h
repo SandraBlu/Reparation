@@ -19,6 +19,8 @@ public:
 	
 	ARTargetActor();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	AGameplayAbilityWorldReticle* ReticleActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = true), Category = "GAS")

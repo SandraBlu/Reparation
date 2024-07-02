@@ -6,9 +6,11 @@
 #include "GameplayTagContainer.h"
 #include "Characters/RCharacterBase.h"
 #include "Interfaces/RPlayerInterface.h"
-#include "Actors/RWeapon.h"
 #include "RPlayer.generated.h"
 
+class ATargetCircle;
+struct FInputActionValue;
+class UInputAction;
 class UNiagaraComponent;
 class URInputConfig;
 class UInputMappingContext;
@@ -49,7 +51,8 @@ public:
 	virtual int32 GetAttributePoints_Implementation() const override;
 	virtual int32 GetAbilityPoints_Implementation() const override;
 	virtual ARWeapon* GetCurrentWeapon_Implementation() override;
-	
+	virtual void ShowTargetingCircle_Implementation(UMaterialInterface* DecalMaterial) override;
+	virtual void HideTargetingCircle_Implementation() override;
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);
 	
@@ -58,7 +61,7 @@ public:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
-
+	
 protected:
 	
 	virtual void BeginPlay() override;
@@ -68,12 +71,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UCameraComponent* FollowCam;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	AActor* CombatTarget;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* PlayerMappingContext;
-	
-	UPROPERTY(BlueprintReadWrite, Category = "Combat")
-	AActor* CombatTarget;
+
 	
 private:
 	virtual void InitAbilityActorInfo() override;
@@ -84,7 +88,7 @@ private:
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
-
+	
 	UPROPERTY()
 	URAbilitySystemComponent* RAbilitySystemComponent;
 	

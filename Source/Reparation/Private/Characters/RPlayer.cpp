@@ -199,6 +199,22 @@ ARWeapon* ARPlayer::GetCurrentWeapon_Implementation()
 	return nullptr;
 }
 
+void ARPlayer::ShowTargetingCircle_Implementation(UMaterialInterface* DecalMaterial)
+{
+	if (ARPlayerController* RPC = Cast<ARPlayerController>(GetController()))
+	{
+		RPC->ShowTargetingCircle(DecalMaterial);
+	}
+}
+
+void ARPlayer::HideTargetingCircle_Implementation()
+{
+	if (ARPlayerController* RPC = Cast<ARPlayerController>(GetController()))
+	{
+		RPC->HideTargetingCircle();
+	}
+}
+
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())
@@ -254,9 +270,9 @@ void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void ARPlayer::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (Gear->EquippedWeapon == nullptr) return;
-	if (GetASC() == nullptr) return;
-	GetASC()->AbilityInputTagHeld(InputTag);
+	if (Gear->EquippedWeapon == nullptr ) return;
+ 	if (GetASC() == nullptr) return;
+	GetASC()->AbilityInputTagHeld(InputTag);	
 }
 
 URAbilitySystemComponent* ARPlayer::GetASC()
