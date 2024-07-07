@@ -11,33 +11,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9c72c529-1c1b-426e-b26d-177f8e645926" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_Phelan.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_Phelan.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/Projectiles/BP_ElectricMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Actors/Projectiles/BP_ElectricMissile.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/Effects/Projectile/GE_MissileCost.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Effects/Projectile/GE_MissileCost.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/GA_HitReact.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/GA_HitReact.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_DarkDagger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_DarkDagger.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCMelee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCMelee.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCRangedAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCRangedAttack.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_Melee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_Melee.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/ROverlapMissile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/ROverlapMissile.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Framework/RAbilitySystemLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Framework/RAbilitySystemLibrary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RDamageAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RDamageAbility.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RLightningBolt.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RLightningBolt.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RMissileAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Ability/RMissileAbility.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Debuff/DebuffNiagaraComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/Debuff/DebuffNiagaraComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAbilitySystemComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAbilitySystemComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAttributeSet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/GAS/RAttributeSet.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/RAbillityTypes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/RAbillityTypes.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/ROverlapMissile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/ROverlapMissile.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/RProjectile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Actors/Projectiles/RProjectile.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Characters/RPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Characters/RPlayer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Framework/RAbilitySystemLibrary.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Framework/RAbilitySystemLibrary.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RDamageAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RDamageAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RLightningBolt.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RLightningBolt.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RMissileAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/GAS/Ability/RMissileAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/RAbilityTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/RAbilityTypes.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/FX/VFX/FX_Ability/P_Fire_AOE_Blast_mobile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/FX/VFX/FX_Ability/P_Fire_AOE_Blast_mobile.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_FireMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_FireMissile.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_TargetAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_TargetAttack.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Map/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Map/TestMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reparation.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Reparation.uproject" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,27 +63,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;C++ Project.Reparation.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "C++ Project.Reparation.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\SandyFee\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\SandyFee\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\SandyFee\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\SandyFee\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\DecompilerCache",
+      "C:\\Users\\SandyFee\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\SourcesCache",
+      "C:\\Users\\SandyFee\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="C++ Project.Reparation">
     <configuration name="Reparation" type="CppProject" factoryName="C++ Project">
       <configuration_1>
@@ -237,6 +217,7 @@
       <workItem from="1716055997118" duration="821000" />
       <workItem from="1719368951246" duration="76000" />
       <workItem from="1719502777263" duration="55000" />
+      <workItem from="1719969533640" duration="710000" />
     </task>
     <servers />
   </component>

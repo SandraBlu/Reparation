@@ -25,9 +25,9 @@ void URProjectileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	if (!bIsServer) return;
 }
 
-void URProjectileAbility::SpawnProjectile(ACharacter* InstigatorCharacter)
+void URProjectileAbility::SpawnProjectile(ACharacter* InstigatorCharacter, const FGameplayTag& SocketTag)
 {
-	const FVector SocketLocation = IRCombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FRGameplayTags::Get().combatSocket_weapon);
+	const FVector SocketLocation = IRCombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	// Ignore Player
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(InstigatorCharacter);

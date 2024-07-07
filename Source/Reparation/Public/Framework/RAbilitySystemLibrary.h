@@ -25,6 +25,8 @@ class REPARATION_API URAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+
+	//Widget Controllers
 	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static bool MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD);
 
@@ -36,19 +38,21 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "RBFL|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static URAbilityMenuController* GetAbilityMenuController(const UObject* WorldContextObject);
-
+	
+	//Initializers
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
 	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass);
-	
+	//Class/AabilityInfo
 	UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
 	static URCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
-	
+
+	//Getters Damage Parameters
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
 	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
@@ -69,7 +73,16 @@ public:
 	static FVector GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle);
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
 	static FVector GetKnockbackForce(const FGameplayEffectContextHandle& EffectContextHandle);
+	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
+	static bool IsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle);
+	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
+	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
+	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
+	static FVector GetRadialDamageOrigin(const FGameplayEffectContextHandle& EffectContextHandle);
 
+	//Setters Damage Parameters
 	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
 	static void SetIsBlockedHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit);
 	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
@@ -90,7 +103,17 @@ public:
 	static void SetDeathImpulse(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,const FVector& InImpulse);
 	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
 	static void SetKnockbackForce(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,const FVector& InForce);
+	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
+	static void SetIsRadialDamage(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsRadialDamage);
+	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
+	static void SetRadialDamageInnerRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InInnerRadius);
+	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
+	static void SetRadialDamageOuterRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InOuterRadius);
+	UFUNCTION(BlueprintCallable, Category = "RBFL|GameplayEffects")
+	static void SetRadialDamageOrigin(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,const FVector& InOrigin);
+	
 
+	//Gameplay Ability Functions
 	UFUNCTION(BlueprintCallable, Category = "AOBFL|GAMelee")
 	static void GetTargetsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 
@@ -102,6 +125,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
 
+	//Target Ability
 	UFUNCTION(BlueprintPure, Category = "RBFL|GAS")
 	static TArray<FRotator> EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators);
 	UFUNCTION(BlueprintPure, Category = "RBFL|GAS")

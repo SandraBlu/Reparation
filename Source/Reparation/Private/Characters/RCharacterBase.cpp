@@ -33,6 +33,13 @@ void ARCharacterBase::Tick(float DeltaSeconds)
 	EffectAttachComp->SetWorldRotation((FRotator::ZeroRotator));
 }
 
+float ARCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageTaken =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnDamageDelegate.Broadcast(DamageTaken);
+	return DamageTaken;
+}
+
 UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -80,6 +87,11 @@ FOnDeath ARCharacterBase::GetOnDeathDelegate()
 
 void ARCharacterBase::Die(const FVector& DeathImpulse)
 {
+}
+
+FOnDamageSignature& ARCharacterBase::GetOnDamageSignature()
+{
+	return OnDamageDelegate;
 }
 
 void ARCharacterBase::BeginPlay()

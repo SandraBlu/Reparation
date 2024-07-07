@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "NiagaraComponent.h"
 #include "RGameplayTags.h"
+#include "Actors/RMelee.h"
 #include "Actors/RWeapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
@@ -72,6 +73,14 @@ FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& Com
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Gear->EquippedWeapon))
 	{
 		return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
+	{
+		return GetMesh()->GetSocketLocation(HandRSocket);
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handR))
+	{
+		return GetMesh()->GetSocketLocation(HandLSocket);
 	}
 	return FVector();
 }
@@ -217,11 +226,16 @@ void ARPlayer::HideTargetingCircle_Implementation()
 
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 {
-	if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())
+	if (MeleeWeapon && MeleeWeapon->GetWeaponBox())
 	{
-		Gear->EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		Gear->EquippedWeapon->IgnoreActors.Empty();
+		MeleeWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		MeleeWeapon->IgnoreActors.Empty();
 	}
+	// if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())
+	// {
+	// 	Gear->EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+	// 	Gear->EquippedWeapon->IgnoreActors.Empty();
+	// }
 }
 
 void ARPlayer::BeginPlay()

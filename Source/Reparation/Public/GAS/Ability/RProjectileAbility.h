@@ -39,6 +39,6 @@ protected:
 	TSubclassOf<AROverlapMissile> ProjectileClass;
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
-	void SpawnProjectile(ACharacter* InstigatorCharacter);
+	void SpawnProjectile(ACharacter* InstigatorCharacter, const FGameplayTag& SocketTag);
 	
 };

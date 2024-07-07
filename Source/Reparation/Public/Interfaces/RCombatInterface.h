@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -11,9 +10,11 @@
 class ARWeapon;
 class UNiagaraSystem;
 class UAbilitySystemComponent;
+class RCharacterBase;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamageSignature, float);
 
 USTRUCT(BlueprintType)
 struct FTaggedMontage
@@ -89,4 +90,6 @@ public:
 	
 	virtual FOnASCRegistered GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath GetOnDeathDelegate() = 0;
+	virtual FOnDamageSignature& GetOnDamageSignature() = 0;
+	
 	};

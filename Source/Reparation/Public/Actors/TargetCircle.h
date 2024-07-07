@@ -17,7 +17,7 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly)
 	UDecalComponent* TargetDecal;
 	
 protected:

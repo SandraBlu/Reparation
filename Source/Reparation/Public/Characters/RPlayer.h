@@ -8,6 +8,7 @@
 #include "Interfaces/RPlayerInterface.h"
 #include "RPlayer.generated.h"
 
+class ARMelee;
 class ATargetCircle;
 struct FInputActionValue;
 class UInputAction;
@@ -61,6 +62,9 @@ public:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
+	
+	UPROPERTY()
+	ARMelee* MeleeWeapon;
 	
 protected:
 	

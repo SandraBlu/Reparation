@@ -27,6 +27,8 @@ public:
 	ARCharacterBase();
 	virtual void Tick(float DeltaSeconds) override;
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
@@ -40,10 +42,12 @@ public:
 	virtual FOnASCRegistered GetOnASCRegisteredDelegate() override;
 	virtual FOnDeath GetOnDeathDelegate() override;
 	virtual void Die(const FVector& DeathImpulse) override;
+	virtual FOnDamageSignature& GetOnDamageSignature() override;
 	//Combat Interface
 
 	FOnASCRegistered OnASCRegistered;
 	FOnDeath OnDeath;
+	FOnDamageSignature OnDamageDelegate;
 	
 protected:
 	

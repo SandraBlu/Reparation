@@ -5,11 +5,11 @@
 
 #include "RAbilityTypes.h"
 #include "RGameplayTags.h"
-#include "../../../../../../../../../../Program Files/Epic Games/UE_5.3/Engine/Plugins/Editor/GameplayTagsEditor/Source/GameplayTagsEditor/Private/GameplayTagEditorUtilities.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "GAS/RAttributeSet.h"
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "Interfaces/RCombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct RDamageStatics
 {
@@ -146,6 +146,7 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
@@ -167,16 +168,34 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDefs[ResistanceTag];
 
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key);
-		
+		if (DamageTypeValue <= 0)
+		{
+			continue;// skips rest of code inside for loop
+		}
 		float Resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvalParams, Resistance);
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 
 		DamageTypeValue *= (100.f - Resistance) / 100.f;
+
+		//Radial Falloff Scales Damage Down further from center of blast
+		if (URAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(TargetAvatar))
+			{
+				CombatInterface->GetOnDamageSignature().AddLambda([&](float DamageAmount)
+				{
+					DamageTypeValue = DamageAmount;
+				});
+			}
+			UGameplayStatics::ApplyRadialDamageWithFalloff(TargetAvatar, DamageTypeValue, 0.f, URAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				URAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle), URAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.f, UDamageType::StaticClass(), TArray<AActor*>(), SourceAvatar, nullptr);
+		}
+		
 		Damage += DamageTypeValue;
 	}
 	
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	//Block
 	float TargetBlockChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvalParams, TargetBlockChance);
