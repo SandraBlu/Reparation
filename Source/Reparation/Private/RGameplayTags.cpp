@@ -86,6 +86,9 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ability_missile_ice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.ice"), FString("Ice Missile tag"));
 	GameplayTags.ability_dart_poison = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.dart.poison"), FString("Poison Dart tag"));
 	GameplayTags.ability_dart_knockout = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.dart.knockout"), FString("Knockout Dart tag"));
+	GameplayTags.ability_grenade_stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.grenade.stun"), FString("Stun grenade"));
+	GameplayTags.ability_grenade_fireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.grenade.fireBlast"), FString("Fire Blast grenade"));
+	GameplayTags.ability_grenade_iceBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.grenade.iceBlast"), FString("Ice Blast Grenade"));
 
 	//Ability Menu Tags
 	GameplayTags.ability_status_locked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.status.locked"), FString("Locked Status"));
@@ -113,6 +116,9 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.cooldown_missile_ice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.missile.ice"), FString("Ice Missile cooldown tag"));
 	GameplayTags.cooldown_dart_poison = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.dart.poison"), FString("Poison Dart cooldown tag"));
 	GameplayTags.cooldown_dart_knockout = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.dart.knockout"), FString("Knockout Dart cooldown tag"));
+	GameplayTags.cooldown_grenade_stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.grenade.stun"), FString("Knockout grenade cooldown tag"));
+	GameplayTags.cooldown_grenade_fireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.grenade.fireBlast"), FString("Fire Blast grenade cooldown tag"));
+	GameplayTags.cooldown_grenade_iceBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.grenade.iceBlast"), FString("Ice Blast grenade cooldown tag"));
 
 	//Sockets
 	GameplayTags.combatSocket_weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("combatSocket.weapon"), FString("weapon"));

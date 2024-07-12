@@ -60,6 +60,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangeSignature OnMaxStaminaChange;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangeSignature OnEnergyChange;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangeSignature OnMaxEnergyChange;
+
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FMessageWidgetSignature MessageWidgetDelegate;
 

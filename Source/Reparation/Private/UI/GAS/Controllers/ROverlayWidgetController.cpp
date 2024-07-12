@@ -17,6 +17,8 @@ void UROverlayWidgetController::BroadcastInitialValues()
 	OnMaxHealthChange.Broadcast(GetRAS()->GetMaxHealth());
 	OnStaminaChange.Broadcast(GetRAS()->GetStamina());
 	OnMaxStaminaChange.Broadcast(GetRAS()->GetMaxStamina());
+	OnEnergyChange.Broadcast(GetRAS()->GetEnergy());
+	OnMaxEnergyChange.Broadcast(GetRAS()->GetMaxEnergy());
 }
 
 void UROverlayWidgetController::BindCallbacksToDependencies()
@@ -32,8 +34,10 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChange.Broadcast(Data.NewValue);});
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnStaminaChange.Broadcast(Data.NewValue);});
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetMaxStaminaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxStaminaChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetEnergyAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnEnergyChange.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetRAS()->GetMaxEnergyAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxEnergyChange.Broadcast(Data.NewValue);});
 
-	//Ability Change
+	 //Ability Change
 	if (GetRASC())
 	{
 		GetRASC()->AbilityEquippedDelegate.AddUObject(this, &UROverlayWidgetController::OnAbilityEquipped);

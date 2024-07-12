@@ -97,6 +97,9 @@ public:
 	FGameplayTag ability_missile_ice;
 	FGameplayTag ability_dart_poison;
 	FGameplayTag ability_dart_knockout;
+	FGameplayTag ability_grenade_stun;
+	FGameplayTag ability_grenade_fireBlast;
+	FGameplayTag ability_grenade_iceBlast;
 
 	//Ability Menu Tags
 	FGameplayTag ability_status_locked;
@@ -128,6 +131,9 @@ public:
 	FGameplayTag cooldown_missile_ice;
 	FGameplayTag cooldown_dart_poison;
 	FGameplayTag cooldown_dart_knockout;
+	FGameplayTag cooldown_grenade_stun;
+	FGameplayTag cooldown_grenade_fireBlast;
+	FGameplayTag cooldown_grenade_iceBlast;
 
 
 	//Combat Socket
