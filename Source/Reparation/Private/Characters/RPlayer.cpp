@@ -231,11 +231,6 @@ void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 		MeleeWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
 		MeleeWeapon->IgnoreActors.Empty();
 	}
-	// if (Gear->EquippedWeapon && Gear->EquippedWeapon->GetWeaponBox())
-	// {
-	// 	Gear->EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-	// 	Gear->EquippedWeapon->IgnoreActors.Empty();
-	// }
 }
 
 void ARPlayer::BeginPlay()

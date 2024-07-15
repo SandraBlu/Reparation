@@ -76,7 +76,6 @@ void AREnemy::BeginPlay()
 		);
 		//Call Hit React/Stunned function
 		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::HitReactTagChanged);
-		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_stunned, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::StunnedTagChanged);
 		//Broadcast Initial Values
 		OnHealthChange.Broadcast(AS->GetHealth());
 		OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
@@ -165,13 +164,24 @@ void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	}
 }
 
-void AREnemy::StunnedTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+void AREnemy::SetToStunned(bool bIsStunned)
 {
-	bStunned = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bStunned ? 0.f : BaseWalkSpeed;
+	if (bStunned)
+  	{
+ 		bIsStunned = true;
+  		if (AIC && AIC->GetBlackboardComponent())
+  		{
+  			AIC->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), bStunned);
+  		}
+  	}
+ 	bIsStunned = false;
+}
+
+void AREnemy::SetToEndStun()
+{
 	if (AIC && AIC->GetBlackboardComponent())
 	{
-		AIC->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), bStunned);
+		AIC->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), false);
 	}
 }
 

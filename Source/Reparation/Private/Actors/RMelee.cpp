@@ -22,7 +22,6 @@ ARMelee::ARMelee()
 void ARMelee::OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
 	//GetWorld Location Of Start and End Scene Components
 	const FVector Start = TraceStart->GetComponentLocation();
 	const FVector End = TraceEnd->GetComponentLocation();
@@ -37,19 +36,18 @@ void ARMelee::OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 
 	FHitResult BoxHit;
 
-	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), TraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false,
+	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(10.f, 10.f, 10.f), TraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false,
 		ActorsToIgnore, EDrawDebugTrace::ForDuration, BoxHit, true);
 
 	if (BoxHit.GetActor())
 	{
-		IRCombatInterface* iHit = Cast<IRCombatInterface>(BoxHit.GetActor());
-		if (iHit)
+		if (IRCombatInterface* iHit = Cast<IRCombatInterface>(BoxHit.GetActor()))
 		{
 			iHit->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
 			OnHit(BoxHit);
 		}
 		IgnoreActors.AddUnique(BoxHit.GetActor());
-
+		
 		CreateForceFields(BoxHit.ImpactPoint);
 	}
 }

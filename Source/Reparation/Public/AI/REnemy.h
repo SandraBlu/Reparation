@@ -42,12 +42,17 @@ public:
 	FOnAttributeChangeSignature OnMaxHealthChange;
 
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	void StunnedTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetToStunned(bool bIsStunned);
+
+	UFUNCTION(BlueprintCallable)
+	void SetToEndStun();
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting = false;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	bool bStunned = false;
 
 	UFUNCTION(BlueprintImplementableEvent)
