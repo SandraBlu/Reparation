@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 #include "RAbilityTypes.h"
 #include "GAS/Data/RCharacterClassInfo.h"
@@ -45,7 +46,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
 	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass);
-	//Class/AabilityInfo
+	//Class/AbilityInfo
 	UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
 	static URCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
@@ -130,4 +131,17 @@ public:
 	static TArray<FRotator> EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators);
 	UFUNCTION(BlueprintPure, Category = "RBFL|GAS")
 	static TArray<FVector> EvenlyRotatedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors);
+
+	//Damage Effect Params
+	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
+	static void SetIsRadialDamageEffectParam(UPARAM(ref)FDamageEffectParams& DamageEffectParams, bool bIsRadial, float InnerRadius, float OuterRadius, FVector Origin);
+	
+	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
+	static void SetKnockbackDirection(UPARAM(ref)FDamageEffectParams& DamageEffectParams, FVector KnockbackDirection, float Magnitude = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
+	static void SetDeathImpulseDirection(UPARAM(ref)FDamageEffectParams& DamageEffectParams, FVector ImpulseDirection, float Magnitude = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
+	static void SetTargetEffectParamsASC(UPARAM(ref)FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC);
 };

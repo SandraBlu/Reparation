@@ -34,6 +34,7 @@ public:
 
 	//Combat Interface
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual UAnimMontage* GetStunnedMontage_Implementation() override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
@@ -109,6 +110,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	UAnimMontage* StunnedMontage;
 	
 	//Passive Effects Niagara
 	UPROPERTY(VisibleAnywhere, Category="PassiveEffects")

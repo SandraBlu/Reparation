@@ -50,6 +50,11 @@ UAnimMontage* ARCharacterBase::GetHitReactMontage_Implementation()
 	return HitReactMontage;
 }
 
+UAnimMontage* ARCharacterBase::GetStunnedMontage_Implementation()
+{
+	return StunnedMontage;
+}
+
 bool ARCharacterBase::IsDead_Implementation() const
 {
 	return bDead;

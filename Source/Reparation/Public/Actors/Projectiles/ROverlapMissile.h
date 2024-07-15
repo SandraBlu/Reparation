@@ -28,12 +28,16 @@ public:
 protected:
 	
 	UFUNCTION()
-	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	virtual void PostInitializeComponents() override;
-	void OnHit();
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHit();
 
 	bool bHit = false;
 	virtual void Destroyed() override;
+
+	bool IsValidOverlap(AActor* OtherActor);
 	
 };

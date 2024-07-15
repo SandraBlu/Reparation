@@ -91,6 +91,7 @@ public:
 	FGameplayTag ability_Attack;
 	FGameplayTag ability_Melee;
 	FGameplayTag ability_HitReact;
+	FGameplayTag ability_stunned;
 	FGameplayTag ability_missile_dark;
 	FGameplayTag ability_missile_electric;
 	FGameplayTag ability_missile_fire;

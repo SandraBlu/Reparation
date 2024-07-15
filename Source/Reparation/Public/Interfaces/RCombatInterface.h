@@ -61,6 +61,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMontage();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetStunnedMontage();
 	
 	virtual void Die(const FVector& DeathImpulse) = 0;
 

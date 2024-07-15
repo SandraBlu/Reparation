@@ -36,8 +36,14 @@ ARProjectile::ARProjectile()
 
 }
 
+void ARProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+	SetReplicateMovement(true);
+}
+
 void ARProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+                              FVector NormalImpulse, const FHitResult& Hit)
 {
 	Explode();
 }

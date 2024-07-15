@@ -74,7 +74,6 @@ struct FDamageEffectParams
 };
 
 
-
 USTRUCT(BlueprintType)
 struct FRGameplayEffectContext : public FGameplayEffectContext
 {

@@ -20,6 +20,8 @@ public:
 	
 	ARProjectile();
 	
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UProjectileMovementComponent* MovementComp;
 	
@@ -46,7 +48,7 @@ protected:
 	// 'virtual' so we can override this in child-classes
 	UFUNCTION()
 	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
+	
 	// BlueprintNativeEvent = C++ base implementation, can be expanded in Blueprints
 	// BlueprintCallable to allow child classes to trigger explosions
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
