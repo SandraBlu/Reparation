@@ -52,8 +52,6 @@ public:
 	virtual int32 GetAttributePoints_Implementation() const override;
 	virtual int32 GetAbilityPoints_Implementation() const override;
 	virtual ARWeapon* GetCurrentWeapon_Implementation() override;
-	virtual void ShowTargetingCircle_Implementation(UMaterialInterface* DecalMaterial) override;
-	virtual void HideTargetingCircle_Implementation() override;
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled);
 	

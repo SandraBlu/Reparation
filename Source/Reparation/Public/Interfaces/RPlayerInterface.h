@@ -58,10 +58,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	ARWeapon* GetCurrentWeapon();
-	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ShowTargetingCircle(UMaterialInterface* DecalMaterial = nullptr);
-	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void HideTargetingCircle();
 };

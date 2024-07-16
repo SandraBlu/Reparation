@@ -36,7 +36,7 @@ void ARMelee::OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 
 	FHitResult BoxHit;
 
-	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(10.f, 10.f, 10.f), TraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false,
+	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), TraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false,
 		ActorsToIgnore, EDrawDebugTrace::ForDuration, BoxHit, true);
 
 	if (BoxHit.GetActor())

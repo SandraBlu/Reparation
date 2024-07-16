@@ -208,22 +208,6 @@ ARWeapon* ARPlayer::GetCurrentWeapon_Implementation()
 	return nullptr;
 }
 
-void ARPlayer::ShowTargetingCircle_Implementation(UMaterialInterface* DecalMaterial)
-{
-	if (ARPlayerController* RPC = Cast<ARPlayerController>(GetController()))
-	{
-		RPC->ShowTargetingCircle(DecalMaterial);
-	}
-}
-
-void ARPlayer::HideTargetingCircle_Implementation()
-{
-	if (ARPlayerController* RPC = Cast<ARPlayerController>(GetController()))
-	{
-		RPC->HideTargetingCircle();
-	}
-}
-
 void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
 {
 	if (MeleeWeapon && MeleeWeapon->GetWeaponBox())

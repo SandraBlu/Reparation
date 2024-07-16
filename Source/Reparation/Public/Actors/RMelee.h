@@ -28,6 +28,7 @@ public:
 	void OnHit(FHitResult BoxHit);
 	
 	//Actors to ignore after weapon hits them (same swing)
+	UPROPERTY()
 	TArray<AActor*> IgnoreActors;
 
 protected:
