@@ -64,18 +64,18 @@
 			"Name": "MotionWarping",
 			"Enabled": true
 		},
-		{
-			"Name": "ReplicatedToss",
-			"Enabled": false,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/7b5bbd855b8243fe885ed35f0bf6a873"
-		},
-		{
+				{
 			"Name": "SkeletalMeshModelingTools",
 			"Enabled": true
 		},
 		{
 			"Name": "NiagaraFluids",
 			"Enabled": true
+		},
+		{
+			"Name": "CapsuleTraceRotation",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/1abd5424c39d426c81068388a39a61c3"
 		}
 	]
 }

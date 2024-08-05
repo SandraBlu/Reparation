@@ -3,8 +3,6 @@
 
 #include "Framework/RPlayerController.h"
 
-#include "Actors/TargetCircle.h"
-#include "Components/DecalComponent.h"
 #include "GameFramework/Character.h"
 #include "UI/GAS/DamageTextComponent.h"
 
