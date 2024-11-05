@@ -5,18 +5,558 @@
     <projectFile profileName="EpicGames.AspNet">../../../../../Program Files/Epic Games/UE_5.3/Engine/Source/Programs/Shared/EpicGames.AspNet/EpicGames.AspNet.csproj</projectFile>
     <projectFile>../../../../../Program Files/Epic Games/UE_5.3/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.csproj</projectFile>
     <projectFile>Intermediate/ProjectFiles/Reparation.vcxproj</projectFile>
+    <projectFile>Intermediate/ProjectFiles/UE5.vcxproj</projectFile>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9c72c529-1c1b-426e-b26d-177f8e645926" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/projectSettingsUpdater.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Reparation/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vsconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.vsconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEditor.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEditor.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/FX/VFX/FX_Ability/P_Fire_AOE_Blast_mobile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/FX/VFX/FX_Ability/P_Fire_AOE_Blast_mobile.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_FireMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_FireMissile.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_TargetAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_TargetAttack.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/BP_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/BP_EnemyBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/BP_Ranger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/BP_Ranger.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/BP_Tronald.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/BP_Tronald.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/BT/Tasks/BTT_Attack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/BT/Tasks/BTT_Attack.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/BT/Tasks/BTT_FindNewPosition.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/BT/Tasks/BTT_FindNewPosition.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/ABP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/ABP_Player.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/ABP/ABP_BasicMovement.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/ABP/ABP_BasicMovement.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/ABP/ABP_OWL_IK_CR.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/ABP/ABP_OWL_IK_CR.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/Animations/CR_Phelan_IK.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/Animations/CR_Phelan_IK.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/Animations/Montages/Vault/DataAssets/VaultOver_High1_UE5_DA.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/Animations/Montages/Vault/DataAssets/VaultOver_High1_UE5_DA.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/Animations/Montages/Vault/DropDown_Anim_Montage.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/Animations/Montages/Vault/DropDown_Anim_Montage.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/CharacterComponents/SystemComponents/OWL_AnimationOverlay_BP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/CharacterComponents/SystemComponents/OWL_AnimationOverlay_BP.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/CharacterComponents/SystemComponents/OWL_Climbing_BP.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animation/OpenWorldLocomotion/CharacterComponents/SystemComponents/OWL_Climbing_BP.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ErosionBrush.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/Foliage/LSP_PivontPainter2FoliageShader.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/Foliage/MF_ObjectBlending.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/Foliage/MF_normal_strength.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/Foliage/MF_two_sided_foliage.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_CellBomb.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_Material.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_Material_Triplanar.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_NormalIntensity.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_Slope.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_Texture.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_Texture_Cell.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_TriplanarProjection.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_TriplanarProjection_Normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/MaterialFunctions/MasterLandscapeMaterial/MF_VTHeightBlend.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/FoliageBase/MasterMaterials/MI_Master.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/FoliageBase/MasterMaterials/MI_Master_Imposter.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/FoliageBase/MasterMaterials/M_Master.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/FoliageBase/MasterMaterials/M_Master_Imposter.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/FoliageBase/MaterialFunctions/LSP_PivontPainter2FoliageShader.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/FoliageBase/MaterialFunctions/MF_normal_strength.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/FoliageBase/MaterialFunctions/MF_two_sided_foliage.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/LandscapeGrass/LG_A.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/LandscapeGrass/LG_B.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/LandscapeGrass/LG_C.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/LandscapeGrass/LG_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/LandscapeGrass/LG_E.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/MI_Landscape.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/M_AutoLandscape.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/MainMaterials/MF_A.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/MainMaterials/MF_B.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/MainMaterials/MF_C.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/MainMaterials/MF_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/MainMaterials/MF_E.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/Trees/MI_CedarBark.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/Trees/MI_CedarLeaves.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/Trees/MI_CedarLeaves_Snow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/Trees/MI_MapleBark.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/Trees/MI_MapleLeaves.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/Trees/MI_MapleTrunk.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Materials/Trees/M_Foliage_Master.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Cedar/S_Cedar_Large.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Cedar/S_Cedar_Medium.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Cedar/S_Cedar_Small.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Cedar/T_CedarBark_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Cedar/T_CedarBark_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Cedar/T_CedarLeaf_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/S_Maple_Large.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/S_Maple_Medium.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/S_Maple_Small.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/T_Bark_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/T_Bark_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/T_MapleLeaf_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/T_MapleLeaf_Winter_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/T_MapleTrunk_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Maple/T_MapleTrunk_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Bark_Oak_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Bark_Oak_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Bark_Oak_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Imposter_Oak01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Imposter_Oak02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Imposter_Oak03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Imposter_Oak_Master.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Leaf_Oak_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Leaf_Oak_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Leaf_Oak_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Master_Bark_Oak.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Materials/MI_Master_Leaf_Oak.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/SM_oak1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/SM_oak2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/SM_oak3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_Impostor_BaseColor_Oak01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_Impostor_BaseColor_Oak02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_Impostor_BaseColor_Oak03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak1_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak1_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak2_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak2_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak3_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak3_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak_leafs_color.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Oak/Textures/T_oak_leafs_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Pines_Master.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Small_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Small_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Imposter_Small_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Master_Bark_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Master_Bark_Small_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Master_Leaf_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_Master_Leaf_Small_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_bark_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_bark_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_bark_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_bark_4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_bark_5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_bark_6.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_bark_7.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_leafs_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_leafs_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_leafs_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_leafs_4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_leafs_5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_leafs_6.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_pine_leafs_7.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_small_pine_bark_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_small_pine_bark_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_small_pine_bark_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_small_pine_leafs_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_small_pine_leafs_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Materials/MI_small_pine_leafs_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_small_pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_small_pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/SM_small_pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Small_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Small_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_BaseColor_Small_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Small_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Small_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Impostor_Normal_Small_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Small_Pine_Normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Small_Pines_Color.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_Small_Pines_Masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine01_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine01_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine02_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine02_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine03_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine03_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine04_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine04_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine05_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine05_rgb_XVector_a_XExtentDividedby2048.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine06_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine06_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine07_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_pine07_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_small_pine01_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_small_pine01_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_small_pine02_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_small_pine02_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_small_pine03_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_small_pine03_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_spruce_bark_basecolor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_spruce_bark_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_spruce_bark_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_spruce_basecolor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_spruce_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Meshes/Pines/Textures/T_spruce_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FT_Maple_Large.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FT_Maple_Large_Snow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FT_Maple_Medium.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FT_Maple_Medium_Snow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FT_Maple_Small.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FT_Maple_Small_Snow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FoliageType_Oak1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FoliageType_Oak2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/Deciduous/FoliageType_Oak3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FT_Cedar_Large.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FT_Cedar_Large_Snow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FT_Cedar_Medium.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FT_Cedar_Medium_Snow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FT_Cedar_Small.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FT_Cedar_Small_Snow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_Pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_Pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_Pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_SmallPine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_SmallPine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/EvergreenForest/FoliageType_SmallPine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/FT_Cedar_Small.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/FoliageType_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/FoliageType_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/FoliageType_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/SMF_Grass.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/SMF_Grass1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/SMF_Grass2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/FoliageTypes/SMF_Grass3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/PFS_Grass.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/ProceduralFoliage/PFS_Trees.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Beech/Textures/T_Impostor_BaseColor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Beech/Textures/T_Impostor_Normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Broadleafs/Textures/T_broadleaf_bark_color.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Broadleafs/Textures/T_broadleaf_bark_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Broadleafs/Textures/T_broadleaf_bark_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Broadleafs/Textures/T_broadleaf_leafs_color.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Broadleafs/Textures/T_broadleaf_leafs_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Broadleafs/Textures/T_broadleaf_leafs_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Materials/MI_Fern01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Materials/MI_Fern02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Materials/MI_Fern03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Materials/MI_Fern04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Materials/MI_Master_Fern.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/SM_fern01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/SM_fern02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/SM_fern03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/SM_fern04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern01_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern01_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern02_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern02_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern03_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern03_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern04_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern04_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern_diffuse.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fern_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Fern/Textures/T_fernm_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_Cover.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_FLower01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_FLower02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_Grass01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_High_Grass1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_High_Grass1_Pine_Forest.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_Low_Grass1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_Low_Grass4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Materials/MI_Master_Grass.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_clover.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_flower01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_flower02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_grass01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_grass02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_grass03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_grass04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_high_grass01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_high_grass02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_high_grass03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_high_grass03_pine_forest.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_high_grass04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/SM_high_grass05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_blue_flower02_rgb_PivotPos_a_ParentIndexInt_UV_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_blue_flower02_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_clover_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_clover_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_grass04_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_grass04_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_grass_atlas01_basecolor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_grass_atlas01_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_grass_atlas01_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_grass_atlas01_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Grass/Textures/T_grass_atlas01_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/Materials/MI_Green_Heather.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/Materials/MI_Master_Heather.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/SM_heather01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/SM_heather02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/SM_heather03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/Textures/T_heather_basecolor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/Textures/T_heather_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/Textures/T_heather_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/Textures/T_heather_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Heather/Textures/T_heather_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Imposter_Oak01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Imposter_Oak02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Imposter_Oak03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Imposter_Oak_Master.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Leaf_Oak_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Leaf_Oak_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Leaf_Oak_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Master_Bark_Oak.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Materials/MI_Master_Leaf_Oak.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/SM_oak1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/SM_oak2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/SM_oak3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_Impostor_BaseColor_Oak01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_Impostor_BaseColor_Oak02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_Impostor_BaseColor_Oak03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_Impostor_Normal_Oak01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_Impostor_Normal_Oak02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_Impostor_Normal_Oak03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak1_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak1_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak2_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak2_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak3_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak3_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak_leafs_color.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Oak/Textures/T_oak_leafs_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Pines_Master.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Small_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Small_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Imposter_Small_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Master_Bark_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Master_Bark_Small_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Master_Leaf_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_Master_Leaf_Small_Pines.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_bark_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_bark_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_bark_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_bark_4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_bark_5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_bark_6.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_bark_7.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_leafs_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_leafs_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_leafs_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_leafs_4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_leafs_5.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_leafs_6.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_pine_leafs_7.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_small_pine_bark_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_small_pine_bark_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_small_pine_bark_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_small_pine_leafs_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_small_pine_leafs_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Materials/MI_small_pine_leafs_3.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_small_pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_small_pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/SM_small_pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Small_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Small_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_BaseColor_Small_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Pine04.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Pine05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Pine06.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Pine07.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Small_Pine01.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Small_Pine02.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Impostor_Normal_Small_Pine03.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Small_Pine_Normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Small_Pines_Color.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_Small_Pines_Masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine01_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine01_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine02_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine02_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine03_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine03_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine04_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine04_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine05_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine05_rgb_XVector_a_XExtentDividedby2048.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine06_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine06_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine07_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_pine07_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_small_pine01_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_small_pine01_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_small_pine02_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_small_pine02_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_small_pine03_rgb_PivotPos_a_ParentIndexInt_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_small_pine03_rgb_XVector_a_XExtentDividedby2048reaches2048_UV_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_spruce_bark_basecolor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_spruce_bark_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_spruce_bark_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_spruce_basecolor.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_spruce_masks.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/Pines/Textures/T_spruce_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/Environment/T_Default_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/MasterMaterial/T_ColorVariation.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/MasterMaterial/T_ColorVariationDistance.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/MasterMaterial/T_MacroVariation.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/MasterMaterial/T_NormalVariation.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/MasterMaterial/T_RGB_Mask.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Textures/MasterMaterial/T_Voronoi_Perturbed_4k.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/VirtualTextures/RVT_Height.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/VirtualTextures/RVT_Material.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Water/MF_panner_variation.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Water/MI_water_shader.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Water/M_water_shader.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Water/T_water_caustics.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Water/T_water_roundWaves.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Water/T_water_whitePart.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Water/T_waves_normal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Wind/MF_DirectionalWind.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Wind/MF_GlobalWind.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Wind/MF_TrunkSway.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Wind/MPC_Wind.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AutoLandscape/Wind/WindParameters.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_BasePlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_BasePlayer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_Phelan.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_Phelan.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Framework/BP_GMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Framework/BP_GMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Framework/BP_PC.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Framework/BP_PC.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/AbilityGlobes/UI_AbilityBtn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/AbilityGlobes/UI_AbilityBtn.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/AbilityGlobes/UI_AbilityGlobe.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/AbilityGlobes/UI_AbilityGlobe.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/UI_AbilityBar.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/UI_AbilityBar.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/UI_AbilityMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/UI_AbilityMenu.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/UI_EquippedSkills.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Abilities/UI_EquippedSkills.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Attributes/UI_ActionButton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Attributes/UI_ActionButton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Attributes/UI_AttributeMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Attributes/UI_AttributeMenu.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/Attributes/UI_ButtonText.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/Attributes/UI_ButtonText.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/PlayerHUD/UI_PlayerHUD.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/PlayerHUD/UI_PlayerHUD.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/PlayerMenu/UI_PlayerMenu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/PlayerMenu/UI_PlayerMenu.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/ProgressBars/UI_PGlobeBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/ProgressBars/UI_PGlobeBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/World/UI_DamageText.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/World/UI_DamageText.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Phelan/Meshes/Top_BlueLeatherCoat_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Phelan/Meshes/Top_BlueLeatherCoat_Skeleton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Phelan/PhelanBlue_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Phelan/PhelanBlue_Skeleton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Phelan/WinterPhe/PheWinter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Phelan/WinterPhe/PheWinter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/FX/VFX/ImproveFights_Vfx/Materials/M_Dirt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/FX/VFX/ImproveFights_Vfx/Materials/M_Dirt.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/BP_PointCollection.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/BP_TargetCircle.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/Fire/GE_Burn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Actors/Fire/GE_Burn.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/Projectiles/BP_Fireball.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Actors/Projectiles/BP_Fireball.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/TestActor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Actors/TestActor.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Actors/Throwables/BP_StunGrenade.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Actors/Throwables/BP_StunGrenade.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Data/DA_CharClassInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Data/DA_CharClassInfo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Effects/Stats/GE_PotionHealth.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Effects/Stats/GE_PotionHealth.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Effects/Stats/GE_PotionStamina.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Effects/Stats/GE_PotionStamina.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/Effects/Stats/GE_StaminaRestore.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/Effects/Stats/GE_StaminaRestore.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_DarkDagger.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_DarkDagger.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCMelee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/NPC/GA_NPCMelee.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_ElectricMissile.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_Melee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_Melee.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_StunGrenade.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/GAS/GA/Player/GA_StunGrenade.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Input/IMC_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Input/IMC_Player.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/BPWeapons/BP_MeleeMaster.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/BPWeapons/BP_MeleeMaster.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/BPWeapons/BP_ThrowMaster.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/BPWeapons/BP_ThrowMaster.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/BPWeapons/Melee/BP_Staff.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/BPWeapons/Melee/BP_Staff.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/BPWeapons/Melee/BP_Sword.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/BPWeapons/Melee/BP_Sword.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/BPWeapons/Throwables/BP_PUKnife.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/BPWeapons/Throwables/BP_PUKnife.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/UI/DragDrop/BP_ItemDDPayload.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/UI/DragDrop/BP_ItemDDPayload.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/UI/Equipment/BP_EquipCapture.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/UI/Equipment/BP_EquipCapture.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/UI/Equipment/UI_EquippedItem.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/UI/Equipment/UI_EquippedItem.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Inventory/UI/Inventory/UI_InventoryContainer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Inventory/UI/Inventory/UI_InventoryContainer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Fuzz_Material/M_MS_Default_Fuzz_Material.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Fuzz_Material/M_MS_Default_Fuzz_Material.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Fuzz_Material_VT/M_MS_Default_Fuzz_Material_VT.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Fuzz_Material_VT/M_MS_Default_Fuzz_Material_VT.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Material/M_MS_Default_Material.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Material/M_MS_Default_Material.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Material_VT/M_MS_Default_Material_VT.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MSPresets/M_MS_Default_Material_VT/M_MS_Default_Material_VT.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/MSPresets/M_MS_Foliage_Material/M_MS_Foliage_Material.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MSPresets/M_MS_Foliage_Material/M_MS_Foliage_Material.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/MSPresets/M_MS_Surface_Material/M_MS_Surface_Material.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/MSPresets/M_MS_Surface_Material/M_MS_Surface_Material.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Map/MainMenu.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Map/MainMenu.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Map/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Map/TestMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/3D_Assets/Mossy_Granite_Rock_rgfoh/MI_Mossy_Granite_Rock_rgfoh_4K.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Megascans/3D_Assets/Mossy_Granite_Rock_rgfoh/MI_Mossy_Granite_Rock_rgfoh_4K.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/3D_Assets/Mossy_Granite_Rock_rgfoh/S_Mossy_Granite_Rock_rgfoh_lod0.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Megascans/3D_Assets/Mossy_Granite_Rock_rgfoh/S_Mossy_Granite_Rock_rgfoh_lod0.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchg1gp0/MI_Animal_Fur__01_2k.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchg1gp0/T_AnimalFur_pchg1gp0_2K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchg1gp0/T_Animal_Fur_pchg1gp0_2K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchg1gp0/T_Animal_Fur_pchg1gp0_2K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchgvvp0/MI_Animal_Fur_02_2K.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchgvvp0/T_AnimalFur_pchgvvp0_2K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchgvvp0/T_Animal_Fur_pchgvvp0_2K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_pchgvvp0/T_Animal_Fur_pchgvvp0_2K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_rczrJ0/MI_Animal_Fur_long2k.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_rczrJ0/T_AnimalFur_rczrJ0_2K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_rczrJ0/T_Animal_Fur_rczrJ0_2K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Animal_Fur_rczrJ0/T_Animal_Fur_rczrJ0_2K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Beach_Gravel_With_Pebbles_uifndiulw/T_BeachGravelWithPebbles_uifndiulw_4K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Beach_Gravel_With_Pebbles_uifndiulw/T_Beach_Gravel_With_Pebbles_uifndiulw_4K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Beach_Gravel_With_Pebbles_uifndiulw/T_Beach_Gravel_With_Pebbles_uifndiulw_4K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Creature_Fur_pgjfcip0/MI_Creature_Fur__2K.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Creature_Fur_pgjfcip0/T_CreatureFur_pgjfcip0_2K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Creature_Fur_pgjfcip0/T_Creature_Fur_pgjfcip0_2K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Creature_Fur_pgjfcip0/T_Creature_Fur_pgjfcip0_2K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Hot_Blued_Steel_shkxcgfc/MI_Hot_Blued_Steel_shkxcgfc_2K.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Hot_Blued_Steel_shkxcgfc/T_HotBluedSteel_shkxcgfc_2K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Hot_Blued_Steel_shkxcgfc/T_Hot_Blued_Steel_shkxcgfc_2K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Hot_Blued_Steel_shkxcgfc/T_Hot_Blued_Steel_shkxcgfc_2K_M.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Hot_Blued_Steel_shkxcgfc/T_Hot_Blued_Steel_shkxcgfc_2K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Rock_Cliff_xbknedb/T_RockCliff_xbknedb_4K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Rock_Cliff_xbknedb/T_Rock_Cliff_xbknedb_4K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Rock_Cliff_xbknedb/T_Rock_Cliff_xbknedb_4K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Rocky_Sand_vd4pbdt/T_RockySand_vd4pbdt_2K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Rocky_Sand_vd4pbdt/T_Rocky_Sand_vd4pbdt_2K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Rocky_Sand_vd4pbdt/T_Rocky_Sand_vd4pbdt_2K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Snow_qbAr20/T_Snow_4K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Snow_qbAr20/T_Snow_4K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Snow_qbAr20/T_Snow_4K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Wild_Grass_oilpa0/T_WildGrass_oilpa0_4K_ORDp.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Wild_Grass_oilpa0/T_Wild_Grass_oilpa0_4K_D.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Megascans/Surfaces/Wild_Grass_oilpa0/T_Wild_Grass_oilpa0_4K_N.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ResourcePack/Materials/UIMat/Example1/MI_NoSat_Example1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ResourcePack/Materials/UIMat/Example1/MI_NoSat_Example1.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ResourcePack/Materials/UIMat/Example1/MI_Sat_Example1.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ResourcePack/Materials/UIMat/Example1/MI_Sat_Example1.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ResourcePack/UI/PS_Triangle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ResourcePack/UI/PS_Triangle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ResourcePack/Weapons/ThrowingSystem/Meshes/Skeleton_Grenade.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ResourcePack/Weapons/ThrowingSystem/Meshes/Skeleton_Grenade.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Narrative/Source/Narrative/Private/NarrativeComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Narrative/Source/Narrative/Private/NarrativeComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Narrative/Source/NarrativeDialogueEditor/Private/DialogueGraphEditor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Narrative/Source/NarrativeDialogueEditor/Private/DialogueGraphEditor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Plugins/Narrative/Source/NarrativeQuestEditor/Private/QuestGraphEditor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Plugins/Narrative/Source/NarrativeQuestEditor/Private/QuestGraphEditor.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Reparation.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Reparation.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/AI/REnemy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/AI/REnemy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/RProjectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Private/Actors/Projectiles/RProjectile.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/AI/REnemy.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/AI/REnemy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Reparation/Public/Actors/REffectActor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Reparation/Public/Actors/REffectActor.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,20 +579,14 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Private/AbilitySystem/Abilities/MissileAbility.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Private/Interfaces/CombatInterface.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Private/UI/AOHUD.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Private/Weapons/AOWeapon.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Public/AbilitySystem/Abilities/MissileAbility.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Public/Interfaces/CombatInterface.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Public/UI/AOHUD.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../AlphaOmega/Source/AlphaOmega/Public/Weapons/AOWeapon.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Intermediate/Build/Win64/UnrealEditor/Inc/Reparation/UHT/RProjectile.gen.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Intermediate/Build/Win64/UnrealEditor/Inc/Reparation/UHT/RWeapon.gen.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Plugins/NarrativeInventory/Intermediate/Build/Win64/UnrealEditor/Inc/NarrativeEquipment/UHT/EquipmentComponent.generated.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Source/Reparation/Private/AbilitySystem/Ability/RMagicMissile.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Containers/BitArray.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../Unreal Projects/GameplayAbilitySystem_Aura/Source/Aura/Private/Character/AuraCharacterBase.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../Unreal Projects/GameplayAbilitySystem_Aura/Source/Aura/Public/Character/AuraCharacterBase.h" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="Toolset" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -76,13 +610,6 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
-  },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\SandyFee\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\DecompilerCache",
-      "C:\\Users\\SandyFee\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\SourcesCache",
-      "C:\\Users\\SandyFee\\AppData\\Local\\Symbols\\src"
-    ]
   }
 }]]></component>
   <component name="RunManager" selected="C++ Project.Reparation">
@@ -153,6 +680,193 @@
         <option name="Build" />
       </method>
     </configuration>
+    <configuration name="UE5" type="CppProject" factoryName="C++ Project">
+      <configuration_1>
+        <option name="CONFIGURATION" value="Development Editor" />
+        <option name="PLATFORM" value="Win64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_1>
+      <configuration_2>
+        <option name="CONFIGURATION" value="Shipping" />
+        <option name="PLATFORM" value="Win64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_2>
+      <configuration_3>
+        <option name="CONFIGURATION" value="DebugGame" />
+        <option name="PLATFORM" value="Win64-arm64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_3>
+      <configuration_4>
+        <option name="CONFIGURATION" value="Development Editor" />
+        <option name="PLATFORM" value="Win64-arm64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_4>
+      <configuration_5>
+        <option name="CONFIGURATION" value="Shipping" />
+        <option name="PLATFORM" value="Win64-arm64ec" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_5>
+      <configuration_6>
+        <option name="CONFIGURATION" value="DebugGame" />
+        <option name="PLATFORM" value="Win64-arm64ec" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_6>
+      <configuration_7>
+        <option name="CONFIGURATION" value="Development Editor" />
+        <option name="PLATFORM" value="Win64-arm64ec" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_7>
+      <configuration_8>
+        <option name="CONFIGURATION" value="Development" />
+        <option name="PLATFORM" value="Win64-arm64ec" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_8>
+      <configuration_9>
+        <option name="CONFIGURATION" value="DebugGame Editor" />
+        <option name="PLATFORM" value="Win64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_9>
+      <configuration_10>
+        <option name="CONFIGURATION" value="Development" />
+        <option name="PLATFORM" value="Win64-arm64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_10>
+      <configuration_11>
+        <option name="CONFIGURATION" value="Shipping" />
+        <option name="PLATFORM" value="Win64-arm64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_11>
+      <configuration_12>
+        <option name="CONFIGURATION" value="DebugGame" />
+        <option name="PLATFORM" value="Win64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_12>
+      <configuration_13>
+        <option name="CONFIGURATION" value="DebugGame Editor" />
+        <option name="PLATFORM" value="Win64-arm64ec" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_13>
+      <configuration_14>
+        <option name="CONFIGURATION" value="DebugGame Editor" />
+        <option name="PLATFORM" value="Win64-arm64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_14>
+      <configuration_15>
+        <option name="CONFIGURATION" value="Development" />
+        <option name="PLATFORM" value="Win64" />
+        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
+        <option name="EXE_PATH" value="$(LocalDebuggerCommand)" />
+        <option name="PROGRAM_PARAMETERS" value="$(LocalDebuggerCommandArguments)" />
+        <option name="WORKING_DIRECTORY" value="$(LocalDebuggerWorkingDirectory)" />
+        <option name="PASS_PARENT_ENVS" value="1" />
+        <option name="USE_EXTERNAL_CONSOLE" value="0" />
+        <option name="TERMINAL_INTERACTION_BEHAVIOR" value="AUTO_DETECT" />
+      </configuration_15>
+      <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
+      <option name="AUTO_SELECT_PRIORITY" value="10000" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
     <configuration name="AutomationTool" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
@@ -218,6 +932,7 @@
       <workItem from="1719368951246" duration="76000" />
       <workItem from="1719502777263" duration="55000" />
       <workItem from="1719969533640" duration="710000" />
+      <workItem from="1730317455224" duration="1216000" />
     </task>
     <servers />
   </component>
