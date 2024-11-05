@@ -443,18 +443,18 @@ bool FQuestGraphEditor::Quest_CanCopyNodes() const
 	//Copying nodes is disabled for now
 	return false;
 
-	// If any of the nodes can be duplicated then we should allow copying
-	const FGraphPanelSelectionSet SelectedNodes = GetSelectedNodes();
-	for (FGraphPanelSelectionSet::TConstIterator SelectedIter(SelectedNodes); SelectedIter; ++SelectedIter)
-	{
-		UEdGraphNode* Node = Cast<UEdGraphNode>(*SelectedIter);
-		if (Node && Node->CanDuplicateNode())
-		{
-			return true;
-		}
-	}
+	//// If any of the nodes can be duplicated then we should allow copying
+	//const FGraphPanelSelectionSet SelectedNodes = GetSelectedNodes();
+	//for (FGraphPanelSelectionSet::TConstIterator SelectedIter(SelectedNodes); SelectedIter; ++SelectedIter)
+	//{
+	//	UEdGraphNode* Node = Cast<UEdGraphNode>(*SelectedIter);
+	//	if (Node && Node->CanDuplicateNode())
+	//	{
+	//		return true;
+	//	}
+	//}
 
-	return false;
+	//return false;
 }
 
 void FQuestGraphEditor::Quest_PasteNodes()
@@ -575,7 +575,7 @@ bool FQuestGraphEditor::Quest_CanDuplicateNodes() const
 	//Duplicating nodes is disabled for now
 	return false;
 
-	return CanCopyNodes();
+	//return CanCopyNodes();
 }
 
 void FQuestGraphEditor::Quest_CreateComment()

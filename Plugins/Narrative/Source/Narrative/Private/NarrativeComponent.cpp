@@ -606,7 +606,6 @@ bool UNarrativeComponent::CompleteNarrativeDataTask(const FString& TaskName, con
 		return false;
 	}
 
-	return false;
 }
 
 class UQuest* UNarrativeComponent::MakeQuestInstance(TSubclassOf<class UQuest> QuestClass)

@@ -51,7 +51,6 @@ void ARProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 void ARProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	Super::PostInitializeComponents();
 	// PostInitializeComponent is the preferred way of binding any events.
 	SphereComp->OnComponentHit.AddDynamic(this, &ARProjectile::OnActorHit);
 	SetLifeSpan(Lifespan);

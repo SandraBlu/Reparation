@@ -12,7 +12,7 @@ class UAbilitySystemComponent;
 class UStaticMeshComponent;
 
 UENUM(BlueprintType)
-enum class EApplyEffectPolicy
+enum class EApplyEffectPolicy: uint8
 {
 	ApplyOnOverlap,
 	ApplyOnEndOverlap,
@@ -20,7 +20,7 @@ enum class EApplyEffectPolicy
 };
 
 UENUM(BlueprintType)
-enum class ERemoveEffectPolicy
+enum class ERemoveEffectPolicy: uint8
 {
 	RemoveOnEndOverlap,
 	DoNotRemove

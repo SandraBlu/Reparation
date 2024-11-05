@@ -677,7 +677,7 @@ bool FDialogueGraphEditor::Dialogue_CanDuplicateNodes() const
 	//Duplicating nodes is disabled for now
 	return false;
 
-	return CanCopyNodes();
+	//return CanCopyNodes();
 }
 
 bool FDialogueGraphEditor::Dialogue_GetBoundsForSelectedNodes(class FSlateRect& Rect, float Padding)

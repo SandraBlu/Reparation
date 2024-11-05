@@ -164,7 +164,7 @@ void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	}
 }
 
-void AREnemy::SetToStunned(bool bIsStunned)
+void AREnemy::SetToStunned(bool bIsStunned) const
 {
 	if (bStunned)
   	{

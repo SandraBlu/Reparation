@@ -10,7 +10,7 @@
 	"DocsURL": "https://docs.google.com/document/d/13lofD4cZqTpeGOM5x4HSKHWRx7ptJbav4FEnCMBbzQU/edit?usp=sharing",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/f1adaffd049b44cca254832b2beeb1b7",
 	"SupportURL": "mailto:contact@reubs.io",
-	"EngineVersion": "5.3.0",
+	"EngineVersion": "5.4.0",
 	"CanContainContent": true,
 	"Installed": true,
 	"Modules": [

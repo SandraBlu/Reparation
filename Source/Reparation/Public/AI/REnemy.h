@@ -44,7 +44,7 @@ public:
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	
 	UFUNCTION(BlueprintCallable)
-	void SetToStunned(bool bIsStunned);
+	void SetToStunned(bool bIsStunned) const;
 
 	UFUNCTION(BlueprintCallable)
 	void SetToEndStun();

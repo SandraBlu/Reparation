@@ -5,6 +5,8 @@
 #include <GameFramework/PlayerController.h>
 #include <GameFramework/Pawn.h>
 #include <Engine/World.h>
+#include <Engine/EngineTypes.h>
+#include <Engine/HitResult.h>
 
 #define LOCTEXT_NAMESPACE "InteractionComponent"
 

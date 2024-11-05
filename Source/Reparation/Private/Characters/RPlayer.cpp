@@ -26,14 +26,6 @@
 
 ARPlayer::ARPlayer()
 {
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->TargetArmLength = 300.f;
-	CameraBoom->bUsePawnControlRotation = true;
-
-	FollowCam = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCam"));
-	FollowCam->SetupAttachment(CameraBoom);
-
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	
