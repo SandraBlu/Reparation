@@ -552,16 +552,16 @@ bool FQuestGraphEditor::Quest_CanPasteNodes() const
 	//Pasting nodes is disabled for now
 	return false;
 
-	TSharedPtr<SGraphEditor> CurrentGraphEditor = UpdateGraphEdPtr.Pin();
-	if (!CurrentGraphEditor.IsValid())
-	{
-		return false;
-	}
+	//TSharedPtr<SGraphEditor> CurrentGraphEditor = UpdateGraphEdPtr.Pin();
+	//if (!CurrentGraphEditor.IsValid())
+	//{
+	//	return false;
+	//}
 
-	FString ClipboardContent;
-	FPlatformApplicationMisc::ClipboardPaste(ClipboardContent);
+	//FString ClipboardContent;
+	//FPlatformApplicationMisc::ClipboardPaste(ClipboardContent);
 
-	return FEdGraphUtilities::CanImportNodesFromText(CurrentGraphEditor->GetCurrentGraph(), ClipboardContent);
+	//return FEdGraphUtilities::CanImportNodesFromText(CurrentGraphEditor->GetCurrentGraph(), ClipboardContent);
 }
 
 void FQuestGraphEditor::Quest_DuplicateNodes()
