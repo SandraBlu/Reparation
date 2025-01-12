@@ -7,7 +7,7 @@
 
 #define LOCTEXT_NAMESPACE "VendorInventoryComponent"
 
-URVendorInventoryComponent::URVendorInventoryComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer) // This line calls the base class constructor
+/*URVendorInventoryComponent::URVendorInventoryComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer) // This line calls the base class constructor
 {
 	
 	//By default buy items for 50% of their value, and sell for 2x their value 
@@ -101,6 +101,6 @@ int32 URVendorInventoryComponent::GetSellPrice_Implementation(TSubclassOf<class 
 		return FMath::CeilToInt((ItemCDO->BaseValue * SellItemPct) * Quantity);
 	}
 	return INT_MAX;
-}
+}*/
 
 #undef LOCTEXT_NAMESPACE 

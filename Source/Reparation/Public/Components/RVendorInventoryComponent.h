@@ -17,38 +17,38 @@ class REPARATION_API URVendorInventoryComponent : public URInventoryComponent
 
 protected:
 
-	URVendorInventoryComponent(const FObjectInitializer& ObjectInitializer);
-
-	virtual bool AllowLootItem(class URInventoryComponent* Taker, TSubclassOf <class URItem> ItemClass, const int32 Quantity, FText& ErrorText) const override;
-	virtual bool AllowStoreItem(class URInventoryComponent* Storer, TSubclassOf <class URItem> ItemClass, const int32 Quantity, FText& ErrorText) const override;
-
-	/** Remove the item from us, and give it to the taker */
-	virtual FItemAddResult PerformLootItem(class URInventoryComponent* Taker, TSubclassOf <class URItem> ItemClass, const int32 Quantity = 1) override;
-
-	/** Remove the item from the storer, and give it to us */
-	virtual FItemAddResult PerformStoreItem(class URInventoryComponent* Storer, TSubclassOf <class URItem> ItemClass, const int32 Quantity = 1) override;
+	// URVendorInventoryComponent(const FObjectInitializer& ObjectInitializer);
+	//
+	// virtual bool AllowLootItem(class URInventoryComponent* Taker, TSubclassOf <class URItem> ItemClass, const int32 Quantity, FText& ErrorText) const override;
+	// virtual bool AllowStoreItem(class URInventoryComponent* Storer, TSubclassOf <class URItem> ItemClass, const int32 Quantity, FText& ErrorText) const override;
+	//
+	// /** Remove the item from us, and give it to the taker */
+	// virtual FItemAddResult PerformLootItem(class URInventoryComponent* Taker, TSubclassOf <class URItem> ItemClass, const int32 Quantity = 1) override;
+	//
+	// /** Remove the item from the storer, and give it to us */
+	// virtual FItemAddResult PerformStoreItem(class URInventoryComponent* Storer, TSubclassOf <class URItem> ItemClass, const int32 Quantity = 1) override;
 
 
 	/**
 	* Return the price we'll buy the given item for
 	*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Item")
-	int32 GetBuyPrice(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
-	virtual int32 GetBuyPrice_Implementation(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
+	// UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Item")
+	// int32 GetBuyPrice(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
+	// virtual int32 GetBuyPrice_Implementation(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
+	//
+	// /**
+	// * Return the price we'll sell the given item for
+	// */
+	// UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Item")
+	// int32 GetSellPrice(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
+	// virtual int32 GetSellPrice_Implementation(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
 
-	/**
-	* Return the price we'll sell the given item for
-	*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Item")
-	int32 GetSellPrice(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
-	virtual int32 GetSellPrice_Implementation(TSubclassOf<class URItem> Item, int32 Quantity = 1) const;
-
-	//The percentage of the items value we'll buy items for
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
-	float BuyItemPct;
-
-	//The percentage of the items value we'll sell items for 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
-	float SellItemPct;
+	// //The percentage of the items value we'll buy items for
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
+	// float BuyItemPct;
+	//
+	// //The percentage of the items value we'll sell items for 
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
+	// float SellItemPct;
 	
 };

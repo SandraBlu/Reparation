@@ -9,6 +9,14 @@
 
 #define LOCTEXT_NAMESPACE "Item"
 
+#define ItemStat_DisplayName "DisplayName"
+#define ItemStat_Weight "Weight"
+#define ItemStat_Quantity "Quantity"
+#define ItemStat_RechargeDuration "RechargeDuration"
+#define ItemStat_StackWeight "StackWeight"
+#define ItemStat_MaxStackSize "MaxStackSize"
+#define ItemStat_BaseValue "BaseValue"
+
 URItem::URItem()
 {
 	DisplayName = LOCTEXT("ItemName", "Item");
@@ -36,13 +44,18 @@ URItem::URItem()
 		DisplayName = FText::FromString(NameString);
 	}
 
-	Stats.Add("Weight");
-	Stats.Add("Quantity");
+	Stats.Add(FItemStat(LOCTEXT("WeightStatDisplayText", "Weight"), ItemStat_Weight));
+	Stats.Add(FItemStat(LOCTEXT("QuantityStatDisplayText", "Quantity"), ItemStat_Quantity));
 }
 
 void URItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	//Inventory needs items to support user added blueprint replicated variables 
+	UBlueprintGeneratedClass* BPClass = Cast<UBlueprintGeneratedClass>(GetClass());
+	if (BPClass != NULL)
+	{
+		BPClass->GetLifetimeBlueprintReplicationList(OutLifetimeProps);
+	}
 
 	DOREPLIFETIME(URItem, Quantity);
 	DOREPLIFETIME_CONDITION_NOTIFY(URItem, bActive, COND_None, REPNOTIFY_OnChanged);
@@ -79,17 +92,11 @@ void URItem::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 		}
 	}
 }
+#endif
 
 bool URItem::HasAuthority() const
 {
 	return (OwningInventory && OwningInventory->GetOwnerRole() >= ROLE_Authority);
-}
-
-#endif
-
-void URItem::OnRep_Quantity(const int32 OldQuantity)
-{
-	OnItemModified.Broadcast();
 }
 
 void URItem::OnRep_bActive(const bool bOldActive)
@@ -104,14 +111,22 @@ void URItem::OnRep_bActive(const bool bOldActive)
 	}
 }
 
-void URItem::SetActive(const bool bNewActive)
+void URItem::SetActive(const bool bNewActive, const bool bForce)
 {
-	if (CanActivate() && bNewActive != bActive)
+	if (bCanActivate)
 	{
-		bActive = bNewActive;
-		OnRep_bActive(!bActive);
-		MarkDirtyForReplication();
+		if (bNewActive != bActive || bForce)
+		{
+			bActive = bNewActive;
+			OnRep_bActive(!bActive);
+			MarkDirtyForReplication();
+		}
 	}
+}
+
+void URItem::OnRep_Quantity(const int32 OldQuantity)
+{
+	OnItemModified.Broadcast();
 }
 
 void URItem::SetQuantity(const int32 NewQuantity)
@@ -162,6 +177,15 @@ void URItem::MarkDirtyForReplication()
 
 bool URItem::ShouldShowInInventory_Implementation() const
 {
+	//By default, don't show vendors equipped items in their store  
+	if (OwningInventory && OwningInventory->bIsVendor)
+	{
+		if (bActive)
+		{
+			return false; 
+		}
+	}
+
 	return true;
 }
 
@@ -178,14 +202,19 @@ void URItem::Deactivated_Implementation()
 {
 }
 
-bool URItem::CanActivate_Implementation() const
-{
-	return bCanActivate;
-}
-
 bool URItem::CanUse_Implementation() const
 {
 	return true;
+}
+
+bool URItem::ShouldUseOnAdd_Implementation() const
+{
+	return false;
+}
+
+FText URItem::GetRawDescription_Implementation()
+{
+	return Description;
 }
 
 FText URItem::GetParsedDescription()
@@ -222,31 +251,31 @@ FText URItem::GetParsedDescription()
 FString URItem::GetStringVariable_Implementation(const FString& VariableName)
 {
 	//Overriable in BP in case you want to add more 
-	if (VariableName == "Display Name")
+	if (VariableName == ItemStat_DisplayName)
 	{
 		return DisplayName.ToString();
 	}
-	else if (VariableName == "Weight")
+	else if (VariableName == ItemStat_Weight)
 	{
 		return FString::SanitizeFloat(Weight);
 	}
-	else if (VariableName == "Recharge Duration")
+	else if (VariableName == ItemStat_RechargeDuration)
 	{
 		return FString::SanitizeFloat(UseRechargeDuration);
 	}
-	else if (VariableName == "Stack Weight")
+	else if (VariableName == ItemStat_StackWeight)
 	{
 		return FString::SanitizeFloat(GetStackWeight());
 	}
-	else if (VariableName == "Quantity")
+	else if (VariableName == ItemStat_Quantity)
 	{
 		return FString::FromInt(Quantity);
 	}
-	else if (VariableName == "Max Stack Size")
+	else if (VariableName == ItemStat_MaxStackSize)
 	{
 		return FString::FromInt(MaxStackSize);
 	}
-	else if (VariableName == "BaseValue")
+	else if (VariableName == ItemStat_BaseValue)
 	{
 		return FString::FromInt(BaseValue);
 	}

@@ -26,8 +26,8 @@ public:
 	UReactionComponent();
 
 	virtual void Deactivate() override;
+	void SetupAttachment(class UStaticMeshComponent* PickupMesh);
 
-protected:
 	//The time the player must hold the interact key to interact with this object
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interact", meta = (ClampMin=0))
 	float InteractTime;
@@ -38,7 +38,7 @@ protected:
 
 	//The name that will come up when the player looks at the interactable
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interact")
-	FText ReactorNameText;
+	FText ReactorItemName;
 
 	//The verb that describes how the interaction works, ie "Sit" for a chair, "Eat" for food, "Light" for a fireplace
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interact")

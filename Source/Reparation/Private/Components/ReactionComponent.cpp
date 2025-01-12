@@ -7,9 +7,10 @@
 
 // Sets default values for this component's properties
 UReactionComponent::UReactionComponent()
-{InteractTime = 0.f;
+{
+	InteractTime = 0.f;
 	InteractDistance = 200.f;
-	ReactorNameText = LOCTEXT("InteractNameText", "Interact Object");
+	ReactorItemName = LOCTEXT("InteractNameText", "Interact Object");
 	ReactorActionText = LOCTEXT("InteractActionText", "Interact");
 	
 	auto FocusedOverlayFinder = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/NarrativeInteraction/Materials/M_Pulse.M_Pulse'"));
@@ -27,9 +28,13 @@ void UReactionComponent::Deactivate()
 	Super::Deactivate();
 }
 
+void UReactionComponent::SetupAttachment(class UStaticMeshComponent* PickupMesh)
+{
+}
+
 void UReactionComponent::SetReactorNameText(const FText& NewNameText)
 {
-	ReactorNameText = NewNameText;
+	ReactorItemName = NewNameText;
 }
 
 void UReactionComponent::SetReactorActionText(const FText& NewActionText)
