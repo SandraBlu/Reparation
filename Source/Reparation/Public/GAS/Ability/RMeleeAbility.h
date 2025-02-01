@@ -15,13 +15,8 @@ class REPARATION_API URMeleeAbility : public URDamageAbility
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
-	class AREnemy* GetEnemyCharacterFromActorInfo();
 	
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	class UREnemyCombatComponent* GetEnemyCombatComponentFromActorInfo();
-	
-private:
-	TWeakObjectPtr<AREnemy> CachedWarriorEnemyCharacter;
 	
 };

@@ -35,6 +35,17 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	URAbilitySystemComponent* GetRAbilitySystemComponentFromActorInfo() const;
 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	ARPlayer* GetPlayerFromActorInfo();
+	
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	virtual class AREnemy* GetEnemyCharacterFromActorInfo();
+
+private:
+	
+	TWeakObjectPtr<ARPlayer> CachedPlayer;
+	TWeakObjectPtr<AREnemy> CachedEnemy;
+	
 };
 
 

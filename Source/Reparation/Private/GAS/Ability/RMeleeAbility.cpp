@@ -5,15 +5,6 @@
 
 #include "AI/REnemy.h"
 
-class AREnemy* URMeleeAbility::GetEnemyCharacterFromActorInfo()
-{
-	if (!CachedWarriorEnemyCharacter.IsValid())
-	{
-		CachedWarriorEnemyCharacter = Cast<AREnemy>(CurrentActorInfo->AvatarActor);
-	}
-	return CachedWarriorEnemyCharacter.IsValid()? CachedWarriorEnemyCharacter.Get() : nullptr;
-}
-
 class UREnemyCombatComponent* URMeleeAbility::GetEnemyCombatComponentFromActorInfo()
 {
 	return GetEnemyCharacterFromActorInfo()->GetEnemyCombatComponent();

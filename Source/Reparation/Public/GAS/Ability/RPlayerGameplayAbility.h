@@ -15,15 +15,14 @@ class REPARATION_API URPlayerGameplayAbility : public URDamageAbility
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
-	ARPlayer* GetPlayerFromActorInfo();
+	
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	ARPlayerController* GetPlayerControllerFromActorInfo();
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	class UPlayerCombatComp* GetPlayerCombatComponentFromActorInfo();
 	
 private:
-	TWeakObjectPtr<ARPlayer> CachedWarriorHeroCharacter;
+	
 	TWeakObjectPtr<ARPlayerController> CachedWarriorHeroController;
 	
 };

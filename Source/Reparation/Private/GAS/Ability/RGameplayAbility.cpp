@@ -3,6 +3,8 @@
 
 #include "GAS/Ability/RGameplayAbility.h"
 
+#include "AI/REnemy.h"
+#include "Characters/RPlayer.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
 
@@ -52,4 +54,23 @@ float URGameplayAbility::GetCooldown(float InLevel) const
 URAbilitySystemComponent* URGameplayAbility::GetRAbilitySystemComponentFromActorInfo() const
 {
 	return Cast<URAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
+}
+
+ARPlayer* URGameplayAbility::GetPlayerFromActorInfo()
+{
+	if (!CachedPlayer.IsValid())
+	{
+		CachedPlayer = Cast<ARPlayer>(CurrentActorInfo->AvatarActor);
+	}
+   
+	return CachedPlayer.IsValid()? CachedPlayer.Get() : nullptr;
+}
+
+class AREnemy* URGameplayAbility::GetEnemyCharacterFromActorInfo()
+{
+	if (!CachedEnemy.IsValid())
+	{
+		CachedEnemy = Cast<AREnemy>(CurrentActorInfo->AvatarActor);
+	}
+	return CachedEnemy.IsValid()? CachedEnemy.Get() : nullptr;
 }

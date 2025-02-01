@@ -6,16 +6,6 @@
 #include "Characters/RPlayer.h"
 #include "Framework/RPlayerController.h"
 
-ARPlayer* URPlayerGameplayAbility::GetPlayerFromActorInfo()
-{
-	if (!CachedWarriorHeroCharacter.IsValid())
-	{
-		CachedWarriorHeroCharacter = Cast<ARPlayer>(CurrentActorInfo->AvatarActor);
-	}
-   
-	return CachedWarriorHeroCharacter.IsValid()? CachedWarriorHeroCharacter.Get() : nullptr;
-}
-
 ARPlayerController* URPlayerGameplayAbility::GetPlayerControllerFromActorInfo()
 {
 	if (!CachedWarriorHeroController.IsValid())
