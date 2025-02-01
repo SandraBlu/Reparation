@@ -218,6 +218,8 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		const bool bFatal = NewHealth <= 0.f;
 		if (bFatal)
 		{
+			FGameplayTagContainer TagContainer;
+			TagContainer.AddTag(FRGameplayTags::Get().ability_death);
 			if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(Props.TargetAvatarActor))
 			{
 				CombatInterface->Die(URAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));

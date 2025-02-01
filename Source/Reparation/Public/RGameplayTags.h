@@ -170,6 +170,7 @@ public:
 	FGameplayTag Event_Evading;
 	FGameplayTag Event_Blocking;
 	FGameplayTag Event_TargetLock;
+	
 	//HitReact Events
 	FGameplayTag Event_HitReact;
 	FGameplayTag Event_HitReact_Front;

@@ -5,6 +5,7 @@
 
 #include "RAbilityTypes.h"
 #include "RGameplayTags.h"
+#include "Characters/RPlayer.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "GAS/RAttributeSet.h"
 #include "GAS/Data/RCharacterClassInfo.h"

@@ -42,17 +42,28 @@ void URAbilitySystemComponent::AddPassiveAbilities(const TArray<TSubclassOf<UGam
 
 void URAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
+	const FRGameplayTags GameplayTags = FRGameplayTags::Get();
 	if (!InputTag.IsValid()) return;
 	FScopedAbilityListLock ActiveScopeLoc(*this);
 	for (auto& AbilitySpec : GetActivatableAbilities())
 	{
-		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		if(!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
+		//if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		if (InputTag.MatchesTag(GameplayTags.InputTag_Toggle))
 		{
 			AbilitySpecInputPressed(AbilitySpec);
 			if (AbilitySpec.IsActive())
 			{
-				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, AbilitySpec.Handle, AbilitySpec.ActivationInfo.GetActivationPredictionKey());
+				CancelAbilityHandle(AbilitySpec.Handle);
 			}
+			else
+			{
+				TryActivateAbility(AbilitySpec.Handle);
+			}
+		}
+		else
+		{
+			TryActivateAbility(AbilitySpec.Handle);
 		}
 	}
 }
@@ -76,12 +87,19 @@ void URAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 
 void URAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {
-	if (!InputTag.IsValid()) return;
+	const FRGameplayTags GameplayTags = FRGameplayTags::Get();
+	
+	if (!InputTag.IsValid() || !InputTag.MatchesTag(GameplayTags.InputTag_MustBeHeld))
+	{
+		return;
+	}
+
 	FScopedAbilityListLock ActiveScopeLoc(*this);
  	for (auto& AbilitySpec : GetActivatableAbilities())
  	{
  		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag) && AbilitySpec.IsActive())
  		{
+ 			CancelAbilityHandle(AbilitySpec.Handle);
  			AbilitySpecInputReleased(AbilitySpec);
 			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, AbilitySpec.ActivationInfo.GetActivationPredictionKey());
  		}
