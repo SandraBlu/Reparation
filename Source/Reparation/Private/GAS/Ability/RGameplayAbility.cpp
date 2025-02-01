@@ -3,6 +3,7 @@
 
 #include "GAS/Ability/RGameplayAbility.h"
 
+#include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
 
 FString URGameplayAbility::GetDescription(int32 Level)
@@ -46,4 +47,9 @@ float URGameplayAbility::GetCooldown(float InLevel) const
 		CooldownEffect->DurationMagnitude.GetStaticMagnitudeIfPossible(InLevel, Cooldown);
 	}
 	return Cooldown;
+}
+
+URAbilitySystemComponent* URGameplayAbility::GetRAbilitySystemComponentFromActorInfo() const
+{
+	return Cast<URAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
 }

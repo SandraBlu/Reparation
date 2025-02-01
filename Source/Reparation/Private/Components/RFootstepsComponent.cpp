@@ -3,32 +3,48 @@
 
 #include "Components/RFootstepsComponent.h"
 
-// Sets default values for this component's properties
+#include "NiagaraFunctionLibrary.h"
+#include "Characters/RPlayer.h"
+#include "Framework/RPhysicalMaterial.h"
+#include "Kismet/GameplayStatics.h"
+#include "RTypes/REnumTypes.h"
+
+
 URFootstepsComponent::URFootstepsComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-// Called when the game starts
-void URFootstepsComponent::BeginPlay()
+void URFootstepsComponent::HandleFootstep(EFoot Foot)
 {
-	Super::BeginPlay();
+	if (ARPlayer* Character = Cast<ARPlayer>(GetOwner()))
+	{
+		if (USkeletalMeshComponent* Mesh = Character->GetMesh())
+		{
+			FHitResult HitResult;
+			const FVector SocketLocation = Mesh->GetSocketLocation(Foot == EFoot::Left ? LeftFootSocket : RightFootSocket);
+			const FVector Location = SocketLocation + FVector::UpVector * 20;
 
-	// ...
-	
+			FCollisionQueryParams QueryParams;
+			QueryParams.bReturnPhysicalMaterial = true;
+			QueryParams.AddIgnoredActor(Character);
+
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, Location + FVector::UpVector * -50.f, ECollisionChannel::ECC_WorldStatic, QueryParams))
+			{
+				if (HitResult.bBlockingHit)
+				{
+					if (HitResult.PhysMaterial.Get())
+					{
+						URPhysicalMaterial* PhysicsMat = Cast<URPhysicalMaterial>(HitResult.PhysMaterial.Get());
+
+						if (PhysicsMat)
+						{
+							UGameplayStatics::PlaySoundAtLocation(this, PhysicsMat->FootstepSFX, Location, 1.f);
+							UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PhysicsMat->FootstepVFX, Location);
+						}
+					}
+				}
+			}
+		}
+	}
 }
-
-
-// Called every frame
-void URFootstepsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-

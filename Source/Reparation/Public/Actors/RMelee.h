@@ -18,37 +18,26 @@ public:
 	
 	ARMelee();
 	
-	UFUNCTION(BlueprintCallable)
-	void OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	//Public getter for private weapon box
-	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBox; }
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnHit(FHitResult BoxHit);
+	//UFUNCTION(BlueprintCallable)
+	//virtual void OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	//UFUNCTION(BlueprintImplementableEvent)
+	//void OnHit(FHitResult BoxHit);
 	
 	//Actors to ignore after weapon hits them (same swing)
-	UPROPERTY()
-	TArray<AActor*> IgnoreActors;
+	//UPROPERTY()
+	//TArray<AActor*> IgnoreActors;
 
 protected:
 
 	//Implement Field System on Weapon
-	UFUNCTION(BlueprintImplementableEvent)
-	void CreateForceFields(const FVector& FieldLocation);
+	//UFUNCTION(BlueprintImplementableEvent)
+	//void CreateForceFields(const FVector& FieldLocation);
 
 private:
 	
 	virtual void BeginPlay() override;
 	
-	//Weapon Box Settings
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	UBoxComponent* WeaponBox;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	USceneComponent* TraceStart;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	USceneComponent* TraceEnd;
+	
 	
 };

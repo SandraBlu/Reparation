@@ -3,6 +3,7 @@
 
 #include "Characters/RCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "MotionWarpingComponent.h"
 #include "RGameplayTags.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/Debuff/DebuffNiagaraComponent.h"
@@ -25,6 +26,8 @@ ARCharacterBase::ARCharacterBase()
 	PassiveLifeSiphon->SetupAttachment(EffectAttachComp);
 	PassiveStaminaSiphon = CreateDefaultSubobject<UPassiveNiagaraComponent>("StaminaSiphonComponent");
 	PassiveStaminaSiphon->SetupAttachment(EffectAttachComp);
+
+	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
 }
 
 void ARCharacterBase::Tick(float DeltaSeconds)
@@ -43,6 +46,11 @@ float ARCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+UPawnCombatComponent* ARCharacterBase::GetPawnCombatComponent() const
+{
+	return nullptr;
 }
 
 UAnimMontage* ARCharacterBase::GetHitReactMontage_Implementation()

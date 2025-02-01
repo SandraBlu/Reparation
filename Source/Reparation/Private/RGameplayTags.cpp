@@ -44,7 +44,11 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.InputTag_Passive02 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive02"), FString("Passive02"));
 	GameplayTags.InputTag_Passive03 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive03"), FString("Passive03"));
 	GameplayTags.InputTag_Passive04 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.passive04"), FString("Passive04"));
-
+	GameplayTags.InputTag_MustBeHeld = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.MustBeHeld"), FString("HeldInput"));
+	GameplayTags.InputTag_MustBeHeld_Blocked= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.block.MustBeHeld"), FString("BlockInput"));
+	GameplayTags.InputTag_Toggle = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.toggle"), FString(" Toggle Input"));
+	GameplayTags.InputTag_Toggle_TargetLock= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.toggle.targetLock"), FString("Target Lock"));
+	
 	//Damage Meta Att
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage"), FString("Damage"));
 	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage.physical"), FString("Physical Damage"));
@@ -79,7 +83,13 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ability_none = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.none"), FString("No Ability"));
 	GameplayTags.ability_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.attack"), FString("General attack tag for Behavior Tree"));
 	GameplayTags.ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.melee"), FString("Melee Attack tag"));
+	GameplayTags.ability_Ranged = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.ranged"), FString("Ranger Attack tag"));
 	GameplayTags.ability_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.HitReact"), FString("Hit React tag"));
+	GameplayTags.ability_HitPause = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.HitPause"), FString("Hit Pause tag"));
+	GameplayTags.ability_block = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.block"), FString("Block tag"));
+	GameplayTags.ability_death = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.death"), FString("Dead tag"));
+	GameplayTags.ability_targetLock= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.targetLock"), FString("Target Lock"));
+	GameplayTags.ability_evade = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.evade"), FString("Evade tag"));
 	GameplayTags.ability_stunned = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.stunned"), FString("Stunned tag"));
 	GameplayTags.ability_missile_dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.dark"), FString("Dark Missile tag"));
 	GameplayTags.ability_missile_electric = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.electric"), FString("Electric Missile tag"));
@@ -121,6 +131,12 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.cooldown_grenade_fireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.grenade.fireBlast"), FString("Fire Blast grenade cooldown tag"));
 	GameplayTags.cooldown_grenade_iceBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("cooldown.grenade.iceBlast"), FString("Ice Blast grenade cooldown tag"));
 
+	//Weapons
+	GameplayTags.weapon_melee_katana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("weapon.katana"), FString("katana"));
+	GameplayTags.weapon_melee_staff = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("weapon.staff"), FString("staff"));
+	GameplayTags.weapon_throwable = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("weapon.throwable"), FString("throwable"));
+	GameplayTags.weapon_crossbow = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("weapon.crossbow"), FString("crossbow"));
+	
 	//Sockets
 	GameplayTags.combatSocket_weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("combatSocket.weapon"), FString("weapon"));
 	GameplayTags.combatSocket_handL = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("combatSocket.handR"), FString("handR"));
@@ -151,5 +167,25 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Electric, GameplayTags.Debuff_Stun);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Fire, GameplayTags.Debuff_Burn);
 	GameplayTags.DamageTypeToDebuff.Add(GameplayTags.Damage_Elemental_Ice, GameplayTags.Debuff_Freeze);
+
+	/*
+	 * PlayerEvents
+	 */
+	GameplayTags.Event_EquipKatana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.equip.katana"), FString("Equip Katana"));
+	GameplayTags.Event_UnequipKatana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.unequip.katana"), FString("Unequip Katana"));
+	GameplayTags.Event_HitMelee= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.hit.melee"), FString("Melee Hit"));;
+	GameplayTags.Event_HitPause = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitPause"), FString("Hit Pause"));
+	GameplayTags.Event_Death = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.death"), FString("Death"));
+	GameplayTags.Event_Strafing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.strafing"), FString("Strafing"));
+	GameplayTags.Event_Evading = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.evading"), FString("Evading"));
+	GameplayTags.Event_Blocking = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block"), FString("Blocking"));
+	GameplayTags.Event_TargetLock= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.targetLock"), FString("Target locking"));
+	
+	//Hit React
+	GameplayTags.Event_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitReact"), FString("Hit React"));
+	GameplayTags.Event_HitReact_Front = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitReact.front"), FString("Hit React Front"));
+	GameplayTags.Event_HitReact_Left = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitReact.left"), FString("Hit React Left"));
+	GameplayTags.Event_HitReact_Right = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitReact.right"), FString("Hit React Right"));
+	GameplayTags.Event_HitReact_Back = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitReact.back"), FString("Hit React Back"));
 	
 }

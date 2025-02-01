@@ -9,6 +9,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/Combat/REnemyCombatComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
@@ -27,8 +28,7 @@ AREnemy::AREnemy()
 	HealthBar->SetupAttachment(GetRootComponent());
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
-
+	
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -42,7 +42,13 @@ AREnemy::AREnemy()
 
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	bUseControllerRotationRoll = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f,180.f,0.f);
+	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
+	
+	EnemyCombatComp = CreateDefaultSubobject<UREnemyCombatComponent>(TEXT("EnemyCombatComp"));
 }
 
 void AREnemy::BeginPlay()
@@ -85,14 +91,18 @@ void AREnemy::BeginPlay()
 void AREnemy::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
-	if (!HasAuthority()) return;
+	
 	AIC = Cast<ARAIController>(NewController);
 	AIC->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	AIC->RunBehaviorTree(BehaviorTree);
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), false);
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
+}
+
+UPawnCombatComponent* AREnemy::GetPawnCombatComponent() const
+{
+	return EnemyCombatComp;
 }
 
 int32 AREnemy::GetPlayerLevel_Implementation()

@@ -14,6 +14,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/REquipmentComponent.h"
+#include "Components/RFootstepsComponent.h"
+#include "Components/Combat/PlayerCombatComp.h"
 #include "Framework/RPlayerController.h"
 #include "Framework/RPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -35,6 +37,11 @@ ARPlayer::ARPlayer()
 	LevelUpFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("VFXComp"));
 	LevelUpFX->SetupAttachment(GetRootComponent());
 	LevelUpFX->bAutoActivate = false;
+
+	PlayerCombatComp = CreateDefaultSubobject<UPlayerCombatComp>(TEXT("PlayerCombatComp"));
+	FootstepComponent = CreateDefaultSubobject<URFootstepsComponent>(TEXT("FootstepComp"));
+
+	bUsingBlock = false;
 }
 
 void ARPlayer::PossessedBy(AController* NewController)
@@ -52,6 +59,11 @@ void ARPlayer::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+UPawnCombatComponent* ARPlayer::GetPawnCombatComponent() const
+{
+	return PlayerCombatComp;
+}
+
 int32 ARPlayer::GetPlayerLevel_Implementation()
 {
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
@@ -64,6 +76,7 @@ FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& Com
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Gear->EquippedWeapon))
 	{
+		GetPawnCombatComponent()->RegisterSpawnedWeapon(GameplayTags.combatSocket_weapon, Gear->EquippedWeapon, true);
 		return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
 	}
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
@@ -75,6 +88,11 @@ FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& Com
 		return GetMesh()->GetSocketLocation(HandLSocket);
 	}
 	return FVector();
+}
+
+AActor* ARPlayer::GetCurrentEquippedWeapon_Implementation(ARWeapon* InWeapon)
+{
+	return Gear->EquippedWeapon;
 }
 
 void ARPlayer::Die(const FVector& DeathImpulse)
@@ -200,13 +218,20 @@ ARWeapon* ARPlayer::GetCurrentWeapon_Implementation()
 	return nullptr;
 }
 
-void ARPlayer::SetWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
+URFootstepsComponent* ARPlayer::GetFootstepsComp() const
 {
-	if (MeleeWeapon && MeleeWeapon->GetWeaponBox())
-	{
-		MeleeWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		MeleeWeapon->IgnoreActors.Empty();
-	}
+	return FootstepComponent;
+}
+
+bool ARPlayer::GetIsUsingBlock()
+{
+	return bUsingBlock;
+}
+
+bool ARPlayer::SetIsUsingBlock(bool block)
+{
+	bUsingBlock = block;
+	return bUsingBlock;
 }
 
 void ARPlayer::BeginPlay()

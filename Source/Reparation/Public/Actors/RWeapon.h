@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "RWeapon.generated.h"
 
+class UNiagaraComponent;
 class UBoxComponent;
+class UPawnCombatComponent;
 
 UENUM(BlueprintType)
 enum class ECombatType : UINT8
@@ -26,27 +29,36 @@ class REPARATION_API ARWeapon : public AActor
 public:	
 
 	ARWeapon();
-
-UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	ECombatType CombatType;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+	FGameplayTag WeaponTag;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	FName ActiveWeaponSocket;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	FName InactiveWeaponSocket;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Settings")
 	FName FiringSocket;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	UAnimMontage* EquipAnim;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+	UAnimMontage* DisarmAnim;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Settings")
 	USoundBase* EquipSFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Settings")
 	USoundBase* DisarmSFX;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FX")
+	UNiagaraComponent* TrailVFX;
 
 	/**collision mesh*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Components)
@@ -70,8 +82,9 @@ UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	USkeletalMeshComponent* GetWeaponMesh() const;
 	
-	void UpdateCombatType(ECombatType);
+	FORCEINLINE FGameplayTag GetWeaponTag() const { return WeaponTag; }
 
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -83,4 +96,7 @@ protected:
 	UPROPERTY()
 	class ARPlayer* PawnOwner;
 	
+
+	
 };
+

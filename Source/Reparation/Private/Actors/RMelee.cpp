@@ -6,20 +6,18 @@
 #include "Components/BoxComponent.h"
 #include "Interfaces/RCombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "RDebugHelper.h"
 
 ARMelee::ARMelee()
 {
-	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
-	WeaponBox->SetupAttachment(GetRootComponent());
-
-	TraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("TraceStart"));
-	TraceStart->SetupAttachment(GetRootComponent());
-
-	TraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("TraceEnd"));
-	TraceEnd->SetupAttachment(GetRootComponent());
+	// WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
+	// WeaponBox->SetupAttachment(GetRootComponent());
+	// WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	// WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 }
-
-void ARMelee::OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		
+/*void ARMelee::OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//GetWorld Location Of Start and End Scene Components
@@ -50,10 +48,10 @@ void ARMelee::OnBoxOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 		
 		CreateForceFields(BoxHit.ImpactPoint);
 	}
-}
+}*/
 
 void ARMelee::BeginPlay()
 {
 	Super::BeginPlay();
-	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &ARMelee::OnBoxOverlap);
+	//WeaponBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARMelee::OnBoxOverlap);
 }

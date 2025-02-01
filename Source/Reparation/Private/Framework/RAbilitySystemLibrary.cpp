@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "RAbilityTypes.h"
+#include "RDebugHelper.h"
 #include "RGameplayTags.h"
 #include "Framework/RGameMode.h"
 #include "Framework/RPlayerState.h"
@@ -13,6 +14,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/GAS/RHUD.h"
 #include "UI/GAS/Controllers/RWidgetController.h"
+#include "Components/Combat/PawnCombatComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 bool URAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContextObject,
                                                         FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD)
@@ -521,3 +524,105 @@ bool URAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor
 	return !bFriend;
 }
 
+URAbilitySystemComponent* URAbilitySystemLibrary::NativeGetRASCFromActor(AActor* InActor)
+{
+	check(InActor);
+	return CastChecked<URAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
+}
+
+void URAbilitySystemLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGameplayTag TagToAdd)
+{
+	URAbilitySystemComponent* ASC = NativeGetRASCFromActor(InActor);
+	if (!ASC->HasMatchingGameplayTag(TagToAdd))
+	{
+		ASC->AddLooseGameplayTag(TagToAdd);
+	}
+}
+
+void URAbilitySystemLibrary::RemoveGameplayTagFromActorIfFound(AActor* InActor, FGameplayTag TagToRemove)
+{
+	URAbilitySystemComponent* ASC = NativeGetRASCFromActor(InActor);
+	if (ASC->HasMatchingGameplayTag(TagToRemove))
+	{
+		ASC->RemoveLooseGameplayTag(TagToRemove);
+	}
+}
+
+bool URAbilitySystemLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck)
+{
+	URAbilitySystemComponent* ASC = NativeGetRASCFromActor(InActor);
+	return ASC->HasMatchingGameplayTag(TagToCheck);
+}
+
+void URAbilitySystemLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck, ERConfirmType& OutConfirmType)
+{
+	OutConfirmType = NativeDoesActorHaveTag(InActor,TagToCheck)? ERConfirmType::Yes : ERConfirmType::No;
+}
+
+UPawnCombatComponent* URAbilitySystemLibrary::NativeGetPawnCombatComponentFromActor(AActor* InActor)
+{
+	check(InActor);
+	if (IRCombatInterface* PawnCombatInterface = Cast<IRCombatInterface>(InActor))
+	{
+		return PawnCombatInterface->GetPawnCombatComponent();
+	}
+	return nullptr;
+}
+
+UPawnCombatComponent* URAbilitySystemLibrary::BP_GetPawnCombatComponentFromActor(AActor* InActor, ERValidType& OutValidType)
+{
+	UPawnCombatComponent* CombatComponent = NativeGetPawnCombatComponentFromActor(InActor);
+	OutValidType = CombatComponent? ERValidType::Valid : ERValidType::Invalid;
+	return CombatComponent;
+}
+
+float URAbilitySystemLibrary::GetScalableFloatValueAtLevel(const FScalableFloat& ScalableFloat, float InLevel)
+{
+	return ScalableFloat.GetValueAtLevel(InLevel);
+}
+
+FGameplayTag URAbilitySystemLibrary::ComputeHitReactDirection(AActor* InAttacker, AActor* InTarget, float& OutHitDirection)
+{
+	check(InAttacker && InTarget);
+	const FVector TargetForward = InTarget->GetActorForwardVector();
+	const FVector TargetAngleNormalized = (InAttacker->GetActorLocation() - InTarget->GetActorLocation()).GetSafeNormal();
+
+	const float DotResult = FVector::DotProduct(TargetForward,TargetAngleNormalized);
+	OutHitDirection = UKismetMathLibrary::DegAcos(DotResult);
+
+	const FVector CrossResult = FVector::CrossProduct(TargetForward, TargetAngleNormalized);
+	if (CrossResult.Z < 0.f)
+	{
+		OutHitDirection *= -1.f;
+	}
+
+	if (OutHitDirection >= -45.f && OutHitDirection <= 45.f)
+	{
+		return FGameplayTag::RequestGameplayTag(FName("event.HitReact.front"));
+	}
+	else if (OutHitDirection<-45.f && OutHitDirection>=-135.f)
+	{
+		return FGameplayTag::RequestGameplayTag(FName("event.HitReact.left"));
+	}
+	else if (OutHitDirection<-135.f || OutHitDirection>135.f)
+	{
+		return FGameplayTag::RequestGameplayTag(FName("event.HitReact.back"));
+	}
+	else if(OutHitDirection>45.f && OutHitDirection<=135.f)
+	{
+		return FGameplayTag::RequestGameplayTag(FName("event.HitReact.right"));
+	}
+	
+	return FGameplayTag::RequestGameplayTag(FName("event.HitReact.front"));
+}
+
+bool URAbilitySystemLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender)
+{
+	check(InAttacker && InDefender);
+
+	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
+
+	const FString DebugString = FString::Printf(TEXT("DotResult: %f %s"), DotResult, DotResult<0.f? TEXT("Valid Block") : TEXT("NO Block"));
+	Debug::Print(DebugString,DotResult<0.f? FColor::Green : FColor::Red);
+	return DotResult < 0.f? true : false;;
+}

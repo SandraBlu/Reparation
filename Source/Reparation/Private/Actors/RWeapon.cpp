@@ -3,9 +3,10 @@
 
 #include "Actors/RWeapon.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "RGameplayTags.h"
 #include "Characters/RPlayer.h"
 #include "Components/BoxComponent.h"
-#include "Interfaces/RCombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -18,38 +19,24 @@ ARWeapon::ARWeapon()
 	SKMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SKMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	RootComponent = SKMesh;
-
+    InactiveWeaponSocket = FName("inactive_katana");
 	ActiveWeaponSocket = FName("weapon_r");
-
 }
 
 void ARWeapon::OnEquip()
 {
     AttachMeshToPawn(PawnOwner->GetMesh(), ActiveWeaponSocket);
-    if (EquipSFX)
-    {
-        UpdateCombatType(CombatType);
-        UGameplayStatics::PlaySoundAtLocation(this, EquipSFX, GetActorLocation());
-    }
+    PlayEquipMontage("Draw");
 }
 
 void ARWeapon::OnUnEquip()
 {
     AttachMeshToPawn(PawnOwner->GetMesh(), InactiveWeaponSocket);
-    if (EquipSFX)
-    {
-        UGameplayStatics::PlaySoundAtLocation(this, DisarmSFX, GetActorLocation());
-    }
 }
 
 USkeletalMeshComponent* ARWeapon::GetWeaponMesh() const
 {
     return SKMesh;
-}
-
-void ARWeapon::UpdateCombatType(ECombatType)
-{
-    CombatType;
 }
 
 void ARWeapon::BeginPlay()
@@ -83,5 +70,3 @@ void ARWeapon::AttachMeshToPawn(USceneComponent* InParent, FName InSocketName)
         AttachToComponent(PawnOwner->GetMesh(), TransformRules, InSocketName);
     }
 }
-
-

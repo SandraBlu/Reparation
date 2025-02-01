@@ -10,6 +10,8 @@ void ARPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACh
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
 	{
+		PlayerTeamID = FGenericTeamId(0);
+		
 		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
 		DamageText->RegisterComponent();
 		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
@@ -21,4 +23,9 @@ void ARPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACh
 ARPlayerController::ARPlayerController()
 {
 	bReplicates = true;
+}
+
+FGenericTeamId ARPlayerController::GetGenericTeamId() const
+{
+	return PlayerTeamID;
 }
