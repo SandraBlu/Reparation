@@ -6,6 +6,10 @@
 #include "Abilities/GameplayAbility.h"
 #include "RGameplayAbility.generated.h"
 
+class URAbilitySystemComponent;
+class UPlayerCombatComp;
+class ARPlayerController;
+class ARPlayer;
 /**
  * 
  */
@@ -27,6 +31,10 @@ protected:
 
 	float GetEnergyCost(float InLevel = 1.f) const;
 	float GetCooldown(float InLevel = 1.f) const;
+
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	URAbilitySystemComponent* GetRAbilitySystemComponentFromActorInfo() const;
+
 };
 
 

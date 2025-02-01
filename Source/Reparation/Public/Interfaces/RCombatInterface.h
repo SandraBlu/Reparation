@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "RCombatInterface.generated.h"
 
+class UPawnCombatComponent;
 class ARWeapon;
 class UNiagaraSystem;
 class UAbilitySystemComponent;
@@ -52,9 +53,11 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void GetHit(const FVector& ImpactPoint);
-
+	
 	UFUNCTION(BlueprintNativeEvent)
 	int32 GetPlayerLevel();
+
+	virtual UPawnCombatComponent* GetPawnCombatComponent() const = 0;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetCombatSocketLocation(const FGameplayTag& CombatSocketTag);
@@ -94,5 +97,8 @@ public:
 	virtual FOnASCRegistered GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath GetOnDeathDelegate() = 0;
 	virtual FOnDamageSignature& GetOnDamageSignature() = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	AActor* GetCurrentEquippedWeapon(ARWeapon* InWeapon);
 	
 	};

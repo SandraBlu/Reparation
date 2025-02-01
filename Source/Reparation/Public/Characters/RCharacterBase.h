@@ -16,6 +16,10 @@ class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
 class UAbilitySystemComponent;
+class UMotionWarpingComponent;
+class USceneComponent;
+class UAnimMontage;
+class USoundBase;
 
 UCLASS()
 class REPARATION_API ARCharacterBase : public ACharacter, public IAbilitySystemInterface, public IRCombatInterface
@@ -33,6 +37,7 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	//Combat Interface
+	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual UAnimMontage* GetStunnedMontage_Implementation() override;
 	virtual bool IsDead_Implementation() const override;
@@ -59,7 +64,10 @@ protected:
 
 	UPROPERTY()
 	UAttributeSet* AttributeSet;
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
+	UMotionWarpingComponent* MotionWarpingComponent;
+	
 	virtual void InitAbilityActorInfo();
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	virtual void InitializeAttributes() const;

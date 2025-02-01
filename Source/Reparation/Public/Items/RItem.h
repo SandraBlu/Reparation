@@ -74,9 +74,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
 	TSoftObjectPtr<class UStaticMesh> PickupMesh;
-
-	UPROPERTY(EditAnywhere, Category = "SFX")
-	TObjectPtr<class USoundBase> PickupSFX;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
 	TSoftObjectPtr<class UTexture2D> Icon;

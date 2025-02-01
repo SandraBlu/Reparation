@@ -6,8 +6,10 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 #include "RAbilityTypes.h"
+#include "GAS/RAbilitySystemComponent.h"
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "RTypes/REnumTypes.h"
 #include "UI/GAS/RHUD.h"
 #include "RAbilitySystemLibrary.generated.h"
 
@@ -17,6 +19,7 @@ class UAbilitySystemComponent;
 class URAttributeMenuController;
 class UROverlayWidgetController;
 struct FWidgetControllerParams;
+class UPawnCombatComponent;
 /**
  * 
  */
@@ -144,4 +147,33 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
 	static void SetTargetEffectParamsASC(UPARAM(ref)FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC);
+
+	//--- added Melee CombatFunctions
+
+	static URAbilitySystemComponent* NativeGetRASCFromActor(AActor* InActor);
+
+	UFUNCTION(BlueprintCallable, Category = "RBFL")
+	static void AddGameplayTagToActorIfNone(AActor* InActor,FGameplayTag TagToAdd);
+
+	UFUNCTION(BlueprintCallable, Category = "RBFL")
+	static void RemoveGameplayTagFromActorIfFound(AActor* InActor,FGameplayTag TagToRemove);
+	
+	static bool NativeDoesActorHaveTag(AActor* InActor,FGameplayTag TagToCheck);
+
+	UFUNCTION(BlueprintCallable, Category = "RBFL", meta = (DisplayName = "Does Actor Have Tag", ExpandEnumAsExecs = "OutConfirmType"))
+	static void BP_DoesActorHaveTag(AActor* InActor,FGameplayTag TagToCheck,ERConfirmType& OutConfirmType);
+	
+	static UPawnCombatComponent* NativeGetPawnCombatComponentFromActor(AActor* InActor);
+
+	UFUNCTION(BlueprintCallable, Category = "RBFL", meta = (DisplayName = "Get Pawn Combat Component From Actor", ExpandEnumAsExecs = "OutValidType"))
+	static UPawnCombatComponent* BP_GetPawnCombatComponentFromActor(AActor* InActor,ERValidType& OutValidType);
+
+	UFUNCTION(BlueprintPure, Category = "RBFL", meta = (CompactNodeTitle = "Get Value At Level"))
+	static float GetScalableFloatValueAtLevel(const FScalableFloat& ScalableFloat, float InLevel = 1.f);
+
+	UFUNCTION(BlueprintPure, Category = "RBFL", meta = (CompactNodeTitle = "Get Value At Level"))
+	static FGameplayTag ComputeHitReactDirection(AActor* InAttacker, AActor* InTarget, float& HitDirection);
+
+	UFUNCTION(BlueprintPure, Category = "RBFL")
+	static bool IsValidBlock(AActor* InAttacker, AActor* InDefender);
 };

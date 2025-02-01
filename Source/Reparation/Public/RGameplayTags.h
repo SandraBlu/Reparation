@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 
-#include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 
 /**
@@ -20,6 +19,7 @@ public:
 	static void InitializeNativeGameplayTags();
 
 	//GameplayTags
+	//Attributes
 	FGameplayTag Attributes_Primary_Agility;
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Perception;
@@ -51,7 +51,12 @@ public:
 	FGameplayTag InputTag_Passive02;
 	FGameplayTag InputTag_Passive03;
 	FGameplayTag InputTag_Passive04;
-
+	//Block
+	FGameplayTag InputTag_MustBeHeld;
+	FGameplayTag InputTag_MustBeHeld_Blocked;
+	FGameplayTag InputTag_Toggle;
+	FGameplayTag InputTag_Toggle_TargetLock;
+	
 	//meta
 	FGameplayTag Attributes_meta_xp;
 	FGameplayTag Damage;
@@ -90,7 +95,13 @@ public:
 	FGameplayTag ability_none;
 	FGameplayTag ability_Attack;
 	FGameplayTag ability_Melee;
+	FGameplayTag ability_Ranged;
 	FGameplayTag ability_HitReact;
+	FGameplayTag ability_HitPause;
+	FGameplayTag ability_block;
+	FGameplayTag ability_death;
+	FGameplayTag ability_evade;
+	FGameplayTag ability_targetLock;
 	FGameplayTag ability_stunned;
 	FGameplayTag ability_missile_dark;
 	FGameplayTag ability_missile_electric;
@@ -120,10 +131,6 @@ public:
 	FGameplayTag ability_passive_staminaSiphon;
 	FGameplayTag ability_passive_staminaRegen;
 	
-	
-	
-
-	
 	//cooldown
 	FGameplayTag cooldown_Melee;
 	FGameplayTag cooldown_missile_dark;
@@ -136,7 +143,12 @@ public:
 	FGameplayTag cooldown_grenade_fireBlast;
 	FGameplayTag cooldown_grenade_iceBlast;
 
-
+	//Weapons
+	FGameplayTag weapon_melee_katana;
+	FGameplayTag weapon_melee_staff;
+	FGameplayTag weapon_throwable;
+	FGameplayTag weapon_crossbow;
+	
 	//Combat Socket
 	FGameplayTag combatSocket_weapon;
 	FGameplayTag combatSocket_handL;
@@ -148,6 +160,23 @@ public:
 	FGameplayTag Montage_Attack03;
 	FGameplayTag Montage_Attack04;
 
+	//Events
+	FGameplayTag Event_EquipKatana;
+	FGameplayTag Event_UnequipKatana;
+	FGameplayTag Event_HitMelee;
+	FGameplayTag Event_HitPause;
+	FGameplayTag Event_Death;
+	FGameplayTag Event_Strafing;
+	FGameplayTag Event_Evading;
+	FGameplayTag Event_Blocking;
+	FGameplayTag Event_TargetLock;
+	//HitReact Events
+	FGameplayTag Event_HitReact;
+	FGameplayTag Event_HitReact_Front;
+	FGameplayTag Event_HitReact_Left;
+	FGameplayTag Event_HitReact_Right;
+	FGameplayTag Event_HitReact_Back;
+	
 private:
 
 	static FRGameplayTags GameplayTags;
