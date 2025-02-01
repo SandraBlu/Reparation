@@ -76,7 +76,7 @@ FVector ARPlayer::GetCombatSocketLocation_Implementation(const FGameplayTag& Com
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Gear->EquippedWeapon))
 	{
-		GetPawnCombatComponent()->RegisterSpawnedWeapon(GameplayTags.combatSocket_weapon, Gear->EquippedWeapon, true);
+		//GetPawnCombatComponent()->RegisterSpawnedWeapon(GameplayTags.combatSocket_weapon, Gear->EquippedWeapon, true);
 		return Gear->EquippedWeapon->GetWeaponMesh()->GetSocketLocation(Gear->EquippedWeapon->FiringSocket);
 	}
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
