@@ -3,7 +3,9 @@
 
 #include "Anim/RAnimInstanceBase.h"
 
+#include "KismetAnimationLibrary.h"
 #include "Characters/RCharacterBase.h"
+#include "Framework/RAbilitySystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -24,4 +26,15 @@ void URAnimInstanceBase::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	}
 	//GroundSpeed = OwningCharacter->GetVelocity().Size2D();
 	bHasAcceleration = OwningMovementComponent->GetCurrentAcceleration().SizeSquared2D()>0.f;
+	//LocomotionDirection = UKismetAnimationLibrary::CalculateDirection(OwningCharacter->GetVelocity(),OwningCharacter->GetActorRotation());
+}
+
+bool URAnimInstanceBase::DoesOwnerHaveTag(FGameplayTag TagToCheck) const
+{
+	if (APawn* OwningPawn = TryGetPawnOwner())
+	{
+		return URAbilitySystemLibrary::NativeDoesActorHaveTag(OwningPawn,TagToCheck);
+	}
+
+	return false;
 }
