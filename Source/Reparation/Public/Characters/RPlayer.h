@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "InputActionValue.h"
 #include "Characters/RCharacterBase.h"
 #include "Interfaces/RPlayerInterface.h"
 #include "RDebugHelper.h"
@@ -91,6 +92,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* PlayerMappingContext;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* SwitchTarget;
+	
 	UPROPERTY(BlueprintReadOnly)
 	URFootstepsComponent* FootstepComponent;
 	
@@ -99,6 +103,12 @@ protected:
 	
 private:
 
+	//Input
+	void Input_SwitchTargetTriggered(const FInputActionValue& Value);
+	void Input_SwitchTargetCompleted(const FInputActionValue& Value);
+
+	FVector2D SwitchTargetDirection = FVector2D::ZeroVector	;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UPlayerCombatComp* PlayerCombatComp;
 	

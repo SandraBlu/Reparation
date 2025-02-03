@@ -247,6 +247,19 @@ void ARPlayer::BeginPlay()
 	}
 }
 
+void ARPlayer::Input_SwitchTargetTriggered(const FInputActionValue& Value)
+{
+	SwitchTargetDirection = Value.Get<FVector2D>();
+}
+
+void ARPlayer::Input_SwitchTargetCompleted(const FInputActionValue& Value)
+{
+	FGameplayEventData EventData;
+	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, SwitchTargetDirection.X > 0.f? GameplayTags.Event_SwitchTarget_Right : GameplayTags.Event_SwitchTarget_Left, EventData);
+	Debug::Print((TEXT("Switch Target Direction: ") + SwitchTargetDirection.ToString()));
+}
+
 void ARPlayer::InitAbilityActorInfo()
 {
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
@@ -300,5 +313,7 @@ void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (URInputComponent* InputComp = CastChecked<URInputComponent>(InputComponent))
 	{
 		InputComp->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+		InputComp->BindAction(SwitchTarget, ETriggerEvent::Started, this, &ARPlayer::Input_SwitchTargetTriggered);
+		InputComp->BindAction(SwitchTarget, ETriggerEvent::Completed, this, &ARPlayer::Input_SwitchTargetCompleted);
 	}
 }

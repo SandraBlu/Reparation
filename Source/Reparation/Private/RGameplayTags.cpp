@@ -47,7 +47,8 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.InputTag_MustBeHeld = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.MustBeHeld"), FString("HeldInput"));
 	GameplayTags.InputTag_MustBeHeld_Blocked= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.block.MustBeHeld"), FString("BlockInput"));
 	GameplayTags.InputTag_Toggle = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.toggle"), FString(" Toggle Input"));
-	GameplayTags.InputTag_Toggle_TargetLock= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.toggle.targetLock"), FString("Target Lock"));
+	GameplayTags.InputTag_Toggle_TargetLock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.toggle.targetLock"), FString("Target Lock"));
+	//GameplayTags.InputTag_SwitchTarget= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("inputTag.switchTarget"), FString("Switch Target"));
 	
 	//Damage Meta Att
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("damage"), FString("Damage"));
@@ -179,8 +180,9 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Event_Strafing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.strafing"), FString("Strafing"));
 	GameplayTags.Event_Evading = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.evading"), FString("Evading"));
 	GameplayTags.Event_Blocking = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block"), FString("Blocking"));
-	GameplayTags.Event_TargetLock= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.targetLock"), FString("Target locking"));
-	
+	GameplayTags.Event_TargetLock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.targetLock"), FString("Target locking"));
+	GameplayTags.Event_SwitchTarget_Left = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.target.left"), FString("Target left"));;
+	GameplayTags.Event_SwitchTarget_Right = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.target.right"), FString("Target right"));;
 	//Hit React
 	GameplayTags.Event_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitReact"), FString("Hit React"));
 	GameplayTags.Event_HitReact_Front = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitReact.front"), FString("Hit React Front"));

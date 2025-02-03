@@ -56,6 +56,7 @@ public:
 	FGameplayTag InputTag_MustBeHeld_Blocked;
 	FGameplayTag InputTag_Toggle;
 	FGameplayTag InputTag_Toggle_TargetLock;
+	//FGameplayTag InputTag_SwitchTarget;
 	
 	//meta
 	FGameplayTag Attributes_meta_xp;
@@ -170,6 +171,8 @@ public:
 	FGameplayTag Event_Evading;
 	FGameplayTag Event_Blocking;
 	FGameplayTag Event_TargetLock;
+	FGameplayTag Event_SwitchTarget_Left;
+	FGameplayTag Event_SwitchTarget_Right;
 	
 	//HitReact Events
 	FGameplayTag Event_HitReact;
