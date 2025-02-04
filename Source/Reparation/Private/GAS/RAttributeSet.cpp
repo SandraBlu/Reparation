@@ -220,6 +220,7 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		{
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FRGameplayTags::Get().ability_death);
+			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(Props.TargetAvatarActor))
 			{
 				CombatInterface->Die(URAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));

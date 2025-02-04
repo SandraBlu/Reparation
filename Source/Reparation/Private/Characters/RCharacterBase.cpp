@@ -100,6 +100,7 @@ FOnDeath ARCharacterBase::GetOnDeathDelegate()
 
 void ARCharacterBase::Die(const FVector& DeathImpulse)
 {
+	
 }
 
 FOnDamageSignature& ARCharacterBase::GetOnDamageSignature()

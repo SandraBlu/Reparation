@@ -97,11 +97,6 @@ AActor* ARPlayer::GetCurrentEquippedWeapon_Implementation(ARWeapon* InWeapon)
 
 void ARPlayer::Die(const FVector& DeathImpulse)
 {
-	MulticastHandleDeath(DeathImpulse);
-}
-
-void ARPlayer::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
-{
 	if (!Gear->EquippedWeapon) return;
 	Gear->EquippedWeapon->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	Gear->EquippedWeapon->GetWeaponMesh()->SetSimulatePhysics(true);
@@ -120,6 +115,27 @@ void ARPlayer::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 	bDead = true;
 	OnDeath.Broadcast(this);
 }
+
+/*void ARPlayer::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
+{
+	if (!Gear->EquippedWeapon) return;
+	Gear->EquippedWeapon->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	Gear->EquippedWeapon->GetWeaponMesh()->SetSimulatePhysics(true);
+	Gear->EquippedWeapon->GetWeaponMesh()->SetEnableGravity(true);
+	Gear->EquippedWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Gear->EquippedWeapon->GetWeaponMesh()->AddImpulse(DeathImpulse);
+
+	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	bDead = true;
+	OnDeath.Broadcast(this);
+}*/
 
 void ARPlayer::AddToXP_Implementation(int32 InXP)
 {
