@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "RGameplayTags.h"
 #include "Components/SphereComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "GAS/Debuff/DebuffNiagaraComponent.h"
@@ -53,22 +54,41 @@ void AROverlapMissile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, 
 	if (!bHit) OnHit();
 	if (HasAuthority())
 	{
-		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
+		APawn* HitPawn = Cast<APawn>(OtherActor);
+		bool bIsValidBlock = false;
+		const bool bIsPlayerBlocking = URAbilitySystemLibrary::NativeDoesActorHaveTag(HitPawn,GameplayTags.Event_Blocking);
+		if (bIsPlayerBlocking)
 		{
-			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
-			DamageEffectParams.DeathImpulse = DeathImpulse;
-			const bool bKnockback = FMath::RandRange(1, 100) <DamageEffectParams.KnockbackChance;
-			if (bKnockback)
-			{
-				FRotator Rotation = GetActorRotation();
-				Rotation.Pitch = 25.f;
-				const FVector KnockbackDirection = Rotation.Vector();
-				const FVector KnockbackForce = KnockbackDirection * DamageEffectParams.KnockbackMagnitude;
-				DamageEffectParams.KnockbackForce = KnockbackForce;
-			}
+			bIsValidBlock = URAbilitySystemLibrary::IsValidBlock(this, HitPawn);
+		}
+		FGameplayEventData Data;
+		Data.Instigator = this;
+		Data.Target = HitPawn;
+		if (bIsValidBlock)
+		{
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitPawn, GameplayTags.Event_Blocking_Successful, Data);
 			
-			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
-			URAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
+		}
+		else
+		{
+			if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+			{
+				const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
+				DamageEffectParams.DeathImpulse = DeathImpulse;
+				const bool bKnockback = FMath::RandRange(1, 100) <DamageEffectParams.KnockbackChance;
+				if (bKnockback)
+				{
+					FRotator Rotation = GetActorRotation();
+					Rotation.Pitch = 25.f;
+					const FVector KnockbackDirection = Rotation.Vector();
+					const FVector KnockbackForce = KnockbackDirection * DamageEffectParams.KnockbackMagnitude;
+					DamageEffectParams.KnockbackForce = KnockbackForce;
+				}
+			
+				DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
+				URAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
+			}
 		}
 		Destroy();
 	}

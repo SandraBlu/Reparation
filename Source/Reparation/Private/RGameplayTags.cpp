@@ -180,6 +180,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Event_Strafing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.strafing"), FString("Strafing"));
 	GameplayTags.Event_Evading = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.evading"), FString("Evading"));
 	GameplayTags.Event_Blocking = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block"), FString("Blocking"));
+	GameplayTags.Event_Blocking_Successful = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block.success"), FString("Successful Block"));
 	GameplayTags.Event_TargetLock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.targetLock"), FString("Target locking"));
 	GameplayTags.Event_SwitchTarget_Left = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.target.left"), FString("Target left"));;
 	GameplayTags.Event_SwitchTarget_Right = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.target.right"), FString("Target right"));;

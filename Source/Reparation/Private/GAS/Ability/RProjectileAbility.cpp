@@ -40,8 +40,9 @@ void URProjectileAbility::SpawnProjectile(ACharacter* InstigatorCharacter, const
 	// Add sweep radius onto start to avoid the sphere clipping into floor/walls the camera is directly against.
 	FVector TraceStart = InstigatorCharacter->GetPawnViewLocation() + (TraceDirection * SweepRadius);
 	// endpoint far into the look-at distance (not too far, still adjust somewhat towards crosshair on a miss)
-	FVector TraceEnd = TraceStart + (TraceDirection * SweepDistanceFallback);
-
+	FVector TraceEnd  = TraceStart + (TraceDirection * SweepDistanceFallback);
+	
+	
 	FHitResult Hit;
 	// returns true if we got to a blocking hit (Channel1="Projectile" defined in DefaultGame.ini)
 	if (GetWorld()->SweepSingleByChannel(Hit, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, Shape, Params))

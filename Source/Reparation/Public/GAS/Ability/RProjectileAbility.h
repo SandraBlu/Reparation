@@ -40,5 +40,4 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	void SpawnProjectile(ACharacter* InstigatorCharacter, const FGameplayTag& SocketTag);
-	
 };

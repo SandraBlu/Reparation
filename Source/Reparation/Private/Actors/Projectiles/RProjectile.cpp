@@ -2,10 +2,14 @@
 
 
 #include "Actors/Projectiles/RProjectile.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Reparation/Reparation.h"
 #include "NiagaraComponent.h"
+#include "RGameplayTags.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Framework/RAbilitySystemLibrary.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 
@@ -42,8 +46,7 @@ void ARProjectile::BeginPlay()
 	SetReplicateMovement(true);
 }
 
-void ARProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                              FVector NormalImpulse, const FHitResult& Hit)
+void ARProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Explode();
 }
@@ -58,9 +61,6 @@ void ARProjectile::PostInitializeComponents()
 
 void ARProjectile::Explode_Implementation()
 {
-	if (IsValid(this))
-	{
-		
-	}
+	
 }
 

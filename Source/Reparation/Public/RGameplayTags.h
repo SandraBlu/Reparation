@@ -170,6 +170,7 @@ public:
 	FGameplayTag Event_Strafing;
 	FGameplayTag Event_Evading;
 	FGameplayTag Event_Blocking;
+	FGameplayTag Event_Blocking_Successful;
 	FGameplayTag Event_TargetLock;
 	FGameplayTag Event_SwitchTarget_Left;
 	FGameplayTag Event_SwitchTarget_Right;
