@@ -104,12 +104,12 @@ void ARPlayer::Die(const FVector& DeathImpulse)
 	Gear->EquippedWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	Gear->EquippedWeapon->GetWeaponMesh()->AddImpulse(DeathImpulse);
 
-	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetEnableGravity(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
-	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	//UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
+	//GetMesh()->SetSimulatePhysics(true);
+	//GetMesh()->SetEnableGravity(true);
+	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	//GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	//GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	bDead = true;

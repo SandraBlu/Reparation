@@ -40,6 +40,7 @@ void UTargetLockAbility::OnTargetLockTick(float DeltaTime)
 		URAbilitySystemLibrary::NativeDoesActorHaveTag(GetPlayerFromActorInfo(), GameplayTags.Event_Death))
 	{
 		CancelTargetLockAbility();
+		return;
 	}
 	SetTargetLockWidgetPosition();
 
@@ -48,7 +49,8 @@ void UTargetLockAbility::OnTargetLockTick(float DeltaTime)
 
 	if (bShouldOverrideRotation)
 	{
-		const FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(GetPlayerFromActorInfo()->GetActorLocation(),CurrentLockedActor->GetActorLocation());
+		FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(GetPlayerFromActorInfo()->GetActorLocation(),CurrentLockedActor->GetActorLocation());
+		LookAtRot -= FRotator(TargetLockCameraOffsetDistance, 0.f, 0.f);
 		const FRotator CurrentControlRot = GetPlayerControllerFromActorInfo()->GetControlRotation();
 		const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot,LookAtRot,DeltaTime,TargetLockRotationInterpSpeed);
 
