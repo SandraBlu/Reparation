@@ -94,7 +94,8 @@ public:
 
 	//Abilities
 	FGameplayTag ability_none;
-	FGameplayTag ability_Attack;
+	FGameplayTag ability_Attack_Melee;
+	FGameplayTag ability_Attack_Ranged;
 	FGameplayTag ability_Melee;
 	FGameplayTag ability_Ranged;
 	FGameplayTag ability_HitReact;
@@ -171,6 +172,7 @@ public:
 	FGameplayTag Event_Evading;
 	FGameplayTag Event_Blocking;
 	FGameplayTag Event_Blocking_Successful;
+	FGameplayTag Event_Blocking_Unblockable;
 	FGameplayTag Event_TargetLock;
 	FGameplayTag Event_SwitchTarget_Left;
 	FGameplayTag Event_SwitchTarget_Right;

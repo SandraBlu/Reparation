@@ -85,8 +85,11 @@ protected:
 	UWidgetComponent* HealthBar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	USkeletalMeshComponent* Weapon;
+	USkeletalMeshComponent* WeaponRH;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	USkeletalMeshComponent* WeaponLH;
+	
 	//Weapon Damage Socket
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponDamageSocket;

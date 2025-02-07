@@ -82,7 +82,8 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	// 
 	//Ability
 	GameplayTags.ability_none = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.none"), FString("No Ability"));
-	GameplayTags.ability_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.attack"), FString("General attack tag for Behavior Tree"));
+	GameplayTags.ability_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.attack.melee"), FString("Melee attack tag for Behavior Tree"));
+	GameplayTags.ability_Attack_Ranged = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.attack.ranged"), FString("Ranged attack tag for Behavior Tree"));
 	GameplayTags.ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.melee"), FString("Melee Attack tag"));
 	GameplayTags.ability_Ranged = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.ranged"), FString("Ranger Attack tag"));
 	GameplayTags.ability_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.HitReact"), FString("Hit React tag"));
@@ -181,6 +182,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Event_Evading = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.evading"), FString("Evading"));
 	GameplayTags.Event_Blocking = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block"), FString("Blocking"));
 	GameplayTags.Event_Blocking_Successful = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block.success"), FString("Successful Block"));
+	GameplayTags.Event_Blocking_Unblockable = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block.unblockable"), FString("No Block"));
 	GameplayTags.Event_TargetLock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.targetLock"), FString("Target locking"));
 	GameplayTags.Event_SwitchTarget_Left = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.target.left"), FString("Target left"));;
 	GameplayTags.Event_SwitchTarget_Right = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.target.right"), FString("Target right"));;

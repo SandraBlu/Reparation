@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "RGameplayTags.h"
+#include "AI/REnemy.h"
 #include "Components/SphereComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "GAS/Debuff/DebuffNiagaraComponent.h"
@@ -56,8 +57,10 @@ void AROverlapMissile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 		APawn* HitPawn = Cast<APawn>(OtherActor);
+		
 		bool bIsValidBlock = false;
 		const bool bIsPlayerBlocking = URAbilitySystemLibrary::NativeDoesActorHaveTag(HitPawn,GameplayTags.Event_Blocking);
+		
 		if (bIsPlayerBlocking)
 		{
 			bIsValidBlock = URAbilitySystemLibrary::IsValidBlock(this, HitPawn);

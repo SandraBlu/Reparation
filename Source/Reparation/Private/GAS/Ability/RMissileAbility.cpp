@@ -57,7 +57,6 @@ void URMissileAbility::SpawnProjectiles(ACharacter* InstigatorCharacter, bool bO
 	if (GetWorld()->SweepSingleByChannel(Hit, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, Shape, Params))
 	{
 		TraceEnd = Hit.Location;
-		TraceEnd = Hit.ImpactPoint;
 	}
 	FRotator Rotation = (TraceEnd - SocketLocation).Rotation();
 	if (bOverridePitch) Rotation.Pitch = PitchOverride;

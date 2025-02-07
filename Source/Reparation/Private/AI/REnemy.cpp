@@ -36,9 +36,13 @@ AREnemy::AREnemy()
 	GetMesh()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Combat");
-	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
-	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponRH = CreateDefaultSubobject<USkeletalMeshComponent>("CombatRH");
+	WeaponRH->SetupAttachment(GetMesh(), FName("weaponRH"));
+	WeaponRH->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	WeaponLH = CreateDefaultSubobject<USkeletalMeshComponent>("CombatLH");
+	WeaponLH->SetupAttachment(GetMesh(), FName("weaponLH"));
+	WeaponLH->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
@@ -113,9 +117,16 @@ int32 AREnemy::GetPlayerLevel_Implementation()
 FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
-	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Weapon))
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(WeaponRH) || IsValid(WeaponLH))
 	{
-		return Weapon->GetSocketLocation(WeaponDamageSocket);
+		if (WeaponRH)
+		{
+			return WeaponRH->GetSocketLocation(WeaponDamageSocket);
+		}
+		else
+		{
+			return WeaponLH->GetSocketLocation(WeaponDamageSocket);
+		}
 	}
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
 	{
@@ -138,10 +149,15 @@ void AREnemy::Die(const FVector& DeathImpulse)
 
 void AREnemy::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
-	Weapon->SetSimulatePhysics(true);
-	Weapon->SetEnableGravity(true);
-	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
-	Weapon->AddImpulse(DeathImpulse);
+	WeaponRH->SetSimulatePhysics(true);
+	WeaponRH->SetEnableGravity(true);
+	WeaponRH->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	WeaponRH->AddImpulse(DeathImpulse);
+
+	WeaponLH->SetSimulatePhysics(true);
+	WeaponLH->SetEnableGravity(true);
+	WeaponLH->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	WeaponLH->AddImpulse(DeathImpulse);
 	
 	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
 	GetMesh()->SetSimulatePhysics(true);
