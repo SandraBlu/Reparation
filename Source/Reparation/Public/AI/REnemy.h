@@ -7,6 +7,7 @@
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
 #include "REnemy.generated.h"
 
+class UTextBlock;
 class UREnemyCombatComponent;
 class UPawnSensingComponent;
 class ARAIController;
@@ -63,14 +64,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void DissolveMesh();
 
-	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	float BaseWalkSpeed = 250.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
-	AActor* CombatTarget;
+	AActor* CombatTargetCombat;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UREnemyCombatComponent* EnemyCombatComp;
@@ -94,12 +95,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponDamageSocket;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	int32 Level = 1;
 
-	UPROPERTY(EditAnywhere, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	UBehaviorTree* BehaviorTree;
 
 	UPROPERTY()
 	ARAIController* AIC;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
+	FText BossName;
 };

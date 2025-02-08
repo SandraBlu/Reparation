@@ -224,6 +224,7 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			if (IRCombatInterface* CombatInterface = Cast<IRCombatInterface>(Props.TargetAvatarActor))
 			{
 				CombatInterface->Die(URAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
+				URAbilitySystemLibrary::AddGameplayTagToActorIfNone(Props.TargetCharacter, FRGameplayTags::Get().Event_Death);
 			}
 			SendXPEvent(Props);
 		}

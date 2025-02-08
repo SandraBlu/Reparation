@@ -702,9 +702,7 @@ void URInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	//If your game requires players to know if other players are looting you can remove 
 	DOREPLIFETIME_CONDITION(URInventoryComponent, LootSource, COND_OwnerOnly);
-
-	//If your game requires players to know if other players are looting you can uncomment this
-	//DOREPLIFETIME_CONDITION(UNarrativeInventoryComponent, LootSource, COND_None);
+	
 }
 
 bool URInventoryComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags)
