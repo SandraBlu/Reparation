@@ -145,6 +145,7 @@ void AREnemy::Die(const FVector& DeathImpulse)
 	MulticastHandleDeath(DeathImpulse);
 	if (AIC) AIC->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
 	DissolveMesh();
+	
 }
 
 void AREnemy::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
@@ -158,6 +159,8 @@ void AREnemy::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 	WeaponLH->SetEnableGravity(true);
 	WeaponLH->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
 	WeaponLH->AddImpulse(DeathImpulse);
+
+	HandleDroppedItems();
 	
 	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
 	GetMesh()->SetSimulatePhysics(true);

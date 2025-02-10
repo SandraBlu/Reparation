@@ -47,16 +47,20 @@ public:
 	FGameplayTag InputTag_RMB;
 	FGameplayTag InputTag_1;
 	FGameplayTag InputTag_2;
+	FGameplayTag InputTag_Rage;
 	FGameplayTag InputTag_Passive01;
 	FGameplayTag InputTag_Passive02;
 	FGameplayTag InputTag_Passive03;
 	FGameplayTag InputTag_Passive04;
+	FGameplayTag InputTag_Special_Light;
+	FGameplayTag InputTag_Special_Heavy;
 	//Block
 	FGameplayTag InputTag_MustBeHeld;
 	FGameplayTag InputTag_MustBeHeld_Blocked;
+	//Targeting
 	FGameplayTag InputTag_Toggle;
 	FGameplayTag InputTag_Toggle_TargetLock;
-	//FGameplayTag InputTag_SwitchTarget;
+	
 	
 	//meta
 	FGameplayTag Attributes_meta_xp;
@@ -92,11 +96,16 @@ public:
 	FGameplayTag Debuff_Frequency;
 	FGameplayTag Debuff_Duration;
 
-	//Abilities
+	//Abilities NPC
 	FGameplayTag ability_none;
 	FGameplayTag ability_Attack_Melee;
 	FGameplayTag ability_Attack_Ranged;
+
+	//Abilities Player
 	FGameplayTag ability_Melee;
+	FGameplayTag ability_Melee_Light;
+	FGameplayTag ability_Melee_Heavy;
+	FGameplayTag ability_Melee_Thrust;
 	FGameplayTag ability_Ranged;
 	FGameplayTag ability_HitReact;
 	FGameplayTag ability_HitPause;
@@ -114,6 +123,9 @@ public:
 	FGameplayTag ability_grenade_stun;
 	FGameplayTag ability_grenade_fireBlast;
 	FGameplayTag ability_grenade_iceBlast;
+	FGameplayTag ability_summonEnemies;
+	FGameplayTag ability_rage;
+	FGameplayTag ability_spawn_pickup;
 
 	//Ability Menu Tags
 	FGameplayTag ability_status_locked;
@@ -135,6 +147,8 @@ public:
 	
 	//cooldown
 	FGameplayTag cooldown_Melee;
+	FGameplayTag cooldown_melee_light;
+	FGameplayTag cooldown_melee_heavy;
 	FGameplayTag cooldown_missile_dark;
 	FGameplayTag cooldown_missile_electric;
 	FGameplayTag cooldown_missile_fire;
@@ -169,13 +183,12 @@ public:
 	FGameplayTag Event_HitPause;
 	FGameplayTag Event_Death;
 	FGameplayTag Event_Strafing;
-	FGameplayTag Event_Evading;
-	FGameplayTag Event_Blocking;
 	FGameplayTag Event_Blocking_Successful;
 	FGameplayTag Event_Blocking_Unblockable;
-	FGameplayTag Event_TargetLock;
 	FGameplayTag Event_SwitchTarget_Left;
 	FGameplayTag Event_SwitchTarget_Right;
+	FGameplayTag Event_SummonEnemies;
+	FGameplayTag Event_Rage_Activate;
 	
 	//HitReact Events
 	FGameplayTag Event_HitReact;
@@ -183,6 +196,18 @@ public:
 	FGameplayTag Event_HitReact_Left;
 	FGameplayTag Event_HitReact_Right;
 	FGameplayTag Event_HitReact_Back;
+
+	//status
+	FGameplayTag status_evading;
+	FGameplayTag status_blocking;
+	FGameplayTag status_targeting;
+	FGameplayTag status_invincible;
+	//Rage Event Tags
+	FGameplayTag status_Rage_Activating;
+	FGameplayTag status_Rage_Active;
+	FGameplayTag status_Rage_Full;
+	FGameplayTag status_Rage_None;
+	
 	
 private:
 

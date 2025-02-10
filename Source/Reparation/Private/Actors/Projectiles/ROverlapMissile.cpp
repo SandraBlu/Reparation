@@ -59,7 +59,7 @@ void AROverlapMissile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, 
 		APawn* HitPawn = Cast<APawn>(OtherActor);
 		
 		bool bIsValidBlock = false;
-		const bool bIsPlayerBlocking = URAbilitySystemLibrary::NativeDoesActorHaveTag(HitPawn,GameplayTags.Event_Blocking);
+		const bool bIsPlayerBlocking = URAbilitySystemLibrary::NativeDoesActorHaveTag(HitPawn,GameplayTags.status_blocking);
 		
 		if (bIsPlayerBlocking)
 		{

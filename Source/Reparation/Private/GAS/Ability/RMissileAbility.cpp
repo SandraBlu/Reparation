@@ -38,12 +38,10 @@ void URMissileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 }
 
-void URMissileAbility::SpawnProjectiles(ACharacter* InstigatorCharacter, bool bOverridePitch, float PitchOverride,
-	AActor* HomingTarget)
+void URMissileAbility::SpawnProjectiles(ACharacter* InstigatorCharacter, bool bOverridePitch, float PitchOverride, AActor* HomingTarget)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!bIsServer) return;
-	
 	const FVector SocketLocation = IRCombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FRGameplayTags::Get().combatSocket_weapon);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(InstigatorCharacter);
@@ -71,7 +69,6 @@ void URMissileAbility::SpawnProjectiles(ACharacter* InstigatorCharacter, bool bO
 		FTransform SpawnTransform = FTransform(Rot, SocketLocation);
 		SpawnTransform.SetLocation(SocketLocation);
 		SpawnTransform.SetRotation(Rot.Quaternion());
-		
 		AROverlapMissile* Missile = GetWorld()->SpawnActorDeferred<AROverlapMissile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
@@ -82,9 +79,9 @@ void URMissileAbility::SpawnProjectiles(ACharacter* InstigatorCharacter, bool bO
 		}
 		else
 		{
-			Missile->HomingTarget = NewObject<USceneComponent>(USceneComponent::StaticClass());
-			Missile->HomingTarget->SetWorldLocation(TraceEnd);
-			Missile->MovementComp->HomingTargetComponent = Missile->HomingTarget;
+			Missile->HomingTargetSceneComponent = NewObject<USceneComponent>(USceneComponent::StaticClass());
+			Missile->HomingTargetSceneComponent->SetWorldLocation(TraceEnd);
+			Missile->MovementComp->HomingTargetComponent = Missile->HomingTargetSceneComponent;
 		}
 		Missile->MovementComp->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
 		Missile->MovementComp->bIsHomingProjectile = bLaunchHomingProjectiles;

@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+class UInputMappingContext;
+class URGameplayAbility;
+
 UENUM()
 enum class ERConfirmType : uint8
 {
@@ -21,15 +24,19 @@ enum class EFoot : uint8
 	Right UMETA(DisplayName = "Right")
 };
 
-
-
-
-
-
-
-
-
-
+UENUM()
+enum class ERCountDownActionInput : uint8
+{
+	Start,
+	Cancel
+};
+UENUM()
+enum class ERCountDownActionOutput : uint8
+{
+	Updated,
+	Completed,
+	Cancelled
+};
 
 
 

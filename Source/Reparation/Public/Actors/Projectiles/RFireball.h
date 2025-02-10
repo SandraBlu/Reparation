@@ -20,7 +20,7 @@ public:
 	void StartOutgoingTimeline();
 
 	UPROPERTY(BlueprintReadOnly)
-	AActor* ReturnToActor;
+	TObjectPtr<AActor> ReturnToActor;
 	
 	UPROPERTY(BlueprintReadWrite)
 	FDamageEffectParams ExplosionDamageParams;

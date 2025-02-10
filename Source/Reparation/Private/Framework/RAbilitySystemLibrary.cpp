@@ -16,6 +16,7 @@
 #include "UI/GAS/Controllers/RWidgetController.h"
 #include "Components/Combat/PawnCombatComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RTypes/RCountdownAction.h"
 
 bool URAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContextObject,
                                                         FWidgetControllerParams& OutWCParams, ARHUD*& OutRHUD)
@@ -625,4 +626,33 @@ bool URAbilitySystemLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender
 	const FString DebugString = FString::Printf(TEXT("DotResult: %f %s"), DotResult, DotResult<0.f? TEXT("Valid Block") : TEXT("NO Block"));
 	Debug::Print(DebugString,DotResult<0.f? FColor::Green : FColor::Red);
 	return DotResult < 0.f? true : false;;
+}
+
+void URAbilitySystemLibrary::CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval,float& OutRemainingTime, ERCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") ERCountDownActionOutput& CountDownOutput,FLatentActionInfo LatentInfo)
+{
+	UWorld* World = nullptr;
+	if (GEngine)
+	{
+		World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	}
+	if (!World)
+	{
+		return;
+	}
+	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+	FRCountDownAction* FoundAction = LatentActionManager.FindExistingAction<FRCountDownAction>(LatentInfo.CallbackTarget, LatentInfo.UUID);
+	if (CountDownInput == ERCountDownActionInput::Start)
+	{
+		if (!FoundAction)
+		{
+			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, new FRCountDownAction(TotalTime, UpdateInterval, OutRemainingTime, CountDownOutput, LatentInfo));
+		}
+	}
+	if (CountDownInput == ERCountDownActionInput::Cancel)
+	{
+		if (FoundAction)
+		{
+			FoundAction->CancelAction();
+		}
+	}
 }

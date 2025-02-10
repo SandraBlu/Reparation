@@ -4,6 +4,8 @@
 #include "Actors/Projectiles/RFireball.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GameplayCueManager.h"
+#include "RGameplayTags.h"
 #include "Framework/RAbilitySystemLibrary.h"
 
 void ARFireball::BeginPlay()

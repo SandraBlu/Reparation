@@ -71,7 +71,7 @@ public:
 	float LifeSpan = 5.f;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
-	AActor* CombatTargetCombat;
+	AActor* CombatTarget;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UREnemyCombatComponent* EnemyCombatComp;
@@ -106,4 +106,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	FText BossName;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void HandleDroppedItems();
+	
 };

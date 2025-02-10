@@ -44,8 +44,8 @@ void UTargetLockAbility::OnTargetLockTick(float DeltaTime)
 	}
 	SetTargetLockWidgetPosition();
 
-	const bool bShouldOverrideRotation = !URAbilitySystemLibrary::NativeDoesActorHaveTag(GetPlayerFromActorInfo(),GameplayTags.Event_Evading)
-	&& !URAbilitySystemLibrary::NativeDoesActorHaveTag(GetPlayerFromActorInfo(),GameplayTags.Event_Blocking);
+	const bool bShouldOverrideRotation = !URAbilitySystemLibrary::NativeDoesActorHaveTag(GetPlayerFromActorInfo(),GameplayTags.status_evading)
+	&& !URAbilitySystemLibrary::NativeDoesActorHaveTag(GetPlayerFromActorInfo(),GameplayTags.status_blocking);
 
 	if (bShouldOverrideRotation)
 	{

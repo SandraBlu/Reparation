@@ -23,7 +23,7 @@ public:
 	FDamageEffectParams DamageEffectParams;
 
 	UPROPERTY()
-	USceneComponent* HomingTarget;
+	TObjectPtr<USceneComponent> HomingTargetSceneComponent;
 	
 protected:
 	

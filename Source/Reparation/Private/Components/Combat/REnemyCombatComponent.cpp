@@ -25,7 +25,7 @@ void UREnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	bool bIsValidBlock = false;
 	const FRGameplayTags GameplayTags = FRGameplayTags::Get();
 	
-	const bool bIsPlayerBlocking = URAbilitySystemLibrary::NativeDoesActorHaveTag(HitActor, GameplayTags.Event_Blocking);
+	const bool bIsPlayerBlocking = URAbilitySystemLibrary::NativeDoesActorHaveTag(HitActor, GameplayTags.status_blocking);
 	const bool bIsMyAttackUnblockable = false;
 
 	if (bIsPlayerBlocking && !bIsMyAttackUnblockable)
@@ -42,7 +42,7 @@ void UREnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 		//TODO::Handle successful block
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			HitActor,
-			GameplayTags.Event_Blocking,
+			GameplayTags.status_blocking,
 			EventData
 		);
 	}

@@ -144,7 +144,6 @@ void URAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& D
 }
 
 
-
 void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float DamageAmount, bool bBlockedHit,
                                       bool bDodgedHit, bool bCriticalHit) const
 {
@@ -194,7 +193,7 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	}
 	if (Data.EvaluatedData.Attribute == GetEnergyAttribute())
 	{
-		SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
+		HandleEnergy(Props);
 	}
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
@@ -203,6 +202,25 @@ void URAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackD
 	if (Data.EvaluatedData.Attribute == GetXPAttribute())
 	{
 		HandleIncomingXP(Props);
+	}
+}
+
+void URAttributeSet::HandleEnergy(const FEffectProperties& Props)
+{
+	const FRGameplayTags& Tag = FRGameplayTags::Get();
+	SetEnergy(FMath::Clamp(GetEnergy(), 0.f, GetMaxEnergy()));
+	if (GetEnergy() == GetMaxEnergy())
+	{
+		URAbilitySystemLibrary::AddGameplayTagToActorIfNone(Props.TargetCharacter,Tag.status_Rage_Full);
+	}
+	else if (GetEnergy() == 0.f)
+	{
+		URAbilitySystemLibrary::AddGameplayTagToActorIfNone(Props.TargetCharacter,Tag.status_Rage_None);
+	}
+	else
+	{
+		URAbilitySystemLibrary::RemoveGameplayTagFromActorIfFound(Props.TargetCharacter,Tag.status_Rage_Full);
+		URAbilitySystemLibrary::RemoveGameplayTagFromActorIfFound(Props.TargetCharacter,Tag.status_Rage_None);
 	}
 }
 

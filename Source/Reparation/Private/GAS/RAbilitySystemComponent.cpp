@@ -48,19 +48,11 @@ void URAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputT
 	for (auto& AbilitySpec : GetActivatableAbilities())
 	{
 		if(!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
-		//if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
-		if (InputTag.MatchesTag(GameplayTags.InputTag_Toggle))
+		if (InputTag.MatchesTag(GameplayTags.InputTag_Toggle) && AbilitySpec.IsActive())
 		{
-			AbilitySpecInputPressed(AbilitySpec);
-			if (AbilitySpec.IsActive())
-			{
-				CancelAbilityHandle(AbilitySpec.Handle);
-			}
-			else
-			{
-				TryActivateAbility(AbilitySpec.Handle);
-			}
+			CancelAbilityHandle(AbilitySpec.Handle);
 		}
+		//if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		else
 		{
 			TryActivateAbility(AbilitySpec.Handle);
