@@ -4,10 +4,14 @@
 #include "AI/RNPC.h"
 
 #include "RGameplayTags.h"
+#include "AI/RAIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
 
@@ -27,9 +31,13 @@ ARNPC::ARNPC()
 	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
-	Weapon->SetupAttachment(GetMesh(), FName("weapon"));
-	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	WeaponRH = CreateDefaultSubobject<USkeletalMeshComponent>("CombatRH");
+	WeaponRH->SetupAttachment(GetMesh(), FName("weaponRH"));
+	WeaponRH->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	WeaponLH = CreateDefaultSubobject<USkeletalMeshComponent>("CombatLH");
+	WeaponLH->SetupAttachment(GetMesh(), FName("weaponLH"));
+	WeaponLH->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
@@ -43,11 +51,71 @@ int32 ARNPC::GetPlayerLevel_Implementation()
 FVector ARNPC::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
-	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(Weapon))
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(WeaponRH) || IsValid(WeaponLH))
 	{
-		return Weapon->GetSocketLocation(WeaponDamageSocket);
+		if (WeaponRH)
+		{
+			return WeaponRH->GetSocketLocation(WeaponDamageSocket);
+		}
+		else
+		{
+			return WeaponLH->GetSocketLocation(WeaponDamageSocket);
+		}
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
+	{
+		return GetMesh()->GetSocketLocation(HandRSocket);
+	}
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handR))
+	{
+		return GetMesh()->GetSocketLocation(HandLSocket);
 	}
 	return FVector();
+}
+
+void ARNPC::Die(const FVector& DeathImpulse)
+{
+	WeaponRH->SetSimulatePhysics(true);
+	WeaponRH->SetEnableGravity(true);
+	WeaponRH->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	WeaponRH->AddImpulse(DeathImpulse);
+
+	WeaponLH->SetSimulatePhysics(true);
+	WeaponLH->SetEnableGravity(true);
+	WeaponLH->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	WeaponLH->AddImpulse(DeathImpulse);
+	
+	UGameplayStatics::PlaySoundAtLocation(this, DeathCry, GetActorLocation(), GetActorRotation());
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	bDead = true;
+	OnDeath.Broadcast(this);
+	if (AIC) AIC->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
+	
+}
+
+void ARNPC::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+AActor* ARNPC::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
+void ARNPC::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	if (AIC && AIC->GetBlackboardComponent())
+	{
+		AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
+	}
 }
 
 void ARNPC::BeginPlay()
@@ -55,9 +123,9 @@ void ARNPC::BeginPlay()
 	Super::BeginPlay();
 	InitAbilityActorInfo();
 	//set health bar widget controller
-	if (URUserWidget* EnemyHealthUI = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))
+	if (URUserWidget* NPCHealthUI = Cast<URUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
-		EnemyHealthUI->SetWidgetController(this);
+		NPCHealthUI->SetWidgetController(this);
 	}
 	//respond to attribute changes
 	if (const URAttributeSet* RAS = Cast<URAttributeSet>(AttributeSet))

@@ -11,11 +11,11 @@
 #include "Components/WidgetComponent.h"
 #include "Components/Combat/REnemyCombatComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
+#include "Framework/RGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "Perception/PawnSensingComponent.h"
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
 
@@ -111,6 +111,24 @@ UPawnCombatComponent* AREnemy::GetPawnCombatComponent() const
 
 int32 AREnemy::GetPlayerLevel_Implementation()
 {
+	if (ARGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<ARGameMode>())
+	{
+		switch (BaseGameMode->GetCurrentGameDifficulty())
+		{
+		case ERGameDifficulty::Easy:
+			Level = 1;
+			break;
+		case ERGameDifficulty::Normal:
+			Level = 10;
+			break;
+		case ERGameDifficulty::Hard:
+			Level = 20;
+			break;
+
+		default:
+			break;
+		}
+	}
 	return Level;
 }
 

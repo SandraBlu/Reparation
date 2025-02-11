@@ -10,6 +10,7 @@
 #include "GAS/Passive/PassiveNiagaraComponent.h"
 
 
+class ARGameMode;
 // Sets default values
 ARCharacterBase::ARCharacterBase()
 {
@@ -124,6 +125,7 @@ void ARCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEff
 	check(GameplayEffectClass);
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	ContextHandle.AddSourceObject(this);
+	
  	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
  	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 }

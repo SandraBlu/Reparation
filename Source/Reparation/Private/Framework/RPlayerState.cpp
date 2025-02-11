@@ -4,9 +4,11 @@
 #include "Framework/RPlayerState.h"
 
 #include "Components/RInventoryComponent.h"
+#include "Framework/RGameMode.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
 #include "Net/UnrealNetwork.h"
+#include "RTypes/REnumTypes.h"
 
 ARPlayerState::ARPlayerState()
 {
