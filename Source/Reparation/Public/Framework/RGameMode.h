@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "RGameMode.generated.h"
 
+enum class ERGameDifficulty : uint8;
 class UAbilityInfo;
 class URCharacterClassInfo;
 /**
@@ -23,5 +24,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
 	UAbilityInfo* AbilityInfo;
-	
+
+	FORCEINLINE ERGameDifficulty GetCurrentGameDifficulty() const { return CurrentGameDifficulty;}
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game Settings")
+	ERGameDifficulty CurrentGameDifficulty;
 };

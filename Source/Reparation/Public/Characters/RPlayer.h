@@ -67,9 +67,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UNiagaraComponent* LevelUpFX;
 	
-	//UFUNCTION(NetMulticast, Reliable)
-	//virtual void MulticastHandleDeath(const FVector& DeathImpulse);
-	
 	UPROPERTY()
 	ARMelee* MeleeWeapon;
 	

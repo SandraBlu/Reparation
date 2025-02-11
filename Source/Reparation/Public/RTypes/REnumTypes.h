@@ -38,6 +38,15 @@ enum class ERCountDownActionOutput : uint8
 	Cancelled
 };
 
+UENUM(BlueprintType)
+enum class ERGameDifficulty : uint8
+{
+	Easy,
+	Normal,
+	Hard,
+	VeryHard
+};
+
 
 
 
