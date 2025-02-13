@@ -99,6 +99,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName HandLSocket;
 
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName Jaw;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	UNiagaraSystem* BloodEffect;
 

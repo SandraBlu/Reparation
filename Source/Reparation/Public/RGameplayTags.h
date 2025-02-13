@@ -169,6 +169,7 @@ public:
 	FGameplayTag combatSocket_weapon;
 	FGameplayTag combatSocket_handL;
 	FGameplayTag combatSocket_handR;
+	FGameplayTag combatSocket_jaw;
 
 	//Attack Montages
 	FGameplayTag Montage_Attack01;

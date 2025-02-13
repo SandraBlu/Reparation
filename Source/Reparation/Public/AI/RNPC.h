@@ -7,6 +7,7 @@
 #include "UI/GAS/Controllers/ROverlayWidgetController.h"
 #include "RNPC.generated.h"
 
+class ANPCAIController;
 class ARAIController;
 class UBehaviorTree;
 class UWidgetComponent;
@@ -21,6 +22,8 @@ class REPARATION_API ARNPC : public ARCharacterBase
 public:
 	
 	ARNPC();
+	
+	virtual void PossessedBy(AController* NewController) override;
 
 	//Combat Interface
 	virtual int32 GetPlayerLevel_Implementation() override;
@@ -74,9 +77,9 @@ protected:
 	int32 Level = 1;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	UBehaviorTree* BehaviorTree;
+	UBehaviorTree* NPCBehaviorTree;
 
 	UPROPERTY()
-	ARAIController* AIC;
+	ANPCAIController* AIC_NPC;
 	
 };

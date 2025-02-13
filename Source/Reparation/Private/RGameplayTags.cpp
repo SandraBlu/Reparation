@@ -153,6 +153,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.combatSocket_weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("combatSocket.weapon"), FString("weapon"));
 	GameplayTags.combatSocket_handL = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("combatSocket.handR"), FString("handR"));
 	GameplayTags.combatSocket_handR = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("combatSocket.handL"), FString("handL"));
+	GameplayTags.combatSocket_jaw = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("combatSocket.jaw"), FString("jaw"));
 
 	//Montages
 	GameplayTags.Montage_Attack01 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("montage.attack01"), FString("attack01"));
