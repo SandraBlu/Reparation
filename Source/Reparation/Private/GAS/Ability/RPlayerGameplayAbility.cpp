@@ -8,14 +8,9 @@
 
 ARPlayerController* URPlayerGameplayAbility::GetPlayerControllerFromActorInfo()
 {
-	if (!CachedWarriorHeroController.IsValid())
+	if (!CachedPlayerController.IsValid())
 	{
-		CachedWarriorHeroController = Cast<ARPlayerController>(CurrentActorInfo->PlayerController);
+		CachedPlayerController = Cast<ARPlayerController>(CurrentActorInfo->PlayerController);
 	}
-	return CachedWarriorHeroController.IsValid()? CachedWarriorHeroController.Get() : nullptr;
-}
-
-UPlayerCombatComp* URPlayerGameplayAbility::GetPlayerCombatComponentFromActorInfo()
-{
-	return GetPlayerFromActorInfo()->GetPlayerCombatComp();
+	return CachedPlayerController.IsValid()? CachedPlayerController.Get() : nullptr;
 }

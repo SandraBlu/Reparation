@@ -12,7 +12,6 @@
 
 class URAbilitySystemLibrary;
 class URFootstepsComponent;
-class UPlayerCombatComp;
 class ARMelee;
 class ATargetCircle;
 struct FInputActionValue;
@@ -40,12 +39,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;
-
-	FORCEINLINE UPlayerCombatComp* GetPlayerCombatComp() const { return PlayerCombatComp;}
 	
 	//Interfaces
 	
-	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
 	virtual int32 GetPlayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	virtual AActor* GetCurrentEquippedWeapon_Implementation(ARWeapon* InWeapon) override;
@@ -104,9 +100,6 @@ private:
 	void Input_SwitchTargetCompleted(const FInputActionValue& Value);
 
 	FVector2D SwitchTargetDirection = FVector2D::ZeroVector	;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	UPlayerCombatComp* PlayerCombatComp;
 	
 	virtual void InitAbilityActorInfo() override;
 

@@ -18,11 +18,9 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	ARPlayerController* GetPlayerControllerFromActorInfo();
-	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
-	class UPlayerCombatComp* GetPlayerCombatComponentFromActorInfo();
 	
 private:
 	
-	TWeakObjectPtr<ARPlayerController> CachedWarriorHeroController;
+	TWeakObjectPtr<ARPlayerController> CachedPlayerController;
 	
 };

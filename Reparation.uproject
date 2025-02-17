@@ -49,7 +49,7 @@
 		},
 		{
 			"Name": "NarrativeInteraction",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/46d407c1917d4575bfc2a8bb1cb5185d"
 		},
 		{

@@ -8,7 +8,6 @@
 #include "RNPC.generated.h"
 
 class ANPCAIController;
-class ARAIController;
 class UBehaviorTree;
 class UWidgetComponent;
 /**

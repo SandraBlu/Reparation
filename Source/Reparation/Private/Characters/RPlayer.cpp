@@ -13,7 +13,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/REquipmentComponent.h"
 #include "Components/RFootstepsComponent.h"
-#include "Components/Combat/PlayerCombatComp.h"
 #include "Framework/RPlayerController.h"
 #include "Framework/RPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -33,8 +32,7 @@ ARPlayer::ARPlayer()
 	LevelUpFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("VFXComp"));
 	LevelUpFX->SetupAttachment(GetRootComponent());
 	LevelUpFX->bAutoActivate = false;
-
-	PlayerCombatComp = CreateDefaultSubobject<UPlayerCombatComp>(TEXT("PlayerCombatComp"));
+	
 	FootstepComponent = CreateDefaultSubobject<URFootstepsComponent>(TEXT("FootstepComp"));
 
 	bUsingBlock = false;
@@ -53,11 +51,6 @@ void ARPlayer::OnRep_PlayerState()
 	//client
 	Super::OnRep_PlayerState();
 	InitAbilityActorInfo();
-}
-
-UPawnCombatComponent* ARPlayer::GetPawnCombatComponent() const
-{
-	return PlayerCombatComp;
 }
 
 int32 ARPlayer::GetPlayerLevel_Implementation()

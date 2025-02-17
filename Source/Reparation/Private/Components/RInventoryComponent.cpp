@@ -1001,14 +1001,11 @@ int32 URInventoryComponent::GetSellPrice_Implementation(TSubclassOf<class URItem
 
 void URInventoryComponent::SetLootSource(class URInventoryComponent* NewLootSource)
 {
-	if (GetOwnerRole() >= ROLE_Authority)
+	if (LootSource != NewLootSource)
 	{
-		if (LootSource != NewLootSource)
-		{
-			URInventoryComponent* OldSource = LootSource;
-			LootSource = NewLootSource;
-			OnRep_LootSource(OldSource);
-		}
+		URInventoryComponent* OldSource = LootSource;
+		LootSource = NewLootSource;
+		OnRep_LootSource(OldSource);
 	}
 }
 

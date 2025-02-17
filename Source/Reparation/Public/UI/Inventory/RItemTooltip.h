@@ -14,7 +14,7 @@ class REPARATION_API URItemTooltip : public UUserWidget
 {
 	GENERATED_BODY()
 
-	public:
+public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Tooltip", meta = (ExposeOnSpawn = true))
 	class URItem* Item;

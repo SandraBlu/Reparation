@@ -20,15 +20,6 @@ public:
 	
 	ARCompanion();
 	
-	virtual void PossessedBy(AController* NewController) override;
 
-
-protected:
-	
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	UBehaviorTree* BT_Companion;
-
-	UPROPERTY()
-	AAIC_Companion* AIC_Companion;
 	
 };
