@@ -2,19 +2,55 @@
 
 
 #include "Components/Combat/PawnCombatComponent.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "RDebugHelper.h"
 #include "RGameplayTags.h"
-#include "Actors/RWeapon.h"
-#include "Components/REquipmentComponent.h"
+#include "Framework/RAbilitySystemLibrary.h"
 
-void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTag, ARWeapon* InWeapon, bool bRegisterAsEquippedWeapon)
+void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
 {
-	checkf (!CharacterWeaponMap.Contains(InWeaponTag), TEXT("A named %s has already been equipped"), *InWeaponTag.ToString());
-	check (InWeapon);
-	CharacterWeaponMap.Add(InWeaponTag, InWeapon);
-
-	if (bRegisterAsEquippedWeapon)
+	if (HitActor)
 	{
-		CurrentEquippedWeaponTag = InWeaponTag;
+		Debug::Print(GetOwningPawn()->GetActorNameOrLabel() + TEXT(" is hitting ") + HitActor->GetActorNameOrLabel());
+	}
+	if (OverlappedActors.Contains(HitActor))
+	{
+		return;
+	}
+
+	OverlappedActors.AddUnique(HitActor);
+	
+	bool bIsValidBlock = false;
+	const FRGameplayTags GameplayTags = FRGameplayTags::Get();
+	
+	const bool bIsPlayerBlocking = URAbilitySystemLibrary::NativeDoesActorHaveTag(HitActor, GameplayTags.status_blocking);
+	const bool bIsMyAttackUnblockable = false;
+
+	if (bIsPlayerBlocking && !bIsMyAttackUnblockable)
+	{
+		bIsValidBlock = URAbilitySystemLibrary::IsValidBlock(GetOwningPawn(),HitActor);
+	}
+
+	FGameplayEventData EventData;
+	EventData.Instigator = GetOwningPawn();
+	EventData.Target = HitActor;
+
+	if (bIsValidBlock)
+	{
+		//TODO::Handle successful block
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			HitActor,
+			GameplayTags.status_blocking,
+			EventData
+		);
+	}
+	else
+	{
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			GetOwningPawn(),
+			GameplayTags.Event_HitMelee,
+			EventData
+		);
 	}
 }

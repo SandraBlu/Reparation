@@ -51,7 +51,7 @@ UAbilitySystemComponent* ARCharacterBase::GetAbilitySystemComponent() const
 
 UPawnCombatComponent* ARCharacterBase::GetPawnCombatComponent() const
 {
-	return nullptr;
+	return CombatComp;
 }
 
 UAnimMontage* ARCharacterBase::GetHitReactMontage_Implementation()

@@ -110,6 +110,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UDebuffNiagaraComponent* EffectDebuffComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UPawnCombatComponent* CombatComp;
 	
 private:
 	

@@ -5,7 +5,7 @@
 
 #include "AI/REnemy.h"
 
-class UREnemyCombatComponent* URMeleeAbility::GetEnemyCombatComponentFromActorInfo()
+class UPawnCombatComponent* URMeleeAbility::GetCombatComponentFromActorInfo()
 {
-	return GetEnemyCharacterFromActorInfo()->GetEnemyCombatComponent();
+	return GetEnemyCharacterFromActorInfo()->GetPawnCombatComponent();
 }

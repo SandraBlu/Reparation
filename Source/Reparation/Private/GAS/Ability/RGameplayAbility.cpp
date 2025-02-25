@@ -5,6 +5,7 @@
 
 #include "AI/REnemy.h"
 #include "Characters/RPlayer.h"
+#include "Framework/RPlayerController.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/RAttributeSet.h"
 
@@ -64,6 +65,16 @@ ARPlayer* URGameplayAbility::GetPlayerFromActorInfo()
 	}
    
 	return CachedPlayer.IsValid()? CachedPlayer.Get() : nullptr;
+}
+
+class ARPlayerController* URGameplayAbility::GetPlayerControllerFromActorInfo()
+{
+	if (!CachedPlayerController.IsValid())
+	{
+		CachedPlayerController = Cast<ARPlayerController>(CurrentActorInfo->PlayerController);
+	}
+
+	return CachedPlayerController.IsValid()? CachedPlayerController.Get() : nullptr;
 }
 
 class AREnemy* URGameplayAbility::GetEnemyCharacterFromActorInfo()

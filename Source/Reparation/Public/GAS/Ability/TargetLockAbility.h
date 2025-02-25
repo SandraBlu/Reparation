@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Ability/RPlayerGameplayAbility.h"
+#include "GAS/Ability/RGameplayAbility.h"
 #include "TargetLockAbility.generated.h"
 
 class UInputMappingContext;
@@ -12,7 +12,7 @@ class UCombatWidget;
  * 
  */
 UCLASS()
-class REPARATION_API UTargetLockAbility : public URPlayerGameplayAbility
+class REPARATION_API UTargetLockAbility : public URGameplayAbility
 {
 	GENERATED_BODY()
 

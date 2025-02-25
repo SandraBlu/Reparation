@@ -22,7 +22,7 @@ protected:
 	friend class UInteractComponent;
 
 public:	
-	// Sets default values for this component's properties
+	
 	UReactionComponent();
 
 	virtual void Deactivate() override;
@@ -112,6 +112,5 @@ protected:
 	//[local + server] Called when the player has interacted with the item for the required amount of time
 	UPROPERTY(BlueprintAssignable)
 	FOnInteract OnInteracted;
-
 		
 };

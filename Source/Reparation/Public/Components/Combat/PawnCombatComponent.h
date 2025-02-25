@@ -3,38 +3,38 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
-#include "Components/PawnExtensionComponentBase.h"
 #include "PawnCombatComponent.generated.h"
 
-class UREquipmentComponent;
-
-UENUM(BlueprintType)
-enum class EToggleDamageType : uint8
-{
-	CurrentArmedWeapon,
-	LeftHand,
-	RightHand
-};
-class ARWeapon;
 /**
  * 
  */
-UCLASS()
-class REPARATION_API UPawnCombatComponent : public UPawnExtensionComponentBase
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class REPARATION_API UPawnCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "Combat")
-	void RegisterSpawnedWeapon(FGameplayTag InWeaponTag, ARWeapon* InWeapon, bool bRegisterAsEquippedWeapon =false);
+	virtual void OnHitTargetActor(AActor* HitActor);
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Combat")
-	FGameplayTag CurrentEquippedWeaponTag;
+	UPROPERTY()
+	TArray<AActor*> OverlappedActors;
 
-	
-private:
-	TMap<FGameplayTag, ARWeapon*> CharacterWeaponMap;
-	
+protected:
+	template<class T>
+	T* GetOwningPawn() const
+	{
+		static_assert(TPointerIsConvertibleFromTo<T, APawn>::Value, "'T' must be derived from 'APawn'");
+		return CastChecked<T>(GetOwner());
+	}
+	APawn* GetOwningPawn() const
+	{
+		return GetOwningPawn<APawn>();
+	}
+	template<class T>
+	T* GetOwningController() const
+	{
+		static_assert(TPointerIsConvertibleFromTo<T, AController>::Value, "'T' must be derived from 'AController'");
+		return GetOwningPawn<APawn>()->GetController<T>();
+	}
 };

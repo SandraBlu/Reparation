@@ -8,7 +8,7 @@
 #include "REnemy.generated.h"
 
 class UTextBlock;
-class UREnemyCombatComponent;
+class UPawnCombatComponent;
 class UPawnSensingComponent;
 class ARAIController;
 class UBehaviorTree;
@@ -28,15 +28,11 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	//Combat Interface
-	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
 	virtual int32 GetPlayerLevel_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag) override;
 	virtual void Die(const FVector& DeathImpulse) override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
-
-
-	FORCEINLINE UREnemyCombatComponent* GetEnemyCombatComponent() const { return EnemyCombatComp;}
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
@@ -72,9 +68,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	AActor* CombatTarget;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	UREnemyCombatComponent* EnemyCombatComp;
 	
 protected:
 	

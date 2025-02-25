@@ -9,7 +9,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Components/Combat/REnemyCombatComponent.h"
+#include "Components/Combat/PawnCombatComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "Framework/RGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -52,7 +52,7 @@ AREnemy::AREnemy()
 	GetCharacterMovement()->RotationRate = FRotator(0.f,180.f,0.f);
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
 	
-	EnemyCombatComp = CreateDefaultSubobject<UREnemyCombatComponent>(TEXT("EnemyCombatComp"));
+	CombatComp = CreateDefaultSubobject<UPawnCombatComponent>(TEXT("EnemyCombatComp"));
 }
 
 void AREnemy::BeginPlay()
@@ -102,11 +102,6 @@ void AREnemy::PossessedBy(AController* NewController)
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), false);
 	AIC->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
-}
-
-UPawnCombatComponent* AREnemy::GetPawnCombatComponent() const
-{
-	return EnemyCombatComp;
 }
 
 int32 AREnemy::GetPlayerLevel_Implementation()

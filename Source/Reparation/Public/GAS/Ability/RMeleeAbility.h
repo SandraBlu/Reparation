@@ -16,7 +16,7 @@ class REPARATION_API URMeleeAbility : public URDamageAbility
 
 public:
 	
-	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
-	class UREnemyCombatComponent* GetEnemyCombatComponentFromActorInfo();
+	UFUNCTION(BlueprintPure, Category = "Ability")
+	class UPawnCombatComponent* GetCombatComponentFromActorInfo();
 	
 };

@@ -41,11 +41,14 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	virtual class AREnemy* GetEnemyCharacterFromActorInfo();
 
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	virtual class ARPlayerController* GetPlayerControllerFromActorInfo();
+
 private:
 	
 	TWeakObjectPtr<ARPlayer> CachedPlayer;
 	TWeakObjectPtr<AREnemy> CachedEnemy;
-	
+	TWeakObjectPtr<ARPlayerController> CachedPlayerController;
 };
 
 
