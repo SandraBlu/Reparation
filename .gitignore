@@ -1,0 +1,85 @@
+# ---------------------------------------------------------------------------
+# Reparation - recovery repository
+#
+# This repo holds what is needed to rebuild a working project: C++ source,
+# config, and gameplay logic assets. Bulk art (meshes, textures, animation
+# sequences) is deliberately excluded and lives in local backups.
+# See README.md for what to reinstall.
+# ---------------------------------------------------------------------------
+
+# Unreal build artifacts
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# IDE / editor state
+.idea/
+.vs/
+.vscode/
+*.sln
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+*.DotSettings.user
+
+# OS noise
+Thumbs.db
+.DS_Store
+
+# Paid marketplace plugins - licensed per seat, reinstall from Fab
+Plugins/
+
+# ---------------------------------------------------------------------------
+# Content: exclude everything, then whitelist gameplay logic
+# ---------------------------------------------------------------------------
+Content/**
+
+# Let git descend into directories so the whitelist below can match
+!Content/**/
+
+# Gameplay logic assets, wherever they live
+!Content/**/BP_*.uasset
+!Content/**/BPI_*.uasset
+!Content/**/ABP_*.uasset
+!Content/**/WBP_*.uasset
+!Content/**/AIC_*.uasset
+!Content/**/BT_*.uasset
+!Content/**/BTT_*.uasset
+!Content/**/BTD_*.uasset
+!Content/**/BTS_*.uasset
+!Content/**/BB_*.uasset
+!Content/**/GA_*.uasset
+!Content/**/GE_*.uasset
+!Content/**/GC_*.uasset
+!Content/**/DA_*.uasset
+!Content/**/DT_*.uasset
+!Content/**/E_*.uasset
+!Content/**/ST_*.uasset
+!Content/**/EUW_*.uasset
+!Content/**/Utility_*.uasset
+
+# Blueprints named with a _BP suffix rather than a BP_ prefix
+!Content/**/*_BP.uasset
+!Content/**/*_ABP.uasset
+!Content/**/*_WBP.uasset
+!Content/**/*_BPI.uasset
+
+# Small authored data folders, kept whole
+!Content/GAS/**
+!Content/UI/**
+!Content/Input/**
+!Content/Inventory/**
+!Content/Dialogue/**
+!Content/Map/**
+!Content/Blueprints/**
+
+# ...but never let art sneak back in via those folders
+Content/**/Textures/
+Content/**/Meshes/
+Content/**/SkeletalMesh/
+Content/**/SkeletalMeshes/
+Content/**/Audio/
