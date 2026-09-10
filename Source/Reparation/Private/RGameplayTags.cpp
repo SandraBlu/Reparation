@@ -206,10 +206,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	//status
 	GameplayTags.status_evading = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.evading"), FString("Evading"));
 	GameplayTags.status_blocking = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.blocking"), FString("Blocking"));
-	GameplayTags.status_targeting = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.targeting"), FString("Targeting"));
-	GameplayTags.status_invincible = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.invincible"), FString("Invincible"));
-
-	//Rage Status
+	GameplayTags.status_targeting = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.targeting"), FString(yes
 	GameplayTags.status_Rage_Activating = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.rage.activating"), FString("Activating Rage"));
 	GameplayTags.status_Rage_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.rage.active"), FString("Active Rage"));
 	GameplayTags.status_Rage_Full = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.rage.full"), FString("Full Rage"));
@@ -222,6 +219,19 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.MapLayer_Default = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("navigation.default"), FString("World Map"));
 	GameplayTags.NavigatorTypes_Screenspace = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("navigation.screenspace"), FString("World Map"));
 	GameplayTags.PointOfInterestCategory = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("navigation.POI"), FString("World Map"));
+
+	//Locomotion States
+	GameplayTags.state_locomotion_grounded = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.grounded"), FString("Character is on the ground"));
+	GameplayTags.state_locomotion_inAir = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.inAir"), FString("Character is airborne"));
+	GameplayTags.state_locomotion_swimming = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.swimming"), FString("Character is in water"));
+	GameplayTags.state_locomotion_underwater = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.underwater"), FString("Character is fully submerged"));
+	GameplayTags.state_locomotion_sprinting = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.sprinting"), FString("Character is sprinting"));
+	GameplayTags.state_locomotion_crouching = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.crouching"), FString("Character is crouched"));
+	GameplayTags.state_locomotion_landing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.landing"), FString("Character is recovering from a landing"));
+	GameplayTags.state_locomotion_flying = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.flying"), FString("Character is flying under power"));
+	GameplayTags.state_locomotion_gliding = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.gliding"), FString("Character is gliding on a hang glider"));
+	GameplayTags.state_locomotion_climbing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.climbing"), FString("Character is climbing a surface"));
+	GameplayTags.state_locomotion_traversing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.traversing"), FString("Character is vaulting or mantling"));
 
 	
 }

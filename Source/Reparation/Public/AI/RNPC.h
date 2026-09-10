@@ -20,7 +20,7 @@ class REPARATION_API ARNPC : public ARCharacterBase
 
 public:
 	
-	ARNPC();
+	ARNPC(const FObjectInitializer& ObjectInitializer);
 	
 	virtual void PossessedBy(AController* NewController) override;
 

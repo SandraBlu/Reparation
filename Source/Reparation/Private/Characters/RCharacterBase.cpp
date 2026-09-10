@@ -12,7 +12,8 @@
 
 class ARGameMode;
 // Sets default values
-ARCharacterBase::ARCharacterBase()
+ARCharacterBase::ARCharacterBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	EffectDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("EffectDebuffComponent");

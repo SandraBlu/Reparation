@@ -219,6 +219,19 @@ public:
 	FGameplayTag NavigatorTypes_Worldmap;
 	
 	FGameplayTag PointOfInterestCategory;
+
+	//Locomotion State Tags
+	FGameplayTag state_locomotion_grounded;
+	FGameplayTag state_locomotion_inAir;
+	FGameplayTag state_locomotion_swimming;
+	FGameplayTag state_locomotion_underwater;
+	FGameplayTag state_locomotion_sprinting;
+	FGameplayTag state_locomotion_crouching;
+	FGameplayTag state_locomotion_landing;
+	FGameplayTag state_locomotion_flying;
+	FGameplayTag state_locomotion_gliding;
+	FGameplayTag state_locomotion_climbing;
+	FGameplayTag state_locomotion_traversing;
 	
 private:
 

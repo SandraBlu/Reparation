@@ -17,7 +17,8 @@
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
 
-ARNPC::ARNPC()
+ARNPC::ARNPC(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<URAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);

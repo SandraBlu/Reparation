@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Animation/AnimInstance.h"
+#include "Locomotion/RLocomotionTypes.h"
 #include "RAnimInstanceBase.generated.h"
 
 class UCharacterMovementComponent;
+class URLocomotionComponent;
 class ARCharacterBase;
 /**
  * 
@@ -20,6 +22,7 @@ class REPARATION_API URAnimInstanceBase : public UAnimInstance
 public:
 	
 	virtual void NativeInitializeAnimation() override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds);
 	
 protected:
@@ -27,6 +30,13 @@ protected:
 	ARCharacterBase* OwningCharacter;
 	UPROPERTY()
 	UCharacterMovementComponent* OwningMovementComponent;
+
+	UPROPERTY()
+	URLocomotionComponent* LocomotionComponent;
+
+	/** Snapshot copied on the game thread, safe to read from the worker thread. */
+	UPROPERTY(BlueprintReadOnly, Category = "AnimData|Locomotion")
+	FRLocomotionAnimData Locomotion;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "AnimData|LocomotionData")
 	float GroundSpeed;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|LocomotionData")

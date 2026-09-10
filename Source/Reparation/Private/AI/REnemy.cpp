@@ -19,7 +19,8 @@
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
 
-AREnemy::AREnemy()
+AREnemy::AREnemy(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<URAbilitySystemComponent>("ASC");
 	AttributeSet = CreateDefaultSubobject<URAttributeSet>("Attributes");

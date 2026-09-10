@@ -18,7 +18,7 @@ class REPARATION_API ARCompanion : public ARCharacterBase
 
 public:
 	
-	ARCompanion();
+	ARCompanion(const FObjectInitializer& ObjectInitializer);
 	
 
 	

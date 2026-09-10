@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 
-ARCompanion::ARCompanion()
+ARCompanion::ARCompanion(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 }

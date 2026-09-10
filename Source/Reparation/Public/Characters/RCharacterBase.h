@@ -28,7 +28,7 @@ class REPARATION_API ARCharacterBase : public ACharacter, public IAbilitySystemI
 
 public:
 	
-	ARCharacterBase();
+	ARCharacterBase(const FObjectInitializer& ObjectInitializer);
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

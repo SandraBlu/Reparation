@@ -1,0 +1,173 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "RLocomotionTypes.generated.h"
+
+class UAnimMontage;
+
+/**
+ * High level locomotion state. This is what drives animation and what abilities
+ * gate against; it is deliberately coarser than the movement component's mode.
+ */
+UENUM(BlueprintType)
+enum class ERLocomotionState : uint8
+{
+	Idle			UMETA(DisplayName = "Idle"),
+	Walk			UMETA(DisplayName = "Walk"),
+	Run				UMETA(DisplayName = "Run"),
+	Sprint			UMETA(DisplayName = "Sprint"),
+	Crouch			UMETA(DisplayName = "Crouch"),
+	Jump			UMETA(DisplayName = "Jump"),
+	Fall			UMETA(DisplayName = "Fall"),
+	Land			UMETA(DisplayName = "Land"),
+	Roll			UMETA(DisplayName = "Roll"),
+	SwimSurface		UMETA(DisplayName = "Swim Surface"),
+	SwimUnderwater	UMETA(DisplayName = "Swim Underwater"),
+
+	Fly				UMETA(DisplayName = "Fly"),
+	Glide			UMETA(DisplayName = "Glide"),
+	Climb			UMETA(DisplayName = "Climb"),
+	Mantle			UMETA(DisplayName = "Mantle"),
+	Vault			UMETA(DisplayName = "Vault")
+};
+
+/** Ground speed tier. Independent of state so Crouch/Walk/Run share one axis. */
+UENUM(BlueprintType)
+enum class ERGait : uint8
+{
+	Walk	UMETA(DisplayName = "Walk"),
+	Run		UMETA(DisplayName = "Run"),
+	Sprint	UMETA(DisplayName = "Sprint")
+};
+
+UENUM(BlueprintType)
+enum class ERStance : uint8
+{
+	Standing	UMETA(DisplayName = "Standing"),
+	Crouching	UMETA(DisplayName = "Crouching")
+};
+
+/**
+ * Values passed to UCharacterMovementComponent::SetMovementMode as the custom
+ * mode byte. Only used when MovementMode == MOVE_Custom.
+ */
+UENUM(BlueprintType)
+enum class ERCustomMovementMode : uint8
+{
+	None	UMETA(DisplayName = "None"),
+	Glide	UMETA(DisplayName = "Glide"),
+	Climb	UMETA(DisplayName = "Climb"),
+	Traversal	UMETA(DisplayName = "Traversal")
+};
+
+/** Speed and handling for one gait tier. */
+USTRUCT(BlueprintType)
+struct FRGaitSettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gait")
+	float MaxSpeed = 375.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gait")
+	float MaxAcceleration = 2048.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gait")
+	float BrakingDeceleration = 1024.f;
+
+	/** Degrees per second the mesh turns toward the movement direction. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gait")
+	float RotationRate = 540.f;
+};
+
+/**
+ * One legal edge in the state machine.
+ *
+ * Conditions live in C++ (URLocomotionComponent::EvaluateDesiredState); this
+ * table governs whether an edge is permitted at all and what it costs
+ * cosmetically. That split keeps designers in control of feel without pushing
+ * physics decisions into data.
+ */
+USTRUCT(BlueprintType)
+struct FRLocomotionTransition
+{
+	GENERATED_BODY()
+
+	/** States this edge may be taken from. Empty means any state. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Transition")
+	TArray<ERLocomotionState> FromStates;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Transition")
+	ERLocomotionState ToState = ERLocomotionState::Idle;
+
+	/** Set to forbid this edge outright, overriding the permissive default. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Transition")
+	bool bBlocked = false;
+
+	/** Optional montage played on entry. Does not block the state change. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Transition")
+	TObjectPtr<UAnimMontage> TransitionMontage = nullptr;
+
+	/** Seconds the new state is held before another change is considered. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Transition", meta = (ClampMin = "0.0"))
+	float LockDuration = 0.f;
+
+	/** Checked highest first, so specific edges can shadow general ones. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Transition")
+	int32 Priority = 0;
+};
+
+/**
+ * Snapshot the anim instance reads. Written on the game thread by
+ * URLocomotionComponent, read from NativeThreadSafeUpdateAnimation, so it holds
+ * only plain values and no pointers to be dereferenced off-thread.
+ */
+USTRUCT(BlueprintType)
+struct FRLocomotionAnimData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	ERLocomotionState State = ERLocomotionState::Idle;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	ERGait Gait = ERGait::Run;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	ERStance Stance = ERStance::Standing;
+
+	/** Horizontal speed, cm/s. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float GroundSpeed = 0.f;
+
+	/** Signed vertical velocity, cm/s. Negative while falling. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float VerticalSpeed = 0.f;
+
+	/** -180..180, movement direction relative to actor rotation. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float Direction = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bHasMovementInput = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bIsGrounded = true;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bIsInWater = false;
+
+	/** 0 at the surface, 1 when the capsule is fully submerged. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float ImmersionDepth = 0.f;
+
+	/** Seconds spent in the current state. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float TimeInState = 0.f;
+
+	/** Downward speed at the moment of the last landing, cm/s. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float LastLandingImpactSpeed = 0.f;
+};

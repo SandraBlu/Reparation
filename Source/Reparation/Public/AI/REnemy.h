@@ -23,7 +23,7 @@ class REPARATION_API AREnemy : public ARCharacterBase
 
 public:
 
-	AREnemy();
+	AREnemy(const FObjectInitializer& ObjectInitializer);
 
 	virtual void PossessedBy(AController* NewController) override;
 

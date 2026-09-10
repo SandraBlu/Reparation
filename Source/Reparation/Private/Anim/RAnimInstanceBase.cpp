@@ -7,6 +7,7 @@
 #include "Characters/RCharacterBase.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Locomotion/RLocomotionComponent.h"
 
 
 void URAnimInstanceBase::NativeInitializeAnimation()
@@ -15,6 +16,21 @@ void URAnimInstanceBase::NativeInitializeAnimation()
 	if (OwningCharacter)
 	{
 		OwningMovementComponent = OwningCharacter->GetCharacterMovement();
+		LocomotionComponent = OwningCharacter->FindComponentByClass<URLocomotionComponent>();
+	}
+}
+
+void URAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	// Copied here rather than in the thread safe pass so the worker thread never
+	// touches the locomotion component directly.
+	if (LocomotionComponent)
+	{
+		Locomotion = LocomotionComponent->GetAnimData();
+		GroundSpeed = Locomotion.GroundSpeed;
+		LocomotionDirection = Locomotion.Direction;
 	}
 }
 

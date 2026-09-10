@@ -8,6 +8,7 @@
 #include "Characters/RCharacterBase.h"
 #include "Interfaces/RPlayerInterface.h"
 #include "Framework/RAbilitySystemLibrary.h"
+#include "Locomotion/RLocomotionTypes.h"
 #include "RPlayer.generated.h"
 
 class URAbilitySystemLibrary;
@@ -20,6 +21,7 @@ class UNiagaraComponent;
 class URInputConfig;
 class UInputMappingContext;
 class UREquipmentComponent;
+class URLocomotionComponent;
 class URAbilitySystemComponent;
 
 /**
@@ -32,13 +34,23 @@ class REPARATION_API ARPlayer : public ARCharacterBase , public IRPlayerInterfac
 
 public:
 	
-	ARPlayer();
+	ARPlayer(const FObjectInitializer& ObjectInitializer);
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	URLocomotionComponent* Locomotion;
+
+	/** Hang glider, hidden until a glide starts. Attach the mesh in the Blueprint. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USkeletalMeshComponent* GliderMesh;
+
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	URLocomotionComponent* GetLocomotionComponent() const { return Locomotion; }
 	
 	//Interfaces
 	
@@ -86,6 +98,38 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* SwitchTarget;
+
+	//Locomotion input
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* WalkAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* CrouchAction;
+
+	/** Axis. Negative dives, positive surfaces. Only meaningful in water. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* SwimVerticalAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* GlideAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* ClimbAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FlyAction;
 	
 	UPROPERTY(BlueprintReadOnly)
 	URFootstepsComponent* FootstepComponent;
@@ -98,6 +142,26 @@ private:
 	//Input
 	void Input_SwitchTargetTriggered(const FInputActionValue& Value);
 	void Input_SwitchTargetCompleted(const FInputActionValue& Value);
+
+	void Input_Move(const FInputActionValue& Value);
+	void Input_Look(const FInputActionValue& Value);
+	void Input_JumpStarted(const FInputActionValue& Value);
+	void Input_JumpCompleted(const FInputActionValue& Value);
+	void Input_SprintStarted(const FInputActionValue& Value);
+	void Input_SprintCompleted(const FInputActionValue& Value);
+	void Input_WalkStarted(const FInputActionValue& Value);
+	void Input_WalkCompleted(const FInputActionValue& Value);
+	void Input_CrouchToggled(const FInputActionValue& Value);
+	void Input_SwimVertical(const FInputActionValue& Value);
+	void Input_SwimVerticalCompleted(const FInputActionValue& Value);
+	void Input_GlideStarted(const FInputActionValue& Value);
+	void Input_GlideCompleted(const FInputActionValue& Value);
+	void Input_ClimbStarted(const FInputActionValue& Value);
+	void Input_ClimbCompleted(const FInputActionValue& Value);
+	void Input_FlyToggled(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void HandleLocomotionStateChanged(ERLocomotionState PreviousState, ERLocomotionState NewState);
 
 	FVector2D SwitchTargetDirection = FVector2D::ZeroVector	;
 	
