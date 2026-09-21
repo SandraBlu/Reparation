@@ -7,6 +7,7 @@
 #include "Characters/RCharacterBase.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimSequenceBase.h"
 #include "Locomotion/RLocomotionComponent.h"
 
 
@@ -53,4 +54,16 @@ bool URAnimInstanceBase::DoesOwnerHaveTag(FGameplayTag TagToCheck) const
 	}
 
 	return false;
+}
+
+float URAnimInstanceBase::GetTraversalExplicitTime(const UAnimSequenceBase* Sequence) const
+{
+	return Sequence ? GetTraversalExplicitTimeForLength(Sequence->GetPlayLength()) : 0.f;
+}
+
+float URAnimInstanceBase::GetTraversalExplicitTimeForLength(float SequenceLength) const
+{
+	// Alpha is already clamped by the movement component, but a sequence evaluator
+	// fed a time past the clip end is a hard-to-spot pop, so clamp defensively.
+	return FMath::Clamp(Locomotion.TraversalAlpha, 0.f, 1.f) * FMath::Max(0.f, SequenceLength);
 }

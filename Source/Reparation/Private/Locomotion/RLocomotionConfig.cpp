@@ -24,6 +24,13 @@ URLocomotionConfig::URLocomotionConfig()
 	CrouchSettings.MaxAcceleration = 1024.f;
 	CrouchSettings.BrakingDeceleration = 1024.f;
 	CrouchSettings.RotationRate = 360.f;
+
+	// Locked on: slower than a walk, and turning fast enough to keep facing a
+	// circling target.
+	TargetingSettings.MaxSpeed = 150.f;
+	TargetingSettings.MaxAcceleration = 1024.f;
+	TargetingSettings.BrakingDeceleration = 1024.f;
+	TargetingSettings.RotationRate = 720.f;
 }
 
 const FRGaitSettings& URLocomotionConfig::GetGaitSettings(ERGait Gait, ERStance Stance) const

@@ -18,6 +18,9 @@ class REPARATION_API UTargetLockAbility : public URGameplayAbility
 
 protected:
 	
+	/** Refuses the lock outright outside ground locomotion, rather than activating and cancelling a frame later. */
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
@@ -35,12 +38,10 @@ private:
 	void GetAvailableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft,TArray<AActor*>& OutActorsOnRight);
 	void DrawTargetLockWidget();
 	void SetTargetLockWidgetPosition();
-	void InitTargetLockMovement();
 	void InitTargetLockMappingContext();
 	
 	void CancelTargetLockAbility();
 	void CleanUp();
-	void ResetTargetLockMovement();
 	void ResetTargetLockMappingContext();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Target Lock")
@@ -57,9 +58,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Target Lock")
 	float TargetLockRotationInterpSpeed = 5.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Target Lock")
-	float TargetLockWalkSpeed = 150.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Target Lock")
 	UInputMappingContext* TargetLockMappingContext;
@@ -81,8 +79,6 @@ private:
 	UPROPERTY()
 	FVector2D TargetLockWidgetSize = FVector2D::ZeroVector;
 
-	UPROPERTY()
-	float DefaultMaxWalkSpeed = 0.f;
 	
 };
 

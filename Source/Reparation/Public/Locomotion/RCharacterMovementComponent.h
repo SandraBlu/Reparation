@@ -51,6 +51,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	bool IsTraversing() const { return IsCustomMode(ERCustomMovementMode::Traversal); }
 
+	/** 0 to 1 progress through the current traversal, 0 when not traversing. */
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	float GetTraversalAlpha() const;
+
 	/** Fraction of the capsule below the water surface, 0 when dry, 1 fully submerged. */
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	float GetImmersionFraction() const;

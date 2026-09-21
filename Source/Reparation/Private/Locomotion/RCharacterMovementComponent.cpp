@@ -513,6 +513,16 @@ bool URCharacterMovementComponent::FindTraversal(FVector& OutStart, FVector& Out
 	return true;
 }
 
+float URCharacterMovementComponent::GetTraversalAlpha() const
+{
+	if (!IsTraversing() || TraversalDuration <= KINDA_SMALL_NUMBER)
+	{
+		return 0.f;
+	}
+
+	return FMath::Clamp(TraversalElapsed / TraversalDuration, 0.f, 1.f);
+}
+
 void URCharacterMovementComponent::BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration)
 {
 	TraversalStart = Start;

@@ -110,6 +110,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Climb")
 	float ClimbJumpAwaySpeed = 250.f;
 
+	/** Strafe while the owner carries status.targeting, facing the aim rather than the path. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Strafe")
+	bool bStrafeWhileTargeting = true;
+
+	/**
+	 * Replaces the gait tier outright while strafing, the same way CrouchSettings
+	 * does while crouched. Locking on is meant to be slower and turn faster.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Strafe")
+	FRGaitSettings TargetingSettings;
+
 	/**
 	 * Legal edges. Any edge not listed is permitted with no montage and no lock;
 	 * list an edge only to attach cosmetics, a lock, or to block it.

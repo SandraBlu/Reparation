@@ -12,14 +12,29 @@
 #include "Framework/RPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Locomotion/RLocomotionComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UI/CombatWidget.h"
 
+bool UTargetLockAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+	{
+		return false;
+	}
+
+	// Same rule OnTargetLockTick enforces, applied before any setup runs so a lock
+	// started mid climb never flashes its widget.
+	const ARPlayer* Player = ActorInfo ? Cast<ARPlayer>(ActorInfo->AvatarActor.Get()) : nullptr;
+	const URLocomotionComponent* Locomotion = Player ? Player->GetLocomotionComponent() : nullptr;
+
+	return !Locomotion || Locomotion->CanTarget();
+}
+
 void UTargetLockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	TryLockOnTarget();
-	InitTargetLockMovement();
 	InitTargetLockMappingContext();
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -27,7 +42,6 @@ void UTargetLockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 void UTargetLockAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	ResetTargetLockMovement();
 	ResetTargetLockMappingContext();
 	CleanUp();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -42,6 +56,15 @@ void UTargetLockAbility::OnTargetLockTick(float DeltaTime)
 		CancelTargetLockAbility();
 		return;
 	}
+	// Climbing, gliding, swimming and traversal each steer the character, so a lock
+	// cannot be held through them.
+	const URLocomotionComponent* Locomotion = GetPlayerFromActorInfo()->GetLocomotionComponent();
+	if (Locomotion && !Locomotion->CanTarget())
+	{
+		CancelTargetLockAbility();
+		return;
+	}
+
 	SetTargetLockWidgetPosition();
 
 	const bool bShouldOverrideRotation = !URAbilitySystemLibrary::NativeDoesActorHaveTag(GetPlayerFromActorInfo(),GameplayTags.status_evading)
@@ -181,14 +204,8 @@ void UTargetLockAbility::CleanUp()
 	}
 	DrawnTargetLockWidget = nullptr;
 	TargetLockWidgetSize = FVector2D::ZeroVector;
-	DefaultMaxWalkSpeed = 0.f;
 }
 
-void UTargetLockAbility::InitTargetLockMovement()
-{
-	DefaultMaxWalkSpeed = GetPlayerFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed;
-	GetPlayerFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed = TargetLockWalkSpeed;
-}
 
 void UTargetLockAbility::InitTargetLockMappingContext()
 {
@@ -198,13 +215,6 @@ void UTargetLockAbility::InitTargetLockMappingContext()
 	Subsystem->AddMappingContext(TargetLockMappingContext, 3);
 }
 
-void UTargetLockAbility::ResetTargetLockMovement()
-{
-	if (DefaultMaxWalkSpeed > 0.f)
-	{
-		GetPlayerFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed = DefaultMaxWalkSpeed;
-	}
-}
 
 void UTargetLockAbility::ResetTargetLockMappingContext()
 {

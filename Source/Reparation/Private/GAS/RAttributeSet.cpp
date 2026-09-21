@@ -291,7 +291,12 @@ void URAttributeSet::Debuff(const FEffectProperties& Props)
 	FInheritedTagContainer InheritedTagContainer;
 	InheritedTagContainer.Added.AddTag(Tag.DamageTypeToDebuff[DamageType]);
 	AssetTagsComponent.SetAndApplyTargetTagChanges(InheritedTagContainer);
+	// StackingType is deprecated in favour of GetStackingType(), but the matching
+	// SetStackingType() is WITH_EDITOR only and this effect is built at runtime,
+	// so direct assignment is still the only way to set it here.
+	PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
+	PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	Effect->StackLimitCount = 1;
 
 	const int32 Index = Effect->Modifiers.Num();

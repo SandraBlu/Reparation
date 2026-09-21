@@ -206,7 +206,10 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	//status
 	GameplayTags.status_evading = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.evading"), FString("Evading"));
 	GameplayTags.status_blocking = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.blocking"), FString("Blocking"));
-	GameplayTags.status_targeting = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.targeting"), FString(yes
+	GameplayTags.status_targeting = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.targeting"), FString("Targeting"));
+	GameplayTags.status_invincible = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.invincible"), FString("Invincible"));
+
+	//Rage Status
 	GameplayTags.status_Rage_Activating = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.rage.activating"), FString("Activating Rage"));
 	GameplayTags.status_Rage_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.rage.active"), FString("Active Rage"));
 	GameplayTags.status_Rage_Full = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("status.rage.full"), FString("Full Rage"));

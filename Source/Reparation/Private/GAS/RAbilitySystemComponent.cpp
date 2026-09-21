@@ -75,7 +75,14 @@ void URAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Input
  		{
  			CancelAbilityHandle(AbilitySpec.Handle);
  			AbilitySpecInputReleased(AbilitySpec);
-			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, AbilitySpec.ActivationInfo.GetActivationPredictionKey());
+			// Instanced abilities each hold their own activation info; the copy on the
+			// spec is deprecated and only ever applied to non-instanced abilities.
+			FPredictionKey ActivationPredictionKey;
+			if (const UGameplayAbility* PrimaryInstance = AbilitySpec.GetPrimaryInstance())
+			{
+				ActivationPredictionKey = PrimaryInstance->GetCurrentActivationInfo().GetActivationPredictionKey();
+			}
+			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, ActivationPredictionKey);
  		}
  	}
 }
@@ -96,7 +103,7 @@ FGameplayTag URAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbil
 {
 	if (AbilitySpec.Ability)
 	{
-		for (FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		for (FGameplayTag Tag : AbilitySpec.Ability.Get()->GetAssetTags())
 		{
 			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("ability"))))
 			{
@@ -211,7 +218,7 @@ FGameplayAbilitySpec* URAbilitySystemComponent::GetSpecFromAbilityTag(const FGam
 	FScopedAbilityListLock ActiveScopeLock(*this);
 	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
-		for(FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		for(FGameplayTag Tag : AbilitySpec.Ability.Get()->GetAssetTags())
 		{
 			if (Tag.MatchesTag(AbilityTag))
 			{

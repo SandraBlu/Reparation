@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Animation/AnimMontage.h"
 #include "KismetAnimationLibrary.h"
 #include "RGameplayTags.h"
 #include "GameFramework/Character.h"
@@ -24,6 +25,7 @@ void URLocomotionComponent::BeginPlay()
 	OwningCharacter = Cast<ACharacter>(GetOwner());
 	if (!OwningCharacter)
 	{
+		UE_LOG(LogTemp, Error, TEXT("%hs: owner [%s] is not a Character, so locomotion is disabled."), __FUNCTION__, *GetNameSafe(GetOwner()));
 		SetComponentTickEnabled(false);
 		return;
 	}
@@ -33,6 +35,7 @@ void URLocomotionComponent::BeginPlay()
 	{
 		// Without the custom movement component there is nothing to drive. The
 		// character must select URCharacterMovementComponent in its constructor.
+		UE_LOG(LogTemp, Error, TEXT("%hs: [%s] does not use URCharacterMovementComponent, so locomotion is disabled. Add SetDefaultSubobjectClass<URCharacterMovementComponent>(ACharacter::CharacterMovementComponentName) to its constructor."), __FUNCTION__, *GetNameSafe(OwningCharacter));
 		SetComponentTickEnabled(false);
 		return;
 	}
@@ -84,6 +87,7 @@ void URLocomotionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	UpdateGait();
 	UpdateVolumetricModes(DeltaTime);
 	EnterState(EvaluateDesiredState());
+	UpdateStrafe();
 	ApplyMovementSettings();
 
 	// Vertical swim input has no equivalent on land, so it is applied here rather
@@ -302,15 +306,33 @@ bool URLocomotionComponent::TryTraversal()
 
 	ActiveTraversalType = Type;
 
-	const float Duration = Type == ERLocomotionState::Vault
+	// Clamped the same way BeginTraversal clamps it, so the play rate below is
+	// derived from the duration the move actually runs for.
+	const float Duration = FMath::Max(0.1f, Type == ERLocomotionState::Vault
 		? MovementComponent->VaultDuration
-		: MovementComponent->MantleDuration;
+		: MovementComponent->MantleDuration);
+
+	// The traversal clips carry no root motion, so the capsule owns the movement
+	// and the clip has to be stretched onto it. A rate under one slows a clip
+	// shorter than the move; over one speeds up a longer one.
+	float MontagePlayRate = 1.f;
+	if (const FRLocomotionTransition* Transition = GetConfigRef().FindTransition(CurrentState, Type))
+	{
+		if (Transition->TransitionMontage)
+		{
+			const float ClipLength = Transition->TransitionMontage->GetPlayLength();
+			if (ClipLength > KINDA_SMALL_NUMBER)
+			{
+				MontagePlayRate = ClipLength / Duration;
+			}
+		}
+	}
 
 	// Clear first so the traversal state is never refused by a stale lock, then
 	// hold it for the whole move.
 	StateLockRemaining = 0.f;
 	MovementComponent->BeginTraversal(Start, Mid, End, Duration);
-	EnterState(Type);
+	EnterState(Type, MontagePlayRate);
 	StateLockRemaining = FMath::Max(StateLockRemaining, Duration);
 
 	return true;
@@ -464,7 +486,7 @@ ERLocomotionState URLocomotionComponent::EvaluateDesiredState() const
 	return CurrentState;
 }
 
-bool URLocomotionComponent::EnterState(ERLocomotionState NewState)
+bool URLocomotionComponent::EnterState(ERLocomotionState NewState, float MontagePlayRate)
 {
 	if (NewState == CurrentState)
 	{
@@ -493,7 +515,7 @@ bool URLocomotionComponent::EnterState(ERLocomotionState NewState)
 
 	if (Transition && Transition->TransitionMontage && OwningCharacter)
 	{
-		OwningCharacter->PlayAnimMontage(Transition->TransitionMontage);
+		OwningCharacter->PlayAnimMontage(Transition->TransitionMontage, MontagePlayRate);
 	}
 
 	ApplyStateTags(PreviousState, NewState);
@@ -552,7 +574,39 @@ void URLocomotionComponent::ApplyMovementSettings()
 		return;
 	}
 
-	MovementComponent->ApplyGaitSettings(Cfg.GetGaitSettings(CurrentGait, CurrentStance));
+	// Targeting replaces the gait tier outright, so speed, acceleration and turn
+	// rate while locked on all come from one place in the config.
+	MovementComponent->ApplyGaitSettings(bIsStrafing
+		? Cfg.TargetingSettings
+		: Cfg.GetGaitSettings(CurrentGait, CurrentStance));
+}
+
+void URLocomotionComponent::UpdateStrafe()
+{
+	const URLocomotionConfig& Cfg = GetConfigRef();
+
+	// Strafing follows the same rule as targeting: ground locomotion only.
+	const bool bModeAllowsStrafe = CanTarget();
+
+	bIsStrafing = false;
+	if (Cfg.bStrafeWhileTargeting && bModeAllowsStrafe)
+	{
+		if (const UAbilitySystemComponent* ASC = GetOwnerASC())
+		{
+			bIsStrafing = ASC->HasMatchingGameplayTag(FRGameplayTags::Get().status_targeting);
+		}
+	}
+
+	if (!bModeAllowsStrafe)
+	{
+		return;
+	}
+
+	// Re-asserted every tick rather than only on change: leaving a climb resets
+	// bOrientRotationToMovement in OnMovementModeChanged, which would otherwise
+	// silently drop the character out of strafe.
+	MovementComponent->bOrientRotationToMovement = !bIsStrafing;
+	MovementComponent->bUseControllerDesiredRotation = bIsStrafing;
 }
 
 void URLocomotionComponent::UpdateAnimData(float DeltaTime)
@@ -570,9 +624,32 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 	AnimData.bIsInWater = MovementComponent->IsSwimming();
 	AnimData.ImmersionDepth = MovementComponent->GetImmersionFraction();
 	AnimData.TimeInState += DeltaTime;
+	AnimData.bIsStrafing = bIsStrafing;
+	AnimData.TraversalAlpha = MovementComponent->GetTraversalAlpha();
+
+	// Wall plane axes, only meaningful while climbing. The character faces the
+	// wall, so its right vector lies along the wall and world Z is up the wall.
+	if (MovementComponent->IsClimbing())
+	{
+		AnimData.ClimbRightSpeed = FVector::DotProduct(Velocity, OwningCharacter->GetActorRightVector());
+		AnimData.ClimbUpSpeed = Velocity.Z;
+	}
+	else
+	{
+		AnimData.ClimbRightSpeed = 0.f;
+		AnimData.ClimbUpSpeed = 0.f;
+	}
 }
 
 // --- Tags -------------------------------------------------------------------
+
+bool URLocomotionComponent::CanTarget() const
+{
+	return CurrentState == ERLocomotionState::Idle
+		|| CurrentState == ERLocomotionState::Walk
+		|| CurrentState == ERLocomotionState::Run
+		|| CurrentState == ERLocomotionState::Sprint;
+}
 
 bool URLocomotionComponent::IsGroundState(ERLocomotionState State)
 {

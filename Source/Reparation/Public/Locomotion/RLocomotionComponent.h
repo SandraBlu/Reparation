@@ -108,6 +108,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	bool IsInWater() const;
 
+	/**
+	 * True only in Idle, Walk, Run and Sprint. Climbing, gliding, swimming and
+	 * traversal each steer the character themselves, so a target lock there would
+	 * fight them for rotation.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	bool CanTarget() const;
+
 	/** Requests a state directly. Still validated against the transition table. */
 	UFUNCTION(BlueprintCallable, Category = "Locomotion")
 	bool RequestState(ERLocomotionState NewState);
@@ -137,13 +145,21 @@ private:
 	/** What the character should be in right now, before the edge is validated. */
 	ERLocomotionState EvaluateDesiredState() const;
 
-	bool EnterState(ERLocomotionState NewState);
+	/**
+	 * MontagePlayRate scales the edge's transition montage. Traversal uses it to
+	 * stretch a fixed length in place clip onto a move whose duration gameplay
+	 * decides, so the feet finish exactly when the capsule does.
+	 */
+	bool EnterState(ERLocomotionState NewState, float MontagePlayRate = 1.f);
 
 	/** Starts and stops glide, climb and traversal before the state is evaluated. */
 	void UpdateVolumetricModes(float DeltaTime);
 
 	void UpdateGait();
 	void ApplyMovementSettings();
+
+	/** Faces the control rotation while the owner is targeting, so the mesh can strafe. */
+	void UpdateStrafe();
 	void UpdateAnimData(float DeltaTime);
 	void ApplyStateTags(ERLocomotionState PreviousState, ERLocomotionState NewState);
 
@@ -173,6 +189,7 @@ private:
 	bool bGlideHeld = false;
 	bool bClimbHeld = false;
 	bool bGliderEquipped = false;
+	bool bIsStrafing = false;
 
 	/** Seconds spent continuously falling, used to gate glider deployment. */
 	float TimeFalling = 0.f;

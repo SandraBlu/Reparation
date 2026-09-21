@@ -22,7 +22,7 @@ ARPlayerState::ARPlayerState()
 	PlayerInventory->SetCapacity(25);
 	PlayerInventory->SetWeightCapacity(60.f);
 	
-	NetUpdateFrequency = 100.f;
+	SetNetUpdateFrequency(100.f);
 }
 
 void ARPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

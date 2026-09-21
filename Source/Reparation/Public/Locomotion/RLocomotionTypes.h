@@ -167,6 +167,37 @@ struct FRLocomotionAnimData
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	float TimeInState = 0.f;
 
+	/**
+	 * 0 to 1 progress through the current vault or mantle, 0 in every other
+	 * state. The traversal clips hold no root motion, so drive a sequence
+	 * evaluator explicit time from this and the feet stay locked to the capsule
+	 * whatever the clip length is.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float TraversalAlpha = 0.f;
+
+	/**
+	 * Velocity in the plane of the climbed wall, cm/s. Right is positive toward
+	 * the character's right hand, Up is positive climbing upward. Both read zero
+	 * when not climbing.
+	 *
+	 * GroundSpeed and Direction are useless on a wall: the character is rotated to
+	 * face it, and climbing straight up has no horizontal component at all.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float ClimbRightSpeed = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float ClimbUpSpeed = 0.f;
+
+	/**
+	 * True while the character faces its target rather than its direction of
+	 * travel. Direction only sweeps the full -180..180 in this mode; orienting to
+	 * movement keeps it pinned near zero.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bIsStrafing = false;
+
 	/** Downward speed at the moment of the last landing, cm/s. */
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	float LastLandingImpactSpeed = 0.f;
