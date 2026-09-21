@@ -198,6 +198,21 @@ struct FRLocomotionAnimData
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	bool bIsStrafing = false;
 
+	/**
+	 * Signed yaw rate of the capsule, degrees per second, positive turning right.
+	 * Pair it with a low GroundSpeed to detect turning on the spot, which is the
+	 * case that foot skates when nothing animates it.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float YawSpeed = 0.f;
+
+	/**
+	 * True while the capsule turns on the spot: yaw changing quickly with little
+	 * translation. Latched with hysteresis so it cannot flicker at the threshold.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bIsTurningInPlace = false;
+
 	/** Downward speed at the moment of the last landing, cm/s. */
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	float LastLandingImpactSpeed = 0.f;

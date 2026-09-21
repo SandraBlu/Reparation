@@ -155,6 +155,8 @@ private:
 	/** Starts and stops glide, climb and traversal before the state is evaluated. */
 	void UpdateVolumetricModes(float DeltaTime);
 
+	/** Mirrors the character's actual crouch state, which can refuse to change. */
+	void UpdateStance();
 	void UpdateGait();
 	void ApplyMovementSettings();
 
@@ -190,6 +192,9 @@ private:
 	bool bClimbHeld = false;
 	bool bGliderEquipped = false;
 	bool bIsStrafing = false;
+
+	/** Previous frame actor yaw, for the turn rate published to the anim data. */
+	float PreviousYaw = 0.f;
 
 	/** Seconds spent continuously falling, used to gate glider deployment. */
 	float TimeFalling = 0.f;

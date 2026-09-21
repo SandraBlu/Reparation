@@ -49,6 +49,8 @@ void URLocomotionComponent::BeginPlay()
 	OwningCharacter->LandedDelegate.AddDynamic(this, &URLocomotionComponent::HandleLanded);
 	OwningCharacter->MovementModeChangedDelegate.AddDynamic(this, &URLocomotionComponent::HandleMovementModeChanged);
 
+	PreviousYaw = OwningCharacter->GetActorRotation().Yaw;
+
 	ApplyStateTags(CurrentState, CurrentState);
 }
 
@@ -84,6 +86,7 @@ void URLocomotionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	StateLockRemaining = FMath::Max(0.f, StateLockRemaining - DeltaTime);
 	TimeFalling = MovementComponent->IsFalling() ? TimeFalling + DeltaTime : 0.f;
 
+	UpdateStance();
 	UpdateGait();
 	UpdateVolumetricModes(DeltaTime);
 	EnterState(EvaluateDesiredState());
@@ -130,15 +133,16 @@ void URLocomotionComponent::ToggleCrouch()
 		return;
 	}
 
-	if (CurrentStance == ERStance::Crouching)
+	// Only a request. Crouch and UnCrouch set an intent the movement component
+	// applies, and standing up is refused when there is no headroom. UpdateStance
+	// reads back whatever it settles on.
+	if (OwningCharacter->bIsCrouched)
 	{
 		OwningCharacter->UnCrouch();
-		CurrentStance = ERStance::Standing;
 	}
 	else
 	{
 		OwningCharacter->Crouch();
-		CurrentStance = ERStance::Crouching;
 	}
 }
 
@@ -524,6 +528,15 @@ bool URLocomotionComponent::EnterState(ERLocomotionState NewState, float Montage
 	return true;
 }
 
+void URLocomotionComponent::UpdateStance()
+{
+	// Crouch() and UnCrouch() only set an intent. The movement component decides,
+	// and it refuses to stand up under a low ceiling. Read the result back rather
+	// than assuming the request took, or the gait settings, the reported stance
+	// and the actual capsule all disagree.
+	CurrentStance = OwningCharacter->bIsCrouched ? ERStance::Crouching : ERStance::Standing;
+}
+
 void URLocomotionComponent::UpdateGait()
 {
 	const URLocomotionConfig& Cfg = GetConfigRef();
@@ -611,6 +624,7 @@ void URLocomotionComponent::UpdateStrafe()
 
 void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 {
+	const URLocomotionConfig& Cfg = GetConfigRef();
 	const FVector Velocity = MovementComponent->Velocity;
 
 	AnimData.State = CurrentState;
@@ -619,6 +633,26 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 	AnimData.GroundSpeed = Velocity.Size2D();
 	AnimData.VerticalSpeed = Velocity.Z;
 	AnimData.Direction = UKismetAnimationLibrary::CalculateDirection(Velocity, OwningCharacter->GetActorRotation());
+
+	// Turning on the spot has no velocity to read, so publish the capsule turn
+	// rate instead. Orient to movement spins the character toward new input while
+	// it is barely translating, and strafing turns it to face the target; both
+	// show up here.
+	const float CurrentYaw = OwningCharacter->GetActorRotation().Yaw;
+	AnimData.YawSpeed = DeltaTime > KINDA_SMALL_NUMBER
+		? FMath::FindDeltaAngleDegrees(PreviousYaw, CurrentYaw) / DeltaTime
+		: 0.f;
+	PreviousYaw = CurrentYaw;
+
+	// Latching on last frame's value is the hysteresis: once turning, the yaw rate
+	// has to drop well under the threshold before the turn is called finished.
+	const float RequiredYawSpeed = AnimData.bIsTurningInPlace
+		? FMath::Max(0.f, Cfg.TurnInPlaceYawSpeed - Cfg.TurnInPlaceYawSpeedHysteresis)
+		: Cfg.TurnInPlaceYawSpeed;
+
+	AnimData.bIsTurningInPlace = MovementComponent->IsMovingOnGround()
+		&& AnimData.GroundSpeed <= Cfg.TurnInPlaceMaxGroundSpeed
+		&& FMath::Abs(AnimData.YawSpeed) >= RequiredYawSpeed;
 	AnimData.bHasMovementInput = !MovementInput.IsNearlyZero();
 	AnimData.bIsGrounded = MovementComponent->IsMovingOnGround();
 	AnimData.bIsInWater = MovementComponent->IsSwimming();

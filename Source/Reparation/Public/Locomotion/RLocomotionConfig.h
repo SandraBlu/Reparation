@@ -121,6 +121,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Strafe")
 	FRGaitSettings TargetingSettings;
 
+	/** Yaw rate above which the character reads as turning on the spot, deg/s. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (ClampMin = "0.0"))
+	float TurnInPlaceYawSpeed = 45.f;
+
+	/** How far the yaw rate must fall below the threshold before the turn ends. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (ClampMin = "0.0"))
+	float TurnInPlaceYawSpeedHysteresis = 35.f;
+
+	/** Above this ground speed a turn is a moving turn, not a turn on the spot. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (ClampMin = "0.0"))
+	float TurnInPlaceMaxGroundSpeed = 60.f;
+
 	/**
 	 * Legal edges. Any edge not listed is permitted with no montage and no lock;
 	 * list an edge only to attach cosmetics, a lock, or to block it.
