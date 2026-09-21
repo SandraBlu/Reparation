@@ -19,7 +19,9 @@ void URAnimPlayer::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeThreadSafeUpdateAnimation(DeltaSeconds);
 
-	if (bHasAcceleration)
+	// Relax only while genuinely standing still on the ground. Acceleration alone
+	// would also read as idle mid-fall or while pinned against a wall.
+	if (Locomotion.State != ERLocomotionState::Idle)
 	{
 		IdleElapsedTime = 0.f;
 		bEnterRelaxState = false;

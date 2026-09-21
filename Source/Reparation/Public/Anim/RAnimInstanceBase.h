@@ -8,7 +8,6 @@
 #include "Locomotion/RLocomotionTypes.h"
 #include "RAnimInstanceBase.generated.h"
 
-class UCharacterMovementComponent;
 class URLocomotionComponent;
 class ARCharacterBase;
 class UAnimSequenceBase;
@@ -24,13 +23,10 @@ public:
 	
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds);
 	
 protected:
 	UPROPERTY()
 	ARCharacterBase* OwningCharacter;
-	UPROPERTY()
-	UCharacterMovementComponent* OwningMovementComponent;
 
 	UPROPERTY()
 	URLocomotionComponent* LocomotionComponent;
@@ -38,12 +34,6 @@ protected:
 	/** Snapshot copied on the game thread, safe to read from the worker thread. */
 	UPROPERTY(BlueprintReadOnly, Category = "AnimData|Locomotion")
 	FRLocomotionAnimData Locomotion;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "AnimData|LocomotionData")
-	float GroundSpeed;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|LocomotionData")
-	bool bHasAcceleration;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "AnimData|LocomotionData")
-	float LocomotionDirection;
 
 	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
 	bool DoesOwnerHaveTag(FGameplayTag TagToCheck) const;
