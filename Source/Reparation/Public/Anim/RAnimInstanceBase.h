@@ -23,6 +23,11 @@ public:
 	
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+private:
+
+	/** Caches the owner and its locomotion component. Safe to call repeatedly. */
+	void ResolveLocomotionComponent();
 	
 protected:
 	UPROPERTY()

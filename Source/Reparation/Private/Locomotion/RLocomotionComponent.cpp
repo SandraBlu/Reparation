@@ -11,6 +11,15 @@
 #include "GameFramework/Character.h"
 #include "Locomotion/RCharacterMovementComponent.h"
 #include "Locomotion/RLocomotionConfig.h"
+#include "Engine/Engine.h"
+
+#if !UE_BUILD_SHIPPING
+static TAutoConsoleVariable<int32> CVarDebugLocomotion(
+	TEXT("r.Reparation.DebugLocomotion"),
+	0,
+	TEXT("Draw the locomotion state on screen. 1 to enable."),
+	ECVF_Cheat);
+#endif
 
 URLocomotionComponent::URLocomotionComponent()
 {
@@ -45,6 +54,11 @@ void URLocomotionComponent::BeginPlay()
 	MovementComponent->AirControl = Cfg.AirControl;
 	MovementComponent->ApplyGaitSettings(Cfg.GetGaitSettings(CurrentGait, CurrentStance));
 	MovementComponent->ApplySwimSettings(Cfg.SwimSurfaceSpeed, Cfg.SwimAcceleration);
+
+	// Tick after the movement component, not merely in the same group. Without
+	// this the state machine reads the previous frame's movement mode, so a jump
+	// spends a frame still reported as running before it reads as airborne.
+	AddTickPrerequisiteComponent(MovementComponent);
 
 	OwningCharacter->LandedDelegate.AddDynamic(this, &URLocomotionComponent::HandleLanded);
 	OwningCharacter->MovementModeChangedDelegate.AddDynamic(this, &URLocomotionComponent::HandleMovementModeChanged);
@@ -101,6 +115,10 @@ void URLocomotionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	}
 
 	UpdateAnimData(DeltaTime);
+
+#if !UE_BUILD_SHIPPING
+	DrawDebugState();
+#endif
 }
 
 // --- Input ------------------------------------------------------------------
@@ -539,6 +557,30 @@ bool URLocomotionComponent::EnterState(ERLocomotionState NewState, float Montage
 	return true;
 }
 
+#if !UE_BUILD_SHIPPING
+void URLocomotionComponent::DrawDebugState() const
+{
+	if (CVarDebugLocomotion.GetValueOnGameThread() <= 0 || !GEngine)
+	{
+		return;
+	}
+
+	const FString StateName = StaticEnum<ERLocomotionState>()->GetNameStringByValue(static_cast<int64>(CurrentState));
+	const FString GaitName = StaticEnum<ERGait>()->GetNameStringByValue(static_cast<int64>(CurrentGait));
+	const FString StanceName = StaticEnum<ERStance>()->GetNameStringByValue(static_cast<int64>(CurrentStance));
+
+	// Keyed on the component so each character overwrites its own line instead
+	// of the list growing every frame.
+	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.f, FColor::Green,
+		FString::Printf(
+			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | Floor %.0f | Strafe %d | Turn %d"),
+			*StateName, *GaitName, *StanceName,
+			AnimData.GroundSpeed, AnimData.YawSpeed, StateLockRemaining,
+			AnimData.TimeFalling, AnimData.FloorAngle,
+			AnimData.bIsStrafing ? 1 : 0, AnimData.bIsTurningInPlace ? 1 : 0));
+}
+#endif
+
 void URLocomotionComponent::UpdateStance()
 {
 	// Crouch() and UnCrouch() only set an intent. The movement component decides,
@@ -876,13 +918,14 @@ void URLocomotionComponent::HandleMovementModeChanged(ACharacter* Character, EMo
 		MovementComponent->ApplySwimSettings(Cfg.SwimSurfaceSpeed, Cfg.SwimAcceleration);
 		bJumpInitiated = false;
 		StateLockRemaining = 0.f;
-		return;
 	}
-
 	// Leaving water: restore gait handling and drop any dive input still held.
-	if (PreviousMode == MOVE_Swimming)
+	else if (PreviousMode == MOVE_Swimming)
 	{
 		SwimVerticalInput = 0.f;
 		MovementComponent->ApplyGaitSettings(Cfg.GetGaitSettings(CurrentGait, CurrentStance));
 	}
+
+	// The mode has already changed by the time this fires, so reflect it now.
+	EnterState(EvaluateDesiredState());
 }

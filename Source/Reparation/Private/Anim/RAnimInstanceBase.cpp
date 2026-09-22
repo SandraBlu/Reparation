@@ -11,16 +11,32 @@
 
 void URAnimInstanceBase::NativeInitializeAnimation()
 {
+	ResolveLocomotionComponent();
+}
+
+void URAnimInstanceBase::ResolveLocomotionComponent()
+{
 	OwningCharacter = Cast<ARCharacterBase>(TryGetPawnOwner());
-	if (OwningCharacter)
+	if (!OwningCharacter)
 	{
-		LocomotionComponent = OwningCharacter->FindComponentByClass<URLocomotionComponent>();
+		return;
 	}
+
+	LocomotionComponent = OwningCharacter->FindComponentByClass<URLocomotionComponent>();
 }
 
 void URAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	// Anim initialisation can run before the owning pawn is fully set up, which
+	// left the snapshot at its defaults for the whole session: State reading Idle
+	// and GroundSpeed zero no matter what the character did. Re-resolve instead of
+	// trusting the one attempt at init.
+	if (!LocomotionComponent)
+	{
+		ResolveLocomotionComponent();
+	}
 
 	// Copied here rather than in the thread safe pass so the worker thread never
 	// touches the locomotion component directly.

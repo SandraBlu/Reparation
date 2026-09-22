@@ -156,6 +156,11 @@ private:
 	void UpdateVolumetricModes(float DeltaTime);
 
 	/** Mirrors the character's actual crouch state, which can refuse to change. */
+#if !UE_BUILD_SHIPPING
+	/** On screen state readout, toggled with r.Reparation.DebugLocomotion 1. */
+	void DrawDebugState() const;
+#endif
+
 	void UpdateStance();
 	void UpdateGait();
 	void ApplyMovementSettings();

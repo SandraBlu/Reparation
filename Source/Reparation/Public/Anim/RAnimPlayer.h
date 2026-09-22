@@ -16,7 +16,7 @@ class REPARATION_API URAnimPlayer : public URAnimInstanceBase
 
 public:
 	virtual void NativeInitializeAnimation() override;
-	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|References")

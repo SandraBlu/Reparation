@@ -15,9 +15,13 @@ void URAnimPlayer::NativeInitializeAnimation()
 	}
 }
 
-void URAnimPlayer::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
+void URAnimPlayer::NativeUpdateAnimation(float DeltaSeconds)
 {
-	Super::NativeThreadSafeUpdateAnimation(DeltaSeconds);
+	// Deliberately not the thread safe pass. This depends on the Locomotion
+	// snapshot that NativeUpdateAnimation copies, and a linked anim graph runs as
+	// its own instance, so relying on both passes firing there left the timer
+	// counting against a snapshot that never updated.
+	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	// Relax only while genuinely standing still on the ground. Acceleration alone
 	// would also read as idle mid-fall or while pinned against a wall.
