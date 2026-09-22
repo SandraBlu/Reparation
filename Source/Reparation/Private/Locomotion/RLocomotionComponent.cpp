@@ -492,7 +492,11 @@ ERLocomotionState URLocomotionComponent::EvaluateDesiredState() const
 			? Cfg.SlideMinSlopeAngle - Cfg.SlideSlopeAngleHysteresis
 			: Cfg.SlideMinSlopeAngle;
 
-		if (MovementComponent->GetFloorAngle() >= RequiredSlopeAngle)
+		// Gravity has to be winning, not just the ground being steep. Running up a
+		// ramp gains height, so it reads as climbing and keeps normal locomotion.
+		const bool bClimbingSlope = MovementComponent->Velocity.Z > Cfg.SlideMaxUphillSpeed;
+
+		if (!bClimbingSlope && MovementComponent->GetFloorAngle() >= RequiredSlopeAngle)
 		{
 			return ERLocomotionState::Slide;
 		}
@@ -709,9 +713,18 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 		? FMath::Max(0.f, Cfg.TurnInPlaceYawSpeed - Cfg.TurnInPlaceYawSpeedHysteresis)
 		: Cfg.TurnInPlaceYawSpeed;
 
+	const bool bWasTurning = AnimData.bIsTurningInPlace;
+
 	AnimData.bIsTurningInPlace = MovementComponent->IsMovingOnGround()
 		&& AnimData.GroundSpeed <= Cfg.TurnInPlaceMaxGroundSpeed
 		&& FMath::Abs(AnimData.YawSpeed) >= RequiredYawSpeed;
+
+	// Captured once, on the frame the turn begins. Sampling the sign every frame
+	// would flip the animation if the yaw rate crossed zero as the turn settled.
+	if (AnimData.bIsTurningInPlace && !bWasTurning)
+	{
+		AnimData.bIsTurningRight = AnimData.YawSpeed > 0.f;
+	}
 	AnimData.bHasMovementInput = !MovementInput.IsNearlyZero();
 	AnimData.bIsGrounded = MovementComponent->IsMovingOnGround();
 	AnimData.bIsInWater = MovementComponent->IsSwimming();
@@ -884,6 +897,7 @@ void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 	// cached on the last tick while still airborne.
 	const float ImpactSpeed = FMath::Abs(AnimData.VerticalSpeed);
 	AnimData.LastLandingImpactSpeed = ImpactSpeed;
+	AnimData.bHeavyLanding = ImpactSpeed >= GetConfigRef().HeavyLandingSpeed;
 
 	const URLocomotionConfig& Cfg = GetConfigRef();
 

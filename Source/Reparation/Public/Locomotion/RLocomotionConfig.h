@@ -57,6 +57,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Air", meta = (ClampMin = "0.0"))
 	float HardLandingSpeed = 1000.f;
 
+	/**
+	 * Within the Land state, the speed above which the heavier of the two landing
+	 * clips is used. Sits between SoftLandingSpeed and HardLandingSpeed, which
+	 * decide whether there is a landing state at all and whether it rolls.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Air", meta = (ClampMin = "0.0"))
+	float HeavyLandingSpeed = 750.f;
+
 	/** How long the Land state is held before returning to ground locomotion. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Air", meta = (ClampMin = "0.0"))
 	float LandRecoveryTime = 0.25f;
@@ -150,6 +158,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
 	float SlideBrakingDeceleration = 200.f;
+
+	/**
+	 * Upward speed above which the character is climbing the slope rather than
+	 * losing to it, so no slide. A ramp is equally steep walking up it, which is
+	 * why angle alone is not enough. Near zero still slides, so standing on steep
+	 * ground starts one.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
+	float SlideMaxUphillSpeed = 10.f;
 
 	/**
 	 * Legal edges. Any edge not listed is permitted with no montage and no lock;

@@ -211,6 +211,17 @@ struct FRLocomotionAnimData
 	bool bIsGroundLocomotion = false;
 
 	/**
+	 * Which way a turn in place is going. Latched when the turn starts so a yaw
+	 * rate wobbling through zero near the end cannot flip the animation.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bIsTurningRight = false;
+
+	/** True when the last landing was hard enough for the heavier Land clip. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bHeavyLanding = false;
+
+	/**
 	 * Signed yaw rate of the capsule, degrees per second, positive turning right.
 	 * Pair it with a low GroundSpeed to detect turning on the spot, which is the
 	 * case that foot skates when nothing animates it.
