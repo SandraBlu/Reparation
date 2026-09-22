@@ -62,6 +62,15 @@ Content/**
 !Content/**/EUW_*.uasset
 !Content/**/Utility_*.uasset
 
+# Authored animation logic. Small, hand made, and unrecoverable if lost, which
+# is how CR_UE4_IK and 14 OWL structs nearly went missing.
+# Control rigs only where we author them. A blanket rule pulls in 30 MB of
+# marketplace mannequin rigs from Advanced_CompanionAI.
+!Content/Animation/**/CR_*.uasset
+!Content/**/BS_*.uasset
+!Content/**/AM_*.uasset
+!Content/**/AO_*.uasset
+
 # Blueprints named with a _BP suffix rather than a BP_ prefix
 !Content/**/*_BP.uasset
 !Content/**/*_ABP.uasset
