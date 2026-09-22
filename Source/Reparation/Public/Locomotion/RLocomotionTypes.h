@@ -30,7 +30,11 @@ enum class ERLocomotionState : uint8
 	Glide			UMETA(DisplayName = "Glide"),
 	Climb			UMETA(DisplayName = "Climb"),
 	Mantle			UMETA(DisplayName = "Mantle"),
-	Vault			UMETA(DisplayName = "Vault")
+	Vault			UMETA(DisplayName = "Vault"),
+
+	// Appended rather than slotted next to the ground states so the saved values
+	// in DA_LocomotionConfig keep their meaning.
+	Slide			UMETA(DisplayName = "Slide")
 };
 
 /** Ground speed tier. Independent of state so Crouch/Walk/Run share one axis. */
@@ -212,6 +216,14 @@ struct FRLocomotionAnimData
 	 */
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	bool bIsTurningInPlace = false;
+
+	/** Seconds spent continuously falling, 0 the moment the character lands. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float TimeFalling = 0.f;
+
+	/** Angle of the floor under the capsule in degrees. 0 when flat or airborne. */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	float FloorAngle = 0.f;
 
 	/** Downward speed at the moment of the last landing, cm/s. */
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")

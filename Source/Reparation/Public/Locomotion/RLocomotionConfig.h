@@ -133,6 +133,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (ClampMin = "0.0"))
 	float TurnInPlaceMaxGroundSpeed = 60.f;
 
+	/** Floor angle at which the character starts sliding, degrees. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0", ClampMax = "90.0"))
+	float SlideMinSlopeAngle = 35.f;
+
+	/** How far the angle must drop below the threshold before the slide releases. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
+	float SlideSlopeAngleHysteresis = 5.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide")
+	float SlideMaxSpeed = 900.f;
+
+	/** Low friction is what lets gravity carry the slide rather than the legs. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
+	float SlideGroundFriction = 0.2f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
+	float SlideBrakingDeceleration = 200.f;
+
 	/**
 	 * Legal edges. Any edge not listed is permitted with no montage and no lock;
 	 * list an edge only to attach cosmetics, a lock, or to block it.

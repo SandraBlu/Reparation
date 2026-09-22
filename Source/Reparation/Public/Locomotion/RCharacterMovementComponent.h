@@ -59,6 +59,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	float GetImmersionFraction() const;
 
+	/** Angle of the floor under the capsule, degrees. 0 when flat or airborne. */
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	float GetFloorAngle() const;
+
+	/** Low friction and braking are what let gravity carry a slide down a slope. */
+	void ApplySlideSettings(float InMaxSpeed, float InFriction, float InBrakingDeceleration);
+
 	// --- Climb ---
 
 	/**
@@ -220,6 +227,9 @@ private:
 
 	/** Capsule fits at Location with nothing overlapping. */
 	bool HasRoomAt(const FVector& Location) const;
+
+	/** Captured in the constructor so leaving a slide can put friction back. */
+	float DefaultGroundFriction = 8.f;
 
 	FVector ClimbSurfaceNormal = FVector::ZeroVector;
 	bool bAtClimbLedge = false;

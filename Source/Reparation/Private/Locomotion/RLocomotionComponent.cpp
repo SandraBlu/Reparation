@@ -468,6 +468,17 @@ ERLocomotionState URLocomotionComponent::EvaluateDesiredState() const
 
 	if (MovementComponent->IsMovingOnGround())
 	{
+		// Steep ground takes over everything else on foot. Hysteresis on the angle
+		// so a slope hovering at the threshold cannot flicker the state.
+		const float RequiredSlopeAngle = CurrentState == ERLocomotionState::Slide
+			? Cfg.SlideMinSlopeAngle - Cfg.SlideSlopeAngleHysteresis
+			: Cfg.SlideMinSlopeAngle;
+
+		if (MovementComponent->GetFloorAngle() >= RequiredSlopeAngle)
+		{
+			return ERLocomotionState::Slide;
+		}
+
 		if (CurrentStance == ERStance::Crouching)
 		{
 			return ERLocomotionState::Crouch;
@@ -587,6 +598,12 @@ void URLocomotionComponent::ApplyMovementSettings()
 		return;
 	}
 
+	if (CurrentState == ERLocomotionState::Slide)
+	{
+		MovementComponent->ApplySlideSettings(Cfg.SlideMaxSpeed, Cfg.SlideGroundFriction, Cfg.SlideBrakingDeceleration);
+		return;
+	}
+
 	// Targeting replaces the gait tier outright, so speed, acceleration and turn
 	// rate while locked on all come from one place in the config.
 	MovementComponent->ApplyGaitSettings(bIsStrafing
@@ -658,6 +675,8 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 	AnimData.bIsInWater = MovementComponent->IsSwimming();
 	AnimData.ImmersionDepth = MovementComponent->GetImmersionFraction();
 	AnimData.TimeInState += DeltaTime;
+	AnimData.TimeFalling = TimeFalling;
+	AnimData.FloorAngle = MovementComponent->GetFloorAngle();
 	AnimData.bIsStrafing = bIsStrafing;
 	AnimData.TraversalAlpha = MovementComponent->GetTraversalAlpha();
 
@@ -693,7 +712,8 @@ bool URLocomotionComponent::IsGroundState(ERLocomotionState State)
 		|| State == ERLocomotionState::Sprint
 		|| State == ERLocomotionState::Crouch
 		|| State == ERLocomotionState::Land
-		|| State == ERLocomotionState::Roll;
+		|| State == ERLocomotionState::Roll
+		|| State == ERLocomotionState::Slide;
 }
 
 bool URLocomotionComponent::IsWaterState(ERLocomotionState State)

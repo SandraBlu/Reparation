@@ -15,6 +15,7 @@ URCharacterMovementComponent::URCharacterMovementComponent()
 	bOrientRotationToMovement = true;
 	bUseControllerDesiredRotation = false;
 	RotationRate = FRotator(0.f, 540.f, 0.f);
+	DefaultGroundFriction = GroundFriction;
 
 	// Water and flight. The locomotion component overwrites these from its config.
 	MaxSwimSpeed = 300.f;
@@ -83,6 +84,32 @@ void URCharacterMovementComponent::ApplyGaitSettings(const FRGaitSettings& Setti
 	MaxAcceleration = Settings.MaxAcceleration;
 	BrakingDecelerationWalking = Settings.BrakingDeceleration;
 	RotationRate = FRotator(0.f, Settings.RotationRate, 0.f);
+
+	// Restored here because a slide lowers it and nothing else would put it back.
+	GroundFriction = DefaultGroundFriction;
+}
+
+float URCharacterMovementComponent::GetFloorAngle() const
+{
+	if (!IsMovingOnGround())
+	{
+		return 0.f;
+	}
+
+	const FVector Normal = CurrentFloor.HitResult.ImpactNormal;
+	if (Normal.IsNearlyZero())
+	{
+		return 0.f;
+	}
+
+	return FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(Normal.Z, -1.f, 1.f)));
+}
+
+void URCharacterMovementComponent::ApplySlideSettings(float InMaxSpeed, float InFriction, float InBrakingDeceleration)
+{
+	MaxWalkSpeed = InMaxSpeed;
+	GroundFriction = InFriction;
+	BrakingDecelerationWalking = InBrakingDeceleration;
 }
 
 void URCharacterMovementComponent::ApplySwimSettings(float InMaxSpeed, float InAcceleration)
