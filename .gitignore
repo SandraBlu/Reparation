@@ -71,6 +71,11 @@ Content/**
 !Content/**/AM_*.uasset
 !Content/**/AO_*.uasset
 
+# IK rigs and retargeters, again only where we author them. The marketplace
+# mannequin rigs and the AI auto generated ones stay out.
+!Content/Animation/**/IK_*.uasset
+!Content/Animation/**/RTG_*.uasset
+
 # Blueprints named with a _BP suffix rather than a BP_ prefix
 !Content/**/*_BP.uasset
 !Content/**/*_ABP.uasset
