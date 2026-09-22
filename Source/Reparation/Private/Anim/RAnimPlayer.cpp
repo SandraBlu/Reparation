@@ -23,6 +23,19 @@ void URAnimPlayer::NativeUpdateAnimation(float DeltaSeconds)
 	// counting against a snapshot that never updated.
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
+	// The base re-resolves OwningCharacter when anim init ran too early, so derive
+	// from it here rather than trusting the one attempt at init.
+	if (!OwningPlayerCharacter)
+	{
+		OwningPlayerCharacter = Cast<ARPlayer>(OwningCharacter);
+	}
+
+	// Cached on the game thread next to the snapshot so the graph reads a plain
+	// value rather than chasing the weapon actor from the worker thread.
+	CombatType = (OwningPlayerCharacter && OwningPlayerCharacter->Weapon)
+		? OwningPlayerCharacter->Weapon->CombatType
+		: ECombatType::ECT_None;
+
 	// Relax only while genuinely standing still on the ground. Acceleration alone
 	// would also read as idle mid-fall or while pinned against a wall.
 	if (Locomotion.State != ERLocomotionState::Idle)

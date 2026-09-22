@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RAnimInstanceBase.h"
+#include "Actors/RWeapon.h"
 #include "RAnimPlayer.generated.h"
 
 /**
@@ -24,6 +25,13 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|References")
 	bool bEnterRelaxState;
+
+	/**
+	 * Weapon overlay the graph blends by. Reads ECT_None when nothing is
+	 * equipped, so an unarmed pin is always valid.
+	 */
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|Combat")
+	ECombatType CombatType = ECombatType::ECT_None;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AnimData|References")
 	float EnterRelaxStateThreshold = 5.f;
