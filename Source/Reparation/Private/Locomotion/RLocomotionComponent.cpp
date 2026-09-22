@@ -617,6 +617,18 @@ void URLocomotionComponent::DrawDebugState() const
 	FHitResult ClimbSurface;
 	const bool bClimbSurfaceFound = MovementComponent->FindClimbableSurface(ClimbSurface);
 
+	// The same sweep without the climbable filter. If this blocks while the
+	// filtered version does not, the geometry is on the channel and something in
+	// IsSurfaceClimbable is rejecting it, which is a different problem from the
+	// trace missing entirely.
+	const FVector RawStart = OwningCharacter->GetActorLocation();
+	const FVector RawEnd = RawStart + OwningCharacter->GetActorForwardVector() * MovementComponent->ClimbDetectionDistance;
+	FCollisionQueryParams RawParams(SCENE_QUERY_STAT(RClimbDebugTrace), false, OwningCharacter);
+	FHitResult RawHit;
+	const bool bRawBlocked = GetWorld()->SweepSingleByChannel(
+		RawHit, RawStart, RawEnd, FQuat::Identity, MovementComponent->ClimbTraceChannel,
+		FCollisionShape::MakeSphere(MovementComponent->ClimbTraceRadius), RawParams);
+
 	// Draw the climb sweep itself, so it is visible whether it even reaches the
 	// wall and what it is hitting, rather than inferring from a bool.
 	const FVector ClimbStart = OwningCharacter->GetActorLocation();
@@ -633,12 +645,12 @@ void URLocomotionComponent::DrawDebugState() const
 	// of the list growing every frame.
 	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.f, FColor::Green,
 		FString::Printf(
-			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ClimbFound %d"),
+			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ChannelHit %d | ClimbFound %d"),
 			*StateName, *GaitName, *StanceName,
 			AnimData.GroundSpeed, AnimData.YawSpeed, StateLockRemaining,
 			AnimData.TimeFalling, AnimData.FloorAngle, DownhillSpeed,
 			AnimData.bIsStrafing ? 1 : 0, AnimData.bIsTurningInPlace ? 1 : 0,
-			bClimbHeld ? 1 : 0, bClimbSurfaceFound ? 1 : 0));
+			bClimbHeld ? 1 : 0, bRawBlocked ? 1 : 0, bClimbSurfaceFound ? 1 : 0));
 }
 #endif
 
