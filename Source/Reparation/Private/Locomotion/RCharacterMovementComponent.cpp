@@ -17,6 +17,17 @@ URCharacterMovementComponent::URCharacterMovementComponent()
 	RotationRate = FRotator(0.f, 540.f, 0.f);
 	DefaultGroundFriction = GroundFriction;
 
+	// Deliberately permissive. This is not "how steep can you walk up" — that is
+	// MaxAscendableSlopeAngle, which strips uphill input at 40. This is only the
+	// angle past which the engine stops calling a surface ground at all, and
+	// anything past it is MOVE_Falling, where the Slide state cannot run and the
+	// engine scrapes you down with a falling animation instead.
+	//
+	// Set high so the slide band is 40 to 80 rather than 40 to 45. Steep faces are
+	// still unwalkable in practice: uphill input is stripped above 40 and the
+	// slide takes over.
+	SetWalkableFloorAngle(80.f);
+
 	// Water and flight. The locomotion component overwrites these from its config.
 	MaxSwimSpeed = 300.f;
 	BrakingDecelerationSwimming = 1024.f;
@@ -89,6 +100,23 @@ void URCharacterMovementComponent::ApplyGaitSettings(const FRGaitSettings& Setti
 	GroundFriction = DefaultGroundFriction;
 }
 
+FVector URCharacterMovementComponent::ScaleInputAcceleration(const FVector& InputAcceleration) const
+{
+	const FVector Scaled = Super::ScaleInputAcceleration(InputAcceleration);
+
+	if (!IsMovingOnGround() || GetFloorAngle() < MaxAscendableSlopeAngle)
+	{
+		return Scaled;
+	}
+
+	// Too steep for feet, so no foot movement at all: not across it, not up it.
+	// Gravity is the only thing that moves the character on a face this steep,
+	// which is what makes the slide read as losing your footing rather than as
+	// sidestepping down a hill. Getting up a face like this is climbing, and that
+	// needs geometry blocking the Climbable channel.
+	return FVector::ZeroVector;
+}
+
 float URCharacterMovementComponent::GetFloorAngle() const
 {
 	if (!IsMovingOnGround())
@@ -105,9 +133,18 @@ float URCharacterMovementComponent::GetFloorAngle() const
 	return FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(Normal.Z, -1.f, 1.f)));
 }
 
+FVector URCharacterMovementComponent::GetFloorNormal() const
+{
+	return IsMovingOnGround() ? CurrentFloor.HitResult.ImpactNormal : FVector::ZeroVector;
+}
+
 void URCharacterMovementComponent::ApplySlideSettings(float InMaxSpeed, float InFriction, float InBrakingDeceleration)
 {
 	MaxWalkSpeed = InMaxSpeed;
+
+	// A slide is not steerable. Zeroing acceleration makes AddMovementInput inert
+	// without intercepting input anywhere, and ApplyGaitSettings restores it.
+	MaxAcceleration = 0.f;
 	GroundFriction = InFriction;
 	BrakingDecelerationWalking = InBrakingDeceleration;
 }
@@ -272,12 +309,9 @@ void URCharacterMovementComponent::PhysGlide(float DeltaTime, int32 Iterations)
 
 bool URCharacterMovementComponent::IsSurfaceClimbable(const FHitResult& Hit) const
 {
-	// Near vertical only; walkable slopes should be walked, not climbed.
-	if (FMath::Abs(Hit.ImpactNormal.Z) > ClimbMaxSurfaceNormalZ)
-	{
-		return false;
-	}
-
+	// The trace channel is the authority here. Only geometry set to block
+	// Climbable is hit at all, so there is no angle test to fight: a designer can
+	// mark a shallow face or an overhang climbable and it simply works.
 	if (!bRequireClimbableTag)
 	{
 		return true;
@@ -316,7 +350,7 @@ bool URCharacterMovementComponent::FindClimbableSurface(FHitResult& OutHit) cons
 
 	FHitResult Hit;
 	const bool bBlocked = GetWorld()->SweepSingleByChannel(
-		Hit, Start, End, FQuat::Identity, TraceChannel,
+		Hit, Start, End, FQuat::Identity, ClimbTraceChannel,
 		FCollisionShape::MakeSphere(ClimbTraceRadius), Params);
 
 	if (!bBlocked || !IsSurfaceClimbable(Hit))

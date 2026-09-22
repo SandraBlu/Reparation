@@ -12,6 +12,7 @@
 #include "Locomotion/RCharacterMovementComponent.h"
 #include "Locomotion/RLocomotionConfig.h"
 #include "Engine/Engine.h"
+#include "DrawDebugHelpers.h"
 
 #if !UE_BUILD_SHIPPING
 static TAutoConsoleVariable<int32> CVarDebugLocomotion(
@@ -52,6 +53,7 @@ void URLocomotionComponent::BeginPlay()
 	const URLocomotionConfig& Cfg = GetConfigRef();
 	MovementComponent->JumpZVelocity = Cfg.JumpZVelocity;
 	MovementComponent->AirControl = Cfg.AirControl;
+	MovementComponent->MaxAscendableSlopeAngle = Cfg.SlideMinSlopeAngle;
 	MovementComponent->ApplyGaitSettings(Cfg.GetGaitSettings(CurrentGait, CurrentStance));
 	MovementComponent->ApplySwimSettings(Cfg.SwimSurfaceSpeed, Cfg.SwimAcceleration);
 
@@ -106,6 +108,20 @@ void URLocomotionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	EnterState(EvaluateDesiredState());
 	UpdateStrafe();
 	ApplyMovementSettings();
+	UpdateSlide(DeltaTime);
+
+	// Climbing input is applied here because it has to be built against the wall,
+	// not the camera. Forward goes up the face, right goes across it.
+	if (MovementComponent->IsClimbing() && !MovementInput.IsNearlyZero())
+	{
+		const FVector Normal = MovementComponent->GetClimbSurfaceNormal();
+		const FVector WallUp = FVector::VectorPlaneProject(FVector::UpVector, Normal).GetSafeNormal();
+
+		// The character is already rotated to face the wall, so its right vector
+		// lies in the plane. This matches how ClimbRightSpeed is measured.
+		OwningCharacter->AddMovementInput(WallUp, MovementInput.Y);
+		OwningCharacter->AddMovementInput(OwningCharacter->GetActorRightVector(), MovementInput.X);
+	}
 
 	// Vertical swim input has no equivalent on land, so it is applied here rather
 	// than in the pawn's input handler.
@@ -412,6 +428,11 @@ void URLocomotionComponent::UpdateVolumetricModes(float DeltaTime)
 
 // --- Queries ----------------------------------------------------------------
 
+bool URLocomotionComponent::IsClimbing() const
+{
+	return MovementComponent && MovementComponent->IsClimbing();
+}
+
 bool URLocomotionComponent::IsInWater() const
 {
 	return MovementComponent && MovementComponent->IsSwimming();
@@ -492,11 +513,24 @@ ERLocomotionState URLocomotionComponent::EvaluateDesiredState() const
 			? Cfg.SlideMinSlopeAngle - Cfg.SlideSlopeAngleHysteresis
 			: Cfg.SlideMinSlopeAngle;
 
-		// Gravity has to be winning, not just the ground being steep. Running up a
-		// ramp gains height, so it reads as climbing and keeps normal locomotion.
-		const bool bClimbingSlope = MovementComponent->Velocity.Z > Cfg.SlideMaxUphillSpeed;
+		// Angle alone is not enough: a ramp is equally steep running up it, which
+		// put the character into a slide while ascending. Gravity has to be the
+		// thing moving them.
+		const FVector Downhill = FVector::VectorPlaneProject(FVector::DownVector, MovementComponent->GetFloorNormal()).GetSafeNormal();
+		const float DownhillSpeed = FVector::DotProduct(MovementComponent->Velocity, Downhill);
 
-		if (!bClimbingSlope && MovementComponent->GetFloorAngle() >= RequiredSlopeAngle)
+		// Starting one wants real downhill movement, so standing still never does.
+		// Sustaining one only needs the sign, so a slide crossing a flatter patch is
+		// not cut short, while moving back up the face always ends it.
+		const float RequiredDownhillSpeed = CurrentState == ERLocomotionState::Slide
+			? 0.f
+			: Cfg.SlideMinDownhillSpeed;
+
+		// Greater or equal, so standing still on a steep face slides. Landing on one
+		// left the character stuck otherwise: no downhill speed to qualify, no input
+		// allowed above MaxAscendableSlopeAngle, and walking mode never pulls a
+		// capsule down a slope by itself.
+		if (DownhillSpeed >= RequiredDownhillSpeed && MovementComponent->GetFloorAngle() >= RequiredSlopeAngle)
 		{
 			return ERLocomotionState::Slide;
 		}
@@ -573,15 +607,38 @@ void URLocomotionComponent::DrawDebugState() const
 	const FString GaitName = StaticEnum<ERGait>()->GetNameStringByValue(static_cast<int64>(CurrentGait));
 	const FString StanceName = StaticEnum<ERStance>()->GetNameStringByValue(static_cast<int64>(CurrentStance));
 
+	// The two numbers the slide actually turns on, so it is never a guess which
+	// of the angle or the speed is failing.
+	const FVector Downhill = FVector::VectorPlaneProject(FVector::DownVector, MovementComponent->GetFloorNormal()).GetSafeNormal();
+	const float DownhillSpeed = FVector::DotProduct(MovementComponent->Velocity, Downhill);
+
+	// Splits "the key is not reaching us" from "the sweep finds nothing", which
+	// are the two ways a climb silently fails to start.
+	FHitResult ClimbSurface;
+	const bool bClimbSurfaceFound = MovementComponent->FindClimbableSurface(ClimbSurface);
+
+	// Draw the climb sweep itself, so it is visible whether it even reaches the
+	// wall and what it is hitting, rather than inferring from a bool.
+	const FVector ClimbStart = OwningCharacter->GetActorLocation();
+	const FVector ClimbEnd = ClimbStart + OwningCharacter->GetActorForwardVector() * MovementComponent->ClimbDetectionDistance;
+	const FColor SweepColour = bClimbSurfaceFound ? FColor::Green : FColor::Red;
+	DrawDebugLine(GetWorld(), ClimbStart, ClimbEnd, SweepColour, false, -1.f, 0, 1.f);
+	DrawDebugSphere(GetWorld(), ClimbEnd, MovementComponent->ClimbTraceRadius, 12, SweepColour, false, -1.f, 0, 1.f);
+	if (bClimbSurfaceFound)
+	{
+		DrawDebugDirectionalArrow(GetWorld(), ClimbSurface.ImpactPoint, ClimbSurface.ImpactPoint + ClimbSurface.ImpactNormal * 60.f, 12.f, FColor::Cyan, false, -1.f, 0, 1.f);
+	}
+
 	// Keyed on the component so each character overwrites its own line instead
 	// of the list growing every frame.
 	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.f, FColor::Green,
 		FString::Printf(
-			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | Floor %.0f | Strafe %d | Turn %d"),
+			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ClimbFound %d"),
 			*StateName, *GaitName, *StanceName,
 			AnimData.GroundSpeed, AnimData.YawSpeed, StateLockRemaining,
-			AnimData.TimeFalling, AnimData.FloorAngle,
-			AnimData.bIsStrafing ? 1 : 0, AnimData.bIsTurningInPlace ? 1 : 0));
+			AnimData.TimeFalling, AnimData.FloorAngle, DownhillSpeed,
+			AnimData.bIsStrafing ? 1 : 0, AnimData.bIsTurningInPlace ? 1 : 0,
+			bClimbHeld ? 1 : 0, bClimbSurfaceFound ? 1 : 0));
 }
 #endif
 
@@ -655,6 +712,37 @@ void URLocomotionComponent::ApplyMovementSettings()
 	MovementComponent->ApplyGaitSettings(bIsStrafing
 		? Cfg.TargetingSettings
 		: Cfg.GetGaitSettings(CurrentGait, CurrentStance));
+}
+
+void URLocomotionComponent::UpdateSlide(float DeltaTime)
+{
+	if (CurrentState != ERLocomotionState::Slide)
+	{
+		return;
+	}
+
+	const FVector Normal = MovementComponent->GetFloorNormal();
+	if (Normal.IsNearlyZero())
+	{
+		return;
+	}
+
+	// Gravity projected onto the slope. Walking mode keeps the capsule on walkable
+	// floors and never pulls it down them, so the slide has to be driven here.
+	// Steering is already dead: ApplySlideSettings zeroed MaxAcceleration.
+	const FVector Downhill = FVector::VectorPlaneProject(FVector::DownVector, Normal).GetSafeNormal();
+	const URLocomotionConfig& Cfg = GetConfigRef();
+	MovementComponent->Velocity += Downhill * Cfg.SlideAcceleration * DeltaTime;
+
+	// Turn to face the way gravity is taking us. Without this the character keeps
+	// whatever facing it arrived with and slides down backwards.
+	const FVector FacingTarget = FVector(Downhill.X, Downhill.Y, 0.f).GetSafeNormal();
+	if (!FacingTarget.IsNearlyZero())
+	{
+		const FRotator Target(0.f, FacingTarget.Rotation().Yaw, 0.f);
+		OwningCharacter->SetActorRotation(
+			FMath::RInterpConstantTo(OwningCharacter->GetActorRotation(), Target, DeltaTime, Cfg.SlideRotationRate));
+	}
 }
 
 void URLocomotionComponent::UpdateStrafe()

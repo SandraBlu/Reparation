@@ -316,6 +316,14 @@ void ARPlayer::Input_Move(const FInputActionValue& Value)
 		Locomotion->SetMovementInput(Axis);
 	}
 
+	// Climbing maps input onto the wall plane, which the locomotion component
+	// does itself. Camera relative input here is purely horizontal, so projecting
+	// it onto a vertical wall can never produce any ascent.
+	if (Locomotion && Locomotion->IsClimbing())
+	{
+		return;
+	}
+
 	if (!Controller)
 	{
 		return;

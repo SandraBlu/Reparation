@@ -108,6 +108,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	bool IsInWater() const;
 
+	/** True while clinging to a wall. The pawn defers movement input when set. */
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	bool IsClimbing() const;
+
 	/**
 	 * True only in Idle, Walk, Run and Sprint. Climbing, gliding, swimming and
 	 * traversal each steer the character themselves, so a target lock there would
@@ -167,6 +171,9 @@ private:
 
 	/** Faces the control rotation while the owner is targeting, so the mesh can strafe. */
 	void UpdateStrafe();
+
+	/** Pushes the character down the slope, which walking mode will not do. */
+	void UpdateSlide(float DeltaTime);
 	void UpdateAnimData(float DeltaTime);
 	void ApplyStateTags(ERLocomotionState PreviousState, ERLocomotionState NewState);
 

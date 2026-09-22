@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Locomotion/RLocomotionTypes.h"
+#include "Reparation/Reparation.h"
 #include "RCharacterMovementComponent.generated.h"
 
 /**
@@ -27,6 +28,15 @@ public:
 	virtual float GetMaxAcceleration() const override;
 	virtual float GetMaxBrakingDeceleration() const override;
 	virtual bool CanAttemptJump() const override;
+	virtual FVector ScaleInputAcceleration(const FVector& InputAcceleration) const override;
+
+	/**
+	 * Ground steeper than this cannot be ascended: the uphill part of movement
+	 * input is stripped. Pushed from URLocomotionConfig so it stays in step with
+	 * the slide threshold rather than drifting as a second number.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion", meta = (ClampMin = "0.0", ClampMax = "90.0"))
+	float MaxAscendableSlopeAngle = 40.f;
 
 	/** Pushes a gait tier onto the walk/crouch speed and handling properties. */
 	void ApplyGaitSettings(const FRGaitSettings& Settings);
@@ -62,6 +72,10 @@ public:
 	/** Angle of the floor under the capsule, degrees. 0 when flat or airborne. */
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	float GetFloorAngle() const;
+
+	/** Normal of the floor under the capsule. Zero when airborne. */
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	FVector GetFloorNormal() const;
 
 	/** Low friction and braking are what let gravity carry a slide down a slope. */
 	void ApplySlideSettings(float InMaxSpeed, float InFriction, float InBrakingDeceleration);
@@ -146,13 +160,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
 	float ClimbTraceRadius = 28.f;
 
-	/**
-	 * Largest absolute Z of a surface normal that still counts as a wall.
-	 * 0 is perfectly vertical; raising it permits leaning surfaces.
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb", meta = (ClampMin = "0.0", ClampMax = "1.0"))
-	float ClimbMaxSurfaceNormalZ = 0.35f;
-
 	/** Distance held between the capsule centre and the wall. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
 	float ClimbWallOffset = 40.f;
@@ -170,9 +177,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
 	FName ClimbableTag = FName("Climbable");
 
+	/**
+	 * Trace channel that defines climbable geometry. Set a mesh to block this
+	 * channel and it is climbable, which scales to a landscape far better than
+	 * tagging every actor.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
+	TEnumAsByte<ECollisionChannel> ClimbTraceChannel = ECC_Climbable;
+
 	/** Set false to climb any sufficiently steep surface, ignoring ClimbableTag. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
-	bool bRequireClimbableTag = true;
+	bool bRequireClimbableTag = false;
 
 	// --- Traversal tuning ---
 

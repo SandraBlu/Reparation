@@ -143,7 +143,7 @@ public:
 
 	/** Floor angle at which the character starts sliding, degrees. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0", ClampMax = "90.0"))
-	float SlideMinSlopeAngle = 35.f;
+	float SlideMinSlopeAngle = 40.f;
 
 	/** How far the angle must drop below the threshold before the slide releases. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
@@ -160,13 +160,29 @@ public:
 	float SlideBrakingDeceleration = 200.f;
 
 	/**
-	 * Upward speed above which the character is climbing the slope rather than
-	 * losing to it, so no slide. A ramp is equally steep walking up it, which is
-	 * why angle alone is not enough. Near zero still slides, so standing on steep
-	 * ground starts one.
+	 * Speed down the face needed to start a slide. Angle alone is not enough,
+	 * since a ramp is equally steep walking up it, and standing still must not
+	 * start one. Once sliding, any downhill movement at all sustains it.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
-	float SlideMaxUphillSpeed = 10.f;
+	float SlideMinDownhillSpeed = 0.f;
+
+	/**
+	 * Downhill acceleration applied while sliding. Walking mode holds the capsule
+	 * on walkable floors and never pulls it down them, so without this a slide is
+	 * only slippery walking.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
+	float SlideAcceleration = 1200.f;
+
+	/**
+	 * Degrees per second the character turns to face downhill while sliding.
+	 * Orient to movement cannot do this: it derives facing from acceleration, and
+	 * a slope this steep has none, so the character would slide down backwards
+	 * still facing up the hill.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slide", meta = (ClampMin = "0.0"))
+	float SlideRotationRate = 360.f;
 
 	/**
 	 * Legal edges. Any edge not listed is permitted with no montage and no lock;
