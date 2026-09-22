@@ -720,6 +720,10 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 	AnimData.TimeFalling = TimeFalling;
 	AnimData.FloorAngle = MovementComponent->GetFloorAngle();
 	AnimData.bIsStrafing = bIsStrafing;
+
+	// Same predicate CanTarget uses, published so the anim graph does not have to
+	// rebuild it out of four enum comparisons and drift from this one.
+	AnimData.bIsGroundLocomotion = CanTarget();
 	AnimData.TraversalAlpha = MovementComponent->GetTraversalAlpha();
 
 	// Wall plane axes, only meaningful while climbing. The character faces the

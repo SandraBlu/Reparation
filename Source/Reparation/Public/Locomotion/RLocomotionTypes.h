@@ -203,6 +203,14 @@ struct FRLocomotionAnimData
 	bool bIsStrafing = false;
 
 	/**
+	 * True in Idle, Walk, Run and Sprint, the states a single ground blendspace
+	 * covers. Not the same as bIsGrounded, which is also true while crouched,
+	 * landing, rolling and sliding.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bIsGroundLocomotion = false;
+
+	/**
 	 * Signed yaw rate of the capsule, degrees per second, positive turning right.
 	 * Pair it with a low GroundSpeed to detect turning on the spot, which is the
 	 * case that foot skates when nothing animates it.
