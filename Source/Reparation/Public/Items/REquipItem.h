@@ -10,6 +10,7 @@ UENUM(BlueprintType)
 enum class EEquipSlot : uint8 
 {
 	ES_Head UMETA(DisplayName = "Head"),
+	ES_Headwear UMETA(DisplayName = "Headwear"),
 	ES_Torso UMETA(DisplayName = "Torso"),
 	ES_Legs UMETA(DisplayName = "Legs"),
 	ES_Feet UMETA(DisplayName = "Feet"),
@@ -17,8 +18,8 @@ enum class EEquipSlot : uint8
 	ES_Backpack UMETA(DisplayName = "Backpack"),
 	ES_Weapon UMETA(DisplayName = "Weapon"),
 	ES_Sheath UMETA(DisplayName = "Sheath"),
-	ES_Throwable UMETA(DisplayName = "Throwable"),
-	ES_Glider UMETA(DisplayName = "Glider"),
+	ES_Throwable UMETA(DisplayName = "Throwable")
+	
 };
 
 /**
