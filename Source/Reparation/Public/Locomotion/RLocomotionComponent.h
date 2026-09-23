@@ -80,13 +80,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Locomotion")
 	bool TryTraversal();
 
-	/** Set by the equipment system. Gates gliding when the config requires a glider. */
-	UFUNCTION(BlueprintCallable, Category = "Locomotion")
-	void SetGliderEquipped(bool bEquipped);
-
-	UFUNCTION(BlueprintPure, Category = "Locomotion")
-	bool IsGliderEquipped() const { return bGliderEquipped; }
-
 	/** True when a glider is carried and the character has fallen long enough to deploy. */
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	bool CanDeployGlider() const;
@@ -202,7 +195,6 @@ private:
 	bool bWalkHeld = false;
 	bool bGlideHeld = false;
 	bool bClimbHeld = false;
-	bool bGliderEquipped = false;
 	bool bIsStrafing = false;
 
 	/** Previous frame actor yaw, for the turn rate published to the anim data. */

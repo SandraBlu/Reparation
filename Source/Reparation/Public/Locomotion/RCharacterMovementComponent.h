@@ -135,6 +135,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Glide")
 	float GlideBrakingDeceleration = 200.f;
 
+	/** Degrees per second the glider turns. Slower than on foot; it is a wing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Glide")
+	float GlideRotationRate = 180.f;
+
 	/** Diving steepens the glide and trades height for speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Glide")
 	float GlideDiveSpeedBonus = 400.f;

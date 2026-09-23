@@ -271,19 +271,6 @@ void URLocomotionComponent::SetClimbHeld(bool bHeld)
 	bClimbHeld = bHeld;
 }
 
-void URLocomotionComponent::SetGliderEquipped(bool bEquipped)
-{
-	bGliderEquipped = bEquipped;
-
-	// Losing the glider mid flight drops the character rather than leaving them
-	// gliding on equipment they no longer have.
-	if (!bGliderEquipped && MovementComponent && MovementComponent->IsGliding())
-	{
-		bGlideHeld = false;
-		MovementComponent->SetMovementMode(MOVE_Falling);
-	}
-}
-
 bool URLocomotionComponent::CanDeployGlider() const
 {
 	if (!MovementComponent || !MovementComponent->IsFalling())
@@ -292,9 +279,13 @@ bool URLocomotionComponent::CanDeployGlider() const
 	}
 
 	const URLocomotionConfig& Cfg = GetConfigRef();
-	if (Cfg.bRequireGliderEquipped && !bGliderEquipped)
+	if (Cfg.GlideUnlockTag.IsValid())
 	{
-		return false;
+		const UAbilitySystemComponent* ASC = GetOwnerASC();
+		if (!ASC || !ASC->HasMatchingGameplayTag(Cfg.GlideUnlockTag))
+		{
+			return false;
+		}
 	}
 
 	// A short hop should not pop the glider open.

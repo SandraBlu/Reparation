@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "GameplayTagContainer.h"
 #include "Locomotion/RLocomotionTypes.h"
 #include "RLocomotionConfig.generated.h"
 
@@ -106,9 +107,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide", meta = (ClampMin = "0.0"))
 	float MinFallTimeBeforeGlide = 0.25f;
 
-	/** When true the character must be carrying a glider before gliding is offered. */
+	/**
+	 * Tag the owner must carry before gliding is offered, granted when the player
+	 * finds a glider. Leave unset to allow gliding unconditionally.
+	 *
+	 * A tag rather than a flag on the component, so the unlock works the same way
+	 * as any other learned traversal skill, and so a debuff or a no fly zone can
+	 * suppress it without anyone writing glider specific code.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
-	bool bRequireGliderEquipped = true;
+	FGameplayTag GlideUnlockTag;
 
 	/** Topping out a climb hands off to a mantle automatically. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")

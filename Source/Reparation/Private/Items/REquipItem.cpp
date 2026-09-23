@@ -5,7 +5,6 @@
 #include <Components/REquipmentComponent.h>
 #include "Engine/SkinnedAssetCommon.h"
 #include "Actors/RWeapon.h"
-#include "GameFramework/Character.h"
 
 #define LOCTEXT_NAMESPACE "EquipItem"
 
@@ -208,49 +207,5 @@ void UREquipItem_Weapon::HandleEquip_Implementation()
 	}
 }
 
-
-void UREquipItem_Actor::HandleEquip_Implementation()
-{
-	if (!ActorClass)
-	{
-		return;
-	}
-
-	ACharacter* Wearer = Cast<ACharacter>(GetOwningPawn());
-	if (!Wearer)
-	{
-		UE_LOG(LogTemp, Error, TEXT("%hs: [%s] has no owning character to attach to."),
-			__FUNCTION__, *GetNameSafe(this));
-		return;
-	}
-
-	// Re-equipping without an unequip would otherwise leak the previous actor.
-	HandleUnequip_Implementation();
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.bNoFail = true;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Owner = SpawnParams.Instigator = Wearer;
-
-	SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, SpawnParams);
-	if (!SpawnedActor)
-	{
-		return;
-	}
-
-	SpawnedActor->AttachToComponent(
-		Wearer->GetMesh(),
-		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		AttachSocket);
-}
-
-void UREquipItem_Actor::HandleUnequip_Implementation()
-{
-	if (SpawnedActor)
-	{
-		SpawnedActor->Destroy();
-		SpawnedActor = nullptr;
-	}
-}
 
 #undef LOCTEXT_NAMESPACE

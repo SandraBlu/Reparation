@@ -223,6 +223,16 @@ void URCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousM
 		Velocity = FVector::ZeroVector;
 	}
 
+	if (IsGliding())
+	{
+		// Set explicitly rather than inherited. Coming off a targeted approach
+		// leaves bUseControllerDesiredRotation set, and the glider then refuses
+		// to turn toward where the player is steering.
+		bOrientRotationToMovement = true;
+		bUseControllerDesiredRotation = false;
+		RotationRate = FRotator(0.f, GlideRotationRate, 0.f);
+	}
+
 	if (IsTraversing())
 	{
 		Velocity = FVector::ZeroVector;
