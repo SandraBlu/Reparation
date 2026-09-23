@@ -10,3 +10,4 @@ UREffectItem::UREffectItem()
 	UseActionText = LOCTEXT("ItemUseActionText", "Ingest");
 }
 
+#undef LOCTEXT_NAMESPACE
