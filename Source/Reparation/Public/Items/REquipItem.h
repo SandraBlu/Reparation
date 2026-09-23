@@ -10,7 +10,6 @@ UENUM(BlueprintType)
 enum class EEquipSlot : uint8 
 {
 	ES_Head UMETA(DisplayName = "Head"),
-	ES_Headwear UMETA(DisplayName = "Headwear"),
 	ES_Torso UMETA(DisplayName = "Torso"),
 	ES_Legs UMETA(DisplayName = "Legs"),
 	ES_Feet UMETA(DisplayName = "Feet"),
@@ -18,8 +17,8 @@ enum class EEquipSlot : uint8
 	ES_Backpack UMETA(DisplayName = "Backpack"),
 	ES_Weapon UMETA(DisplayName = "Weapon"),
 	ES_Sheath UMETA(DisplayName = "Sheath"),
-	ES_Throwable UMETA(DisplayName = "Throwable")
-	
+	ES_Throwable UMETA(DisplayName = "Throwable"),
+	ES_Glider UMETA(DisplayName = "Glider"),
 };
 
 /**
@@ -101,4 +100,33 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<class ARWeapon> WeaponClass;
+};
+
+/**
+ * Equipment that spawns an actor and attaches it to the wearer: a glider, a
+ * lantern, a quiver. Unlike the weapon variant this keeps no pointer on the
+ * equipment component, because nothing else needs to look the actor up, so
+ * adding a new kind of worn gear costs no C++ at all.
+ */
+UCLASS()
+class REPARATION_API UREquipItem_Actor : public UREquipItem
+{
+	GENERATED_BODY()
+
+public:
+
+	virtual void HandleEquip_Implementation() override;
+	virtual void HandleUnequip_Implementation() override;
+
+	/** Actor spawned and attached while this is worn. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equippable")
+	TSubclassOf<AActor> ActorClass;
+
+	/** Socket on the wearer's mesh to attach to. None attaches at the root. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equippable")
+	FName AttachSocket;
+
+	/** The live actor. Held here rather than on the equipment component. */
+	UPROPERTY(BlueprintReadOnly, Category = "Equippable")
+	TObjectPtr<AActor> SpawnedActor;
 };

@@ -45,10 +45,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	URLocomotionComponent* Locomotion;
 
-	/** Hang glider, hidden until a glide starts. Attach the mesh in the Blueprint. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USkeletalMeshComponent* GliderMesh;
-
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	URLocomotionComponent* GetLocomotionComponent() const { return Locomotion; }
 	
@@ -159,9 +155,6 @@ private:
 	void Input_ClimbStarted(const FInputActionValue& Value);
 	void Input_ClimbCompleted(const FInputActionValue& Value);
 	void Input_FlyToggled(const FInputActionValue& Value);
-
-	UFUNCTION()
-	void HandleLocomotionStateChanged(ERLocomotionState PreviousState, ERLocomotionState NewState);
 
 	FVector2D SwitchTargetDirection = FVector2D::ZeroVector	;
 	

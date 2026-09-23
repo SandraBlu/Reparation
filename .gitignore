@@ -19,6 +19,7 @@ Saved/
 .vs/
 .vscode/
 *.sln
+*.slnx
 *.suo
 *.sdf
 *.opensdf

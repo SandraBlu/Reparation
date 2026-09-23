@@ -31,11 +31,6 @@ ARPlayer::ARPlayer(const FObjectInitializer& ObjectInitializer)
 	// Speeds come from the locomotion config, not from here.
 	Locomotion = CreateDefaultSubobject<URLocomotionComponent>(TEXT("LocomotionComp"));
 
-	GliderMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GliderMesh"));
-	GliderMesh->SetupAttachment(GetRootComponent());
-	GliderMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GliderMesh->SetHiddenInGame(true);
-	
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
 	CharacterClass = ECharacterClass::Elementalist;
 
@@ -239,10 +234,6 @@ void ARPlayer::BeginPlay()
 		}
 	}
 
-	if (Locomotion)
-	{
-		Locomotion->OnLocomotionStateChanged.AddDynamic(this, &ARPlayer::HandleLocomotionStateChanged);
-	}
 }
 
 void ARPlayer::Input_SwitchTargetTriggered(const FInputActionValue& Value)
@@ -454,14 +445,6 @@ void ARPlayer::Input_FlyToggled(const FInputActionValue& Value)
 	if (Locomotion)
 	{
 		Locomotion->ToggleFlight();
-	}
-}
-
-void ARPlayer::HandleLocomotionStateChanged(ERLocomotionState PreviousState, ERLocomotionState NewState)
-{
-	if (GliderMesh)
-	{
-		GliderMesh->SetHiddenInGame(NewState != ERLocomotionState::Glide);
 	}
 }
 
