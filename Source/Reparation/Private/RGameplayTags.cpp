@@ -196,6 +196,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Event_HitPause = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitPause"), FString("Hit Pause"));
 	GameplayTags.Event_Death = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.death"), FString("Death"));
 	GameplayTags.Event_Landed = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.landed"), FString("Touched down, magnitude is the impact speed"));
+	GameplayTags.Event_Impact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.impact"), FString("Struck an unlandable surface while airborne, magnitude is the speed into it"));
 	GameplayTags.Event_Strafing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.strafing"), FString("Strafing"));
 	GameplayTags.Event_Blocking_Successful = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block.success"), FString("Successful Block"));
 	GameplayTags.Event_Blocking_Unblockable = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block.unblockable"), FString("No Block"));

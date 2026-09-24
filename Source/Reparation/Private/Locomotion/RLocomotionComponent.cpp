@@ -63,6 +63,8 @@ void URLocomotionComponent::BeginPlay()
 	// spends a frame still reported as running before it reads as airborne.
 	AddTickPrerequisiteComponent(MovementComponent);
 
+	MovementComponent->OnAirborneImpact.AddUObject(this, &URLocomotionComponent::HandleAirborneImpact);
+
 	OwningCharacter->LandedDelegate.AddDynamic(this, &URLocomotionComponent::HandleLanded);
 	OwningCharacter->MovementModeChangedDelegate.AddDynamic(this, &URLocomotionComponent::HandleMovementModeChanged);
 
@@ -820,6 +822,7 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 		? FMath::FindDeltaAngleDegrees(PreviousYaw, CurrentYaw) / DeltaTime
 		: 0.f;
 	PreviousYaw = CurrentYaw;
+	PreviousVelocity = Velocity;
 
 	// Latching on last frame's value is the hysteresis: once turning, the yaw rate
 	// has to drop well under the threshold before the turn is called finished.
@@ -1011,9 +1014,14 @@ void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 	// Fold the glider on touchdown so the next fall does not auto deploy it.
 	bGlideHeld = false;
 
-	// Velocity.Z is already zeroed by the time this fires, so use the value
-	// cached on the last tick while still airborne.
-	const float ImpactSpeed = FMath::Abs(AnimData.VerticalSpeed);
+	// Speed into the ground, not merely downward speed, so this is the same
+	// measure an airborne collision with a wall uses and one curve can serve
+	// both. On flat ground the two are identical; on a slope, arriving fast
+	// along it counts for something, which it should.
+	//
+	// Velocity is already zeroed by the time this fires, hence the cached value
+	// from the last tick while still airborne.
+	const float ImpactSpeed = FMath::Max(0.f, FVector::DotProduct(PreviousVelocity, -Hit.ImpactNormal));
 	AnimData.LastLandingImpactSpeed = ImpactSpeed;
 	AnimData.bHeavyLanding = ImpactSpeed >= GetConfigRef().HeavyLandingSpeed;
 
@@ -1051,6 +1059,21 @@ void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 	{
 		StateLockRemaining = FMath::Max(StateLockRemaining, Cfg.LandRecoveryTime);
 	}
+}
+
+void URLocomotionComponent::HandleAirborneImpact(float SpeedIntoSurface, const FHitResult& Hit)
+{
+	// Sent as a gameplay event for the same reason landing is: an ability can be
+	// triggered by it rather than something having to bind and unbind a delegate.
+	// Separate from event.landed on purpose, since the skydive skill spares you a
+	// fall but should not spare you flying into a cliff.
+	FGameplayEventData ImpactEvent;
+	ImpactEvent.EventTag = FRGameplayTags::Get().Event_Impact;
+	ImpactEvent.Instigator = OwningCharacter;
+	ImpactEvent.Target = OwningCharacter;
+	ImpactEvent.EventMagnitude = SpeedIntoSurface;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		OwningCharacter, ImpactEvent.EventTag, ImpactEvent);
 }
 
 void URLocomotionComponent::HandleMovementModeChanged(ACharacter* Character, EMovementMode PreviousMode, uint8 PreviousCustomMode)

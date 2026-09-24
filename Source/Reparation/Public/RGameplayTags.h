@@ -189,6 +189,7 @@ public:
 	FGameplayTag Event_HitPause;
 	FGameplayTag Event_Death;
 	FGameplayTag Event_Landed;
+	FGameplayTag Event_Impact;
 	FGameplayTag Event_Strafing;
 	FGameplayTag Event_Blocking_Successful;
 	FGameplayTag Event_Blocking_Unblockable;

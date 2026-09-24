@@ -144,6 +144,9 @@ protected:
 	UFUNCTION()
 	void HandleLanded(const FHitResult& Hit);
 
+	/** Turns a hard airborne collision into a gameplay event abilities can trigger on. */
+	void HandleAirborneImpact(float SpeedIntoSurface, const FHitResult& Hit);
+
 	UFUNCTION()
 	void HandleMovementModeChanged(ACharacter* Character, EMovementMode PreviousMode, uint8 PreviousCustomMode);
 
@@ -212,6 +215,12 @@ private:
 
 	/** Previous frame actor yaw, for the turn rate published to the anim data. */
 	float PreviousYaw = 0.f;
+
+	/**
+	 * Velocity on the previous tick. Landing zeroes velocity before HandleLanded
+	 * runs, so the speed the character actually arrived at has to be remembered.
+	 */
+	FVector PreviousVelocity = FVector::ZeroVector;
 
 	/** Seconds spent continuously falling, used to gate glider deployment. */
 	float TimeFalling = 0.f;

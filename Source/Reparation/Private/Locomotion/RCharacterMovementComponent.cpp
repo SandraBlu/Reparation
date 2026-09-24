@@ -149,6 +149,33 @@ void URCharacterMovementComponent::ApplySlideSettings(float InMaxSpeed, float In
 	BrakingDecelerationWalking = InBrakingDeceleration;
 }
 
+void URCharacterMovementComponent::HandleImpact(const FHitResult& Hit, float TimeSlice, const FVector& MoveDelta)
+{
+	Super::HandleImpact(Hit, TimeSlice, MoveDelta);
+
+	// Only airborne collisions. On the ground this fires constantly against every
+	// kerb and doorframe.
+	if (!IsFalling() && !IsGliding())
+	{
+		return;
+	}
+
+	// A walkable surface is a landing, which HandleLanded already reports. This is
+	// for the faces you cannot land on: cliffs, walls, the side of a mountain.
+	if (IsWalkable(Hit))
+	{
+		return;
+	}
+
+	// Speed into the surface, not raw speed. Skimming a wall at a glancing angle
+	// should not read the same as flying straight at it.
+	const float SpeedIntoSurface = FVector::DotProduct(Velocity, -Hit.ImpactNormal);
+	if (SpeedIntoSurface >= MinAirborneImpactSpeed)
+	{
+		OnAirborneImpact.Broadcast(SpeedIntoSurface, Hit);
+	}
+}
+
 void URCharacterMovementComponent::ApplyGlideSettings(const FRGlideSettings& Settings)
 {
 	GlideMaxSpeed = Settings.MaxSpeed;

@@ -8,6 +8,9 @@
 #include "Reparation/Reparation.h"
 #include "RCharacterMovementComponent.generated.h"
 
+/** Broadcast when an airborne character strikes a surface hard. Speed is into the surface. */
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnAirborneImpact, float, const FHitResult&);
+
 /**
  * Movement component for Reparation characters.
  *
@@ -28,6 +31,18 @@ public:
 	virtual float GetMaxAcceleration() const override;
 	virtual float GetMaxBrakingDeceleration() const override;
 	virtual bool CanAttemptJump() const override;
+	virtual void HandleImpact(const FHitResult& Hit, float TimeSlice, const FVector& MoveDelta) override;
+
+	/**
+	 * Fires when an airborne character hits something too steep to land on, hard
+	 * enough to matter. Flying into a cliff should hurt even when a fall would
+	 * not, which is what the skydive skill is meant to survive.
+	 */
+	FOnAirborneImpact OnAirborneImpact;
+
+	/** Speed into a surface below which an airborne collision is ignored. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion", meta = (ClampMin = "0.0"))
+	float MinAirborneImpactSpeed = 600.f;
 	virtual FVector ScaleInputAcceleration(const FVector& InputAcceleration) const override;
 
 	/**
