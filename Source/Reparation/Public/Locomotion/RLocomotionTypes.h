@@ -87,6 +87,45 @@ struct FRGaitSettings
 };
 
 /**
+ * Flight characteristics of one glider. Held on the ARGlider actor and pushed
+ * onto the movement component when it is acquired, so a better wing is a better
+ * wing rather than a different code path.
+ */
+USTRUCT(BlueprintType)
+struct FRGlideSettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float MaxSpeed = 900.f;
+
+	/** Steady descent the glide settles to, cm/s downward. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float DescentRate = 200.f;
+
+	/** How quickly vertical speed converges on DescentRate. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float DescentInterpSpeed = 2.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float Acceleration = 1024.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float Friction = 0.4f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float BrakingDeceleration = 200.f;
+
+	/** Degrees per second the wing turns. The main handling difference. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float RotationRate = 180.f;
+
+	/** Diving steepens the glide and trades height for speed. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
+	float DiveSpeedBonus = 400.f;
+};
+
+/**
  * One legal edge in the state machine.
  *
  * Conditions live in C++ (URLocomotionComponent::EvaluateDesiredState); this

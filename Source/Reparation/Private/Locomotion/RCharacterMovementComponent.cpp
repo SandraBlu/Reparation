@@ -149,6 +149,24 @@ void URCharacterMovementComponent::ApplySlideSettings(float InMaxSpeed, float In
 	BrakingDecelerationWalking = InBrakingDeceleration;
 }
 
+void URCharacterMovementComponent::ApplyGlideSettings(const FRGlideSettings& Settings)
+{
+	GlideMaxSpeed = Settings.MaxSpeed;
+	GlideDescentRate = Settings.DescentRate;
+	GlideDescentInterpSpeed = Settings.DescentInterpSpeed;
+	GlideAcceleration = Settings.Acceleration;
+	GlideFriction = Settings.Friction;
+	GlideBrakingDeceleration = Settings.BrakingDeceleration;
+	GlideRotationRate = Settings.RotationRate;
+	GlideDiveSpeedBonus = Settings.DiveSpeedBonus;
+
+	// Applied live if already airborne, so swapping wings mid flight takes hold.
+	if (IsGliding())
+	{
+		RotationRate = FRotator(0.f, GlideRotationRate, 0.f);
+	}
+}
+
 void URCharacterMovementComponent::ApplySwimSettings(float InMaxSpeed, float InAcceleration)
 {
 	MaxSwimSpeed = InMaxSpeed;

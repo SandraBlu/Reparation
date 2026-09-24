@@ -114,6 +114,10 @@ public:
 	FGameplayTag ability_evade;
 	FGameplayTag ability_targetLock;
 	FGameplayTag ability_stunned;
+
+	/** Traversal unlocks. Carried permanently once earned, not while active. */
+	FGameplayTag ability_glide;
+	FGameplayTag ability_skydive;
 	FGameplayTag ability_missile_dark;
 	FGameplayTag ability_missile_electric;
 	FGameplayTag ability_missile_fire;

@@ -98,6 +98,10 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ability_targetLock= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.targetLock"), FString("Target Lock"));
 	GameplayTags.ability_evade = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.evade"), FString("Evade tag"));
 	GameplayTags.ability_stunned = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.stunned"), FString("Stunned tag"));
+
+	//Traversal unlocks
+	GameplayTags.ability_glide = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.glide"), FString("Carries a glider, so gliding is permitted"));
+	GameplayTags.ability_skydive = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.skydive"), FString("Has learned to skydive, so a long fall is survivable"));
 	GameplayTags.ability_missile_dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.dark"), FString("Dark Missile tag"));
 	GameplayTags.ability_missile_electric = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.electric"), FString("Electric Missile tag"));
 	GameplayTags.ability_missile_fire = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.missile.fire"), FString("Fire Missile tag"));

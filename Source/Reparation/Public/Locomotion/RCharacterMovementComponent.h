@@ -43,6 +43,9 @@ public:
 
 	void ApplySwimSettings(float InMaxSpeed, float InAcceleration);
 
+	/** Pushes one glider's flight characteristics onto the live glide tuning. */
+	void ApplyGlideSettings(const FRGlideSettings& Settings);
+
 	void ApplyFlySettings(float InMaxSpeed, float InAcceleration, float InBrakingDeceleration);
 
 	void SetCustomMovementMode(ERCustomMovementMode Mode);
