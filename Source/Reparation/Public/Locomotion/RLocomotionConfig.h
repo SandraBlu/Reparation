@@ -108,6 +108,14 @@ public:
 	float MinFallTimeBeforeGlide = 0.25f;
 
 	/**
+	 * Seconds within which a second jump press counts as a double tap, which
+	 * deploys or stows the wing. A toggle rather than a hold, so a long glide
+	 * does not mean a held key.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide", meta = (ClampMin = "0.0"))
+	float GlideToggleDoubleTapWindow = 0.3f;
+
+	/**
 	 * Tag the owner must carry before gliding is offered, granted when the player
 	 * finds a glider. Leave unset to allow gliding unconditionally.
 	 *

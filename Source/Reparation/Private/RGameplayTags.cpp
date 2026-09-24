@@ -99,6 +99,8 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ability_evade = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.evade"), FString("Evade tag"));
 	GameplayTags.ability_stunned = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.stunned"), FString("Stunned tag"));
 
+	GameplayTags.ability_fallDamage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.falldamage"), FString("Reacts to event.landed and applies damage scaled by impact"));
+
 	//Traversal unlocks
 	GameplayTags.ability_glide = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.glide"), FString("Carries a glider, so gliding is permitted"));
 	GameplayTags.ability_skydive = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("ability.skydive"), FString("Has learned to skydive, so a long fall is survivable"));
@@ -193,6 +195,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Event_HitMelee= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.hit.melee"), FString("Melee Hit"));
 	GameplayTags.Event_HitPause = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitPause"), FString("Hit Pause"));
 	GameplayTags.Event_Death = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.death"), FString("Death"));
+	GameplayTags.Event_Landed = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.landed"), FString("Touched down, magnitude is the impact speed"));
 	GameplayTags.Event_Strafing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.strafing"), FString("Strafing"));
 	GameplayTags.Event_Blocking_Successful = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block.success"), FString("Successful Block"));
 	GameplayTags.Event_Blocking_Unblockable = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.block.unblockable"), FString("No Block"));

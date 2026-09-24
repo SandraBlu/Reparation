@@ -14,6 +14,7 @@ class URCharacterMovementComponent;
 class URLocomotionConfig;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocomotionStateChanged, ERLocomotionState, PreviousState, ERLocomotionState, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLandedWithImpact, float, ImpactSpeed, float, FallDuration);
 
 /**
  * Owns the character's locomotion state machine.
@@ -120,6 +121,18 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Locomotion")
 	FOnLocomotionStateChanged OnLocomotionStateChanged;
 
+	/**
+	 * Every touchdown, including the light ones that enter no landing state at
+	 * all. Fires after the impact figures are written, so a fall damage effect
+	 * can hang off this rather than racing the character's own LandedDelegate
+	 * for the same frame.
+	 *
+	 * FallDuration is passed because TimeFalling is reset on touchdown and would
+	 * otherwise be gone by the time anyone could read it.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Locomotion")
+	FOnLandedWithImpact OnLandedImpact;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locomotion")
 	TObjectPtr<URLocomotionConfig> Config;
 
@@ -211,6 +224,9 @@ private:
 
 	/** Set on jump so the ascent reads as Jump rather than Fall. */
 	bool bJumpInitiated = false;
+
+	/** When the jump key was last pressed, for detecting the glide double tap. */
+	float LastJumpPressTime = 0.f;
 
 	/** Tags currently pushed onto the ASC, so they can be removed cleanly. */
 	FGameplayTagContainer AppliedTags;

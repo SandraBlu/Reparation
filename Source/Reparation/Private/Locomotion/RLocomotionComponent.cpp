@@ -3,6 +3,7 @@
 
 #include "Locomotion/RLocomotionComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "Animation/AnimMontage.h"
@@ -187,6 +188,12 @@ bool URLocomotionComponent::TryJump()
 		return false;
 	}
 
+	// Timed here, not in the airborne branch, so the press that launches the jump
+	// starts the window. Otherwise deploying would take three taps.
+	const float Now = GetWorld()->GetTimeSeconds();
+	const bool bDoubleTap = (Now - LastJumpPressTime) <= GetConfigRef().GlideToggleDoubleTapWindow;
+	LastJumpPressTime = Now;
+
 	// A scripted traversal owns the character until it completes.
 	if (MovementComponent->IsTraversing())
 	{
@@ -234,12 +241,28 @@ bool URLocomotionComponent::TryJump()
 
 	if (!MovementComponent->IsMovingOnGround())
 	{
-		// Airborne, the jump key deploys the glider if one is carried.
+		// Airborne, a double tap toggles the wing.
+		if (!bDoubleTap)
+		{
+			return false;
+		}
+
+		if (bGlideHeld)
+		{
+			bGlideHeld = false;
+			if (MovementComponent->IsGliding())
+			{
+				MovementComponent->SetMovementMode(MOVE_Falling);
+			}
+			return true;
+		}
+
 		if (CanDeployGlider())
 		{
 			bGlideHeld = true;
 			return true;
 		}
+
 		return false;
 	}
 
@@ -979,6 +1002,10 @@ UAbilitySystemComponent* URLocomotionComponent::GetOwnerASC() const
 void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 {
 	bJumpInitiated = false;
+
+	// Captured before the reset, since a fall damage rule may care how long the
+	// drop lasted rather than only how fast it ended.
+	const float FallDuration = TimeFalling;
 	TimeFalling = 0.f;
 
 	// Fold the glider on touchdown so the next fall does not auto deploy it.
@@ -989,6 +1016,21 @@ void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 	const float ImpactSpeed = FMath::Abs(AnimData.VerticalSpeed);
 	AnimData.LastLandingImpactSpeed = ImpactSpeed;
 	AnimData.bHeavyLanding = ImpactSpeed >= GetConfigRef().HeavyLandingSpeed;
+
+	// Broadcast before the soft landing early out below, so every touchdown is
+	// reported and not only the ones that enter a landing state.
+	OnLandedImpact.Broadcast(ImpactSpeed, FallDuration);
+
+	// Also sent as a gameplay event, so an ability can be triggered by it rather
+	// than something having to bind a delegate at BeginPlay and unbind later.
+	// Magnitude carries the impact speed; fall damage scales off it.
+	FGameplayEventData LandedEvent;
+	LandedEvent.EventTag = FRGameplayTags::Get().Event_Landed;
+	LandedEvent.Instigator = OwningCharacter;
+	LandedEvent.Target = OwningCharacter;
+	LandedEvent.EventMagnitude = ImpactSpeed;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		OwningCharacter, LandedEvent.EventTag, LandedEvent);
 
 	const URLocomotionConfig& Cfg = GetConfigRef();
 

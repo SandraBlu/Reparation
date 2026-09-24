@@ -116,6 +116,7 @@ public:
 	FGameplayTag ability_stunned;
 
 	/** Traversal unlocks. Carried permanently once earned, not while active. */
+	FGameplayTag ability_fallDamage;
 	FGameplayTag ability_glide;
 	FGameplayTag ability_skydive;
 	FGameplayTag ability_missile_dark;
@@ -187,6 +188,7 @@ public:
 	FGameplayTag Event_HitMelee;
 	FGameplayTag Event_HitPause;
 	FGameplayTag Event_Death;
+	FGameplayTag Event_Landed;
 	FGameplayTag Event_Strafing;
 	FGameplayTag Event_Blocking_Successful;
 	FGameplayTag Event_Blocking_Unblockable;
