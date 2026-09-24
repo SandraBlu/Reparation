@@ -79,12 +79,12 @@ void ARGlider::OnAcquired(ACharacter* NewOwner)
 		// Bound after the fact, so catch up rather than waiting for a change.
 		if (Locomotion->GetLocomotionState() == ERLocomotionState::Glide)
 		{
-			OnDeployed();
+			SetDeployed(true);
 			return;
 		}
 	}
 
-	OnStowed();
+	SetDeployed(false);
 }
 
 void ARGlider::OnLost()
@@ -114,7 +114,11 @@ void ARGlider::OnLost()
 
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-	OnStowed();
+	SetDeployed(false);
+
+	// Visible again once dropped. SetDeployed hides it, which is right on a
+	// wearer carrying it in a pack and wrong for one lying on the ground.
+	Mesh->SetHiddenInGame(false);
 
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	CarriedBy = nullptr;
@@ -125,9 +129,23 @@ void ARGlider::HandleLocomotionStateChanged(ERLocomotionState PreviousState, ERL
 {
 	if (NewState == ERLocomotionState::Glide)
 	{
-		OnDeployed();
+		SetDeployed(true);
 	}
 	else if (PreviousState == ERLocomotionState::Glide)
+	{
+		SetDeployed(false);
+	}
+}
+
+void ARGlider::SetDeployed(bool bDeployed)
+{
+	Mesh->SetHiddenInGame(!bDeployed);
+
+	if (bDeployed)
+	{
+		OnDeployed();
+	}
+	else
 	{
 		OnStowed();
 	}

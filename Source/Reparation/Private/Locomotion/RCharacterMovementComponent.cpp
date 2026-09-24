@@ -310,11 +310,15 @@ void URCharacterMovementComponent::PhysGlide(float DeltaTime, int32 Iterations)
 
 	if (Hit.Time < 1.f)
 	{
+		// Captured before sliding. SlideAlongSurface takes Hit by reference and
+		// overwrites it, so testing afterwards asks about whatever the slide ran
+		// into rather than the ground just touched, and the glide never ended.
+		const bool bTouchedGround = IsWalkable(Hit);
+
 		HandleImpact(Hit, DeltaTime, Adjusted);
 		SlideAlongSurface(Adjusted, 1.f - Hit.Time, Hit.Normal, Hit, true);
 
-		// Touching walkable ground ends the glide.
-		if (IsWalkable(Hit))
+		if (bTouchedGround)
 		{
 			SetMovementMode(MOVE_Walking);
 			return;
@@ -323,7 +327,13 @@ void URCharacterMovementComponent::PhysGlide(float DeltaTime, int32 Iterations)
 
 	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
 	{
-		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / DeltaTime;
+		// Horizontal is taken from the move so collisions are honoured, but the
+		// vertical stays as authored. Sliding along rising ground produces upward
+		// displacement, and folding that back in turns terrain contact into lift:
+		// the glider would climb a ramp and cross a landscape indefinitely.
+		const FVector MovedVelocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / DeltaTime;
+		Velocity.X = MovedVelocity.X;
+		Velocity.Y = MovedVelocity.Y;
 	}
 
 	// Entering water cancels the glide so swimming can take over.

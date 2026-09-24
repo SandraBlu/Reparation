@@ -636,10 +636,10 @@ void URLocomotionComponent::DrawDebugState() const
 	// of the list growing every frame.
 	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.f, FColor::Green,
 		FString::Printf(
-			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ChannelHit %d | ClimbFound %d"),
+			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | VertSpeed %.0f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ChannelHit %d | ClimbFound %d"),
 			*StateName, *GaitName, *StanceName,
 			AnimData.GroundSpeed, AnimData.YawSpeed, StateLockRemaining,
-			AnimData.TimeFalling, AnimData.FloorAngle, DownhillSpeed,
+			AnimData.TimeFalling, AnimData.VerticalSpeed, AnimData.FloorAngle, DownhillSpeed,
 			AnimData.bIsStrafing ? 1 : 0, AnimData.bIsTurningInPlace ? 1 : 0,
 			bClimbHeld ? 1 : 0, bRawBlocked ? 1 : 0, bClimbSurfaceFound ? 1 : 0));
 }

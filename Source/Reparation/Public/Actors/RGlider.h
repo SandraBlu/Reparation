@@ -69,6 +69,13 @@ protected:
 	UFUNCTION()
 	void HandleLocomotionStateChanged(ERLocomotionState PreviousState, ERLocomotionState NewState);
 
+	/**
+	 * Shows or hides the wing and raises the matching event. Stowed it lives in
+	 * the pack rather than on the back, so visibility and the effects are driven
+	 * from one place and cannot disagree.
+	 */
+	void SetDeployed(bool bDeployed);
+
 	UPROPERTY(BlueprintReadOnly, Category = "Glider")
 	TObjectPtr<ACharacter> CarriedBy;
 
