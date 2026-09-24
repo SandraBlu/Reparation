@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
+#include "Components/ReactionComponent.h"
 #include "Locomotion/RCharacterMovementComponent.h"
 #include "Locomotion/RLocomotionComponent.h"
 
@@ -16,9 +17,12 @@ ARGlider::ARGlider()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
 
-	// Worn, not solid. A colliding actor strapped to a moving capsule fights
-	// both the capsule and the world.
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Queryable but not solid while it sits in the world: the interact check
+	// traces on Visibility, so the wing has to answer that, but it should not
+	// block anyone walking past it. Collision goes off entirely once worn.
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 }
 
 void ARGlider::OnAcquired(ACharacter* NewOwner)
@@ -52,6 +56,17 @@ void ARGlider::OnAcquired(ACharacter* NewOwner)
 			ASC->AddLooseGameplayTag(UnlockTag);
 		}
 	}
+
+	// Worn, so no longer something in the world to walk up to. Both halves
+	// matter: the reaction component would otherwise stay live on the wearer's
+	// back, and a colliding actor strapped to a moving capsule fights both the
+	// capsule and the world.
+	if (UReactionComponent* Reaction = FindComponentByClass<UReactionComponent>())
+	{
+		Reaction->Deactivate();
+	}
+
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Presentation follows locomotion rather than driving it, so deploy and stow
 	// stay correct however a glide ends: released, landed, in water, or grabbing
@@ -90,6 +105,14 @@ void ARGlider::OnLost()
 			}
 		}
 	}
+
+	// Interactable again once it is off the character.
+	if (UReactionComponent* Reaction = FindComponentByClass<UReactionComponent>())
+	{
+		Reaction->Activate();
+	}
+
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	OnStowed();
 
