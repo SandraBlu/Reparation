@@ -141,6 +141,17 @@ void ARGlider::SetDeployed(bool bDeployed)
 {
 	Mesh->SetHiddenInGame(!bDeployed);
 
+	// Reapplied on every deploy, not only on acquisition: skydiving writes its own
+	// numbers onto the same movement properties, so the wing has to reclaim them
+	// when it opens.
+	if (bDeployed && CarriedBy)
+	{
+		if (URCharacterMovementComponent* Movement = Cast<URCharacterMovementComponent>(CarriedBy->GetCharacterMovement()))
+		{
+			Movement->ApplyGlideSettings(GlideSettings);
+		}
+	}
+
 	if (bDeployed)
 	{
 		OnDeployed();

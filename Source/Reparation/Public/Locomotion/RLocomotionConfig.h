@@ -108,6 +108,18 @@ public:
 	float MinFallTimeBeforeGlide = 0.25f;
 
 	/**
+	 * Seconds of falling after which a character who knows the skill drops into a
+	 * skydive. Longer than the glider gate, so stepping off a ledge is still just
+	 * a step.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skydive", meta = (ClampMin = "0.0"))
+	float MinFallTimeBeforeSkydive = 0.8f;
+
+	/** Seconds of falling after which bIsLongFall is set, for the airborne pose. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Air", meta = (ClampMin = "0.0"))
+	float LongFallTime = 0.8f;
+
+	/**
 	 * Seconds within which a second jump press counts as a double tap, which
 	 * deploys or stows the wing. A toggle rather than a hold, so a long glide
 	 * does not mean a held key.
@@ -126,9 +138,34 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Glide")
 	FGameplayTag GlideUnlockTag;
 
+	/**
+	 * Learned skill that turns a lethal drop into a controlled one. Without it a
+	 * long fall is simply a fall. Leave unset to allow skydiving unconditionally.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skydive")
+	FGameplayTag SkydiveUnlockTag;
+
+	/**
+	 * Handling while skydiving. The same shape as a wing because it is the same
+	 * physics: a far steeper descent and less horizontal reach, but steerable.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skydive")
+	FRGlideSettings SkydiveSettings;
+
 	/** Topping out a climb hands off to a mantle automatically. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
 	bool bAutoMantleAtClimbLedge = true;
+
+	/**
+	 * Traversal variants, tested in order, first match wins. Order them most
+	 * specific first: a running hurdle before a standing step over the same
+	 * fence, since the hurdle is the one with the speed requirement.
+	 *
+	 * Leave it empty and traversal still works, falling back on the movement
+	 * component's vault and mantle limits with no clip chosen.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	TArray<FRTraversalAction> TraversalActions;
 
 	/** Sideways push given when jumping off a climbed wall. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Climb")
@@ -215,4 +252,7 @@ public:
 
 	/** False only when an explicit blocking entry matches. */
 	bool IsTransitionAllowed(ERLocomotionState From, ERLocomotionState To) const;
+
+	/** First action whose bounds all contain the measurement, or nullptr. */
+	const FRTraversalAction* FindTraversalAction(const FRTraversalQuery& Query) const;
 };

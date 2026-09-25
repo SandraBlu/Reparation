@@ -6,6 +6,7 @@
 #include "RLocomotionTypes.generated.h"
 
 class UAnimMontage;
+class UAnimSequenceBase;
 
 /**
  * High level locomotion state. This is what drives animation and what abilities
@@ -34,7 +35,133 @@ enum class ERLocomotionState : uint8
 
 	// Appended rather than slotted next to the ground states so the saved values
 	// in DA_LocomotionConfig keep their meaning.
-	Slide			UMETA(DisplayName = "Slide")
+	Slide			UMETA(DisplayName = "Slide"),
+	Skydive			UMETA(DisplayName = "Skydive")
+};
+
+/**
+ * Where a traversal was started from. The same ledge needs a different clip
+ * depending on whether the character walked up to it or was hanging off it,
+ * and the geometry alone cannot tell the two apart.
+ */
+UENUM(BlueprintType)
+enum class ERTraversalEntry : uint8
+{
+	Grounded	UMETA(DisplayName = "Grounded"),
+	Climbing	UMETA(DisplayName = "Climbing")
+};
+
+/**
+ * What the traversal traces measured. Filled by FindTraversal and matched
+ * against the FRTraversalAction rows to choose a clip, so that adding a
+ * variant is a row of data rather than a state in the animation graph.
+ */
+USTRUCT(BlueprintType)
+struct FRTraversalQuery
+{
+	GENERATED_BODY()
+
+	/** Capsule position as the move begins. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	FVector Start = FVector::ZeroVector;
+
+	/** Capsule position clearing the top of the obstacle. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	FVector Mid = FVector::ZeroVector;
+
+	/** Capsule position where the move finishes. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	FVector End = FVector::ZeroVector;
+
+	/** Top of the obstacle above the character's feet. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	float ObstacleHeight = 0.f;
+
+	/**
+	 * Near face to far edge along the approach. Clamped to MaxVaultDepth, which
+	 * is also what a surface with no far edge in range reports, so a wall and a
+	 * very deep ledge look the same here. Both want a mantle.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	float ObstacleDepth = 0.f;
+
+	/** Drop from the top of the obstacle to the far ground. Negative if higher. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	float FarSideDrop = 0.f;
+
+	/** True when there is standable ground beyond the obstacle to land on. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	bool bHasFarSideGround = false;
+
+	/** Horizontal speed carried into the obstacle, cm/s. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	float ApproachSpeed = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	ERTraversalEntry Entry = ERTraversalEntry::Grounded;
+
+	/**
+	 * The movement component's own vault-or-mantle verdict, from its height and
+	 * depth limits. Used when the config lists no matching action, so traversal
+	 * keeps working with an empty table and the animation rows stay optional.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	ERLocomotionState FallbackState = ERLocomotionState::Vault;
+};
+
+/**
+ * One traversal variant. Rows are tested in order and the first whose bounds
+ * all contain the measured obstacle wins, so order them most specific first.
+ */
+USTRUCT(BlueprintType)
+struct FRTraversalAction
+{
+	GENERATED_BODY()
+
+	/**
+	 * Played by the traversal state's sequence evaluator, scrubbed to the
+	 * capsule's progress rather than its own clock. Root motion is ignored;
+	 * PhysTraversal owns the movement.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	TObjectPtr<UAnimSequenceBase> Animation = nullptr;
+
+	/** Reported as the locomotion state while the move runs. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	ERLocomotionState State = ERLocomotionState::Vault;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	ERTraversalEntry Entry = ERTraversalEntry::Grounded;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0"))
+	float MinObstacleHeight = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0"))
+	float MaxObstacleHeight = 220.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0"))
+	float MinObstacleDepth = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0"))
+	float MaxObstacleDepth = 1000.f;
+
+	/**
+	 * Speed the character must carry into it. This is what separates a running
+	 * hurdle from a standing step over the same fence.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0"))
+	float MinApproachSpeed = 0.f;
+
+	/**
+	 * Require somewhere to land past the obstacle. A vault through needs it; a
+	 * mantle onto the top does not.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	bool bRequiresFarSideGround = false;
+
+	/** How long the capsule takes. The clip is stretched onto this. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.1"))
+	float Duration = 0.6f;
 };
 
 /** Ground speed tier. Independent of state so Crouch/Walk/Run share one axis. */
@@ -63,7 +190,8 @@ enum class ERCustomMovementMode : uint8
 	None	UMETA(DisplayName = "None"),
 	Glide	UMETA(DisplayName = "Glide"),
 	Climb	UMETA(DisplayName = "Climb"),
-	Traversal	UMETA(DisplayName = "Traversal")
+	Traversal	UMETA(DisplayName = "Traversal"),
+	Skydive		UMETA(DisplayName = "Skydive")
 };
 
 /** Speed and handling for one gait tier. */
@@ -275,6 +403,14 @@ struct FRLocomotionAnimData
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	bool bIsTurningInPlace = false;
 
+	/**
+	 * True once a fall has lasted long enough to read as a real drop rather than
+	 * a step off a kerb. A short fall is a tuck; a long one is a body trying to
+	 * balance itself, which is a different pose.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	bool bIsLongFall = false;
+
 	/** Seconds spent continuously falling, 0 the moment the character lands. */
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	float TimeFalling = 0.f;
@@ -286,4 +422,13 @@ struct FRLocomotionAnimData
 	/** Downward speed at the moment of the last landing, cm/s. */
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	float LastLandingImpactSpeed = 0.f;
+
+	/**
+	 * Clip the current traversal picked. Drive the traversal state's sequence
+	 * evaluator from this and one state covers every vault and mantle variant;
+	 * pair it with GetTraversalExplicitTime so the clip tracks the capsule.
+	 * Null when the config lists no matching action.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	TObjectPtr<UAnimSequenceBase> TraversalAnim = nullptr;
 };

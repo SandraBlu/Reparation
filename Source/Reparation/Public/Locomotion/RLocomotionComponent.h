@@ -77,13 +77,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Locomotion|Input")
 	void SetFlying(bool bEnabled);
 
-	/** Vaults or mantles the obstacle ahead. False when there is nothing to cross. */
+	/**
+	 * Vaults or mantles the obstacle ahead. False when there is nothing to cross.
+	 *
+	 * Entry is passed rather than inferred because topping out a climb and
+	 * mantling from standing measure identically and need different clips.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Locomotion")
-	bool TryTraversal();
+	bool TryTraversal(ERTraversalEntry Entry = ERTraversalEntry::Grounded);
 
 	/** True when a glider is carried and the character has fallen long enough to deploy. */
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	bool CanDeployGlider() const;
+
+	/** True when the skydive skill is known and the character has fallen far enough. */
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	bool CanSkydive() const;
 
 	// --- Queries ---
 

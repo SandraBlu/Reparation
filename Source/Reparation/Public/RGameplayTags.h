@@ -237,6 +237,7 @@ public:
 	FGameplayTag state_locomotion_landing;
 	FGameplayTag state_locomotion_flying;
 	FGameplayTag state_locomotion_gliding;
+	FGameplayTag state_locomotion_skydiving;
 	FGameplayTag state_locomotion_climbing;
 	FGameplayTag state_locomotion_traversing;
 	

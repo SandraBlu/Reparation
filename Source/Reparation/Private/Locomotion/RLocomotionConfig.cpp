@@ -31,6 +31,18 @@ URLocomotionConfig::URLocomotionConfig()
 	TargetingSettings.MaxAcceleration = 1024.f;
 	TargetingSettings.BrakingDeceleration = 1024.f;
 	TargetingSettings.RotationRate = 720.f;
+
+	// A wing with the lift taken out. Steep and quick, still steerable, and much
+	// less horizontal reach than a glider: surviving the drop, not crossing a
+	// valley.
+	SkydiveSettings.MaxSpeed = 400.f;
+	SkydiveSettings.DescentRate = 1400.f;
+	SkydiveSettings.DescentInterpSpeed = 4.f;
+	SkydiveSettings.Acceleration = 700.f;
+	SkydiveSettings.Friction = 0.6f;
+	SkydiveSettings.BrakingDeceleration = 200.f;
+	SkydiveSettings.RotationRate = 120.f;
+	SkydiveSettings.DiveSpeedBonus = 400.f;
 }
 
 const FRGaitSettings& URLocomotionConfig::GetGaitSettings(ERGait Gait, ERStance Stance) const
@@ -79,4 +91,42 @@ bool URLocomotionConfig::IsTransitionAllowed(ERLocomotionState From, ERLocomotio
 {
 	const FRLocomotionTransition* Transition = FindTransition(From, To);
 	return !Transition || !Transition->bBlocked;
+}
+
+const FRTraversalAction* URLocomotionConfig::FindTraversalAction(const FRTraversalQuery& Query) const
+{
+	// First match rather than best match. Ranking rows by how tightly they fit
+	// would make the outcome depend on bounds a designer set for readability,
+	// which is a poor thing to hinge an animation choice on. Order is explicit.
+	for (const FRTraversalAction& Action : TraversalActions)
+	{
+		if (Action.Entry != Query.Entry)
+		{
+			continue;
+		}
+
+		if (Query.ObstacleHeight < Action.MinObstacleHeight || Query.ObstacleHeight > Action.MaxObstacleHeight)
+		{
+			continue;
+		}
+
+		if (Query.ObstacleDepth < Action.MinObstacleDepth || Query.ObstacleDepth > Action.MaxObstacleDepth)
+		{
+			continue;
+		}
+
+		if (Query.ApproachSpeed < Action.MinApproachSpeed)
+		{
+			continue;
+		}
+
+		if (Action.bRequiresFarSideGround && !Query.bHasFarSideGround)
+		{
+			continue;
+		}
+
+		return &Action;
+	}
+
+	return nullptr;
 }

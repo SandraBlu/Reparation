@@ -73,6 +73,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	bool IsGliding() const { return IsCustomMode(ERCustomMovementMode::Glide); }
 
+	/** Same physics as a glide, different numbers: much faster descent. */
+	UFUNCTION(BlueprintPure, Category = "Locomotion")
+	bool IsSkydiving() const { return IsCustomMode(ERCustomMovementMode::Skydive); }
+
 	UFUNCTION(BlueprintPure, Category = "Locomotion")
 	bool IsClimbing() const { return IsCustomMode(ERCustomMovementMode::Climb); }
 
@@ -120,13 +124,13 @@ public:
 	// --- Traversal (vault and mantle) ---
 
 	/**
-	 * Looks for an obstacle ahead that can be crossed.
+	 * Looks for an obstacle ahead that can be crossed and measures it.
 	 *
-	 * Thin obstacles up to MaxVaultHeight resolve as a vault that lands beyond
-	 * them; thicker or taller ones up to MaxMantleHeight resolve as a mantle that
-	 * lands on top. OutType reports which.
+	 * Reports the geometry rather than a verdict: height, depth, what is on the
+	 * far side, and the three capsule positions the move runs through. Choosing
+	 * which animation suits those numbers belongs to the config, not here.
 	 */
-	bool FindTraversal(FVector& OutStart, FVector& OutMid, FVector& OutEnd, ERLocomotionState& OutType) const;
+	bool FindTraversal(ERTraversalEntry Entry, FRTraversalQuery& OutQuery) const;
 
 	/** Begins a scripted move along Start, Mid, End. Duration is clamped to a sane minimum. */
 	void BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration);
@@ -188,6 +192,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
 	float ClimbSnapSpeed = 200.f;
+
+	/**
+	 * Descending at least this fast with walkable ground underfoot dismounts.
+	 * A threshold rather than any downward motion at all, because the inward
+	 * snap reads as a slight descent on an overhanging face, and because the
+	 * capsule is stationary on the frame the wall is first grabbed.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
+	float ClimbDismountDescentSpeed = 10.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Climb")
 	float ClimbRotationRate = 360.f;

@@ -241,6 +241,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.state_locomotion_landing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.landing"), FString("Character is recovering from a landing"));
 	GameplayTags.state_locomotion_flying = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.flying"), FString("Character is flying under power"));
 	GameplayTags.state_locomotion_gliding = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.gliding"), FString("Character is gliding on a hang glider"));
+	GameplayTags.state_locomotion_skydiving = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.skydiving"), FString("Character is in a freefall skydive"));
 	GameplayTags.state_locomotion_climbing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.climbing"), FString("Character is climbing a surface"));
 	GameplayTags.state_locomotion_traversing = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("state.locomotion.traversing"), FString("Character is vaulting or mantling"));
 

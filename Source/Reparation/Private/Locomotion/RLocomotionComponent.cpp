@@ -103,7 +103,12 @@ void URLocomotionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	}
 
 	StateLockRemaining = FMath::Max(0.f, StateLockRemaining - DeltaTime);
-	TimeFalling = MovementComponent->IsFalling() ? TimeFalling + DeltaTime : 0.f;
+	// Time airborne, not merely time in MOVE_Falling. Gliding and skydiving are
+	// both off the ground, and resetting this on entering them would fail the
+	// fall time gate that lets a wing open out of a skydive.
+	TimeFalling = (MovementComponent->IsFalling() || MovementComponent->IsGliding() || MovementComponent->IsSkydiving())
+		? TimeFalling + DeltaTime
+		: 0.f;
 
 	UpdateStance();
 	UpdateGait();
@@ -202,14 +207,6 @@ bool URLocomotionComponent::TryJump()
 		return false;
 	}
 
-	// While gliding, the jump key folds the glider away.
-	if (MovementComponent->IsGliding())
-	{
-		bGlideHeld = false;
-		MovementComponent->SetMovementMode(MOVE_Falling);
-		return true;
-	}
-
 	// While climbing, it pushes off the wall.
 	if (MovementComponent->IsClimbing())
 	{
@@ -249,6 +246,9 @@ bool URLocomotionComponent::TryJump()
 			return false;
 		}
 
+		// The wing only. Skydiving is not deployed, it is what falling becomes once
+		// the skill is known, so stowing here drops back into it rather than into a
+		// plain fall.
 		if (bGlideHeld)
 		{
 			bGlideHeld = false;
@@ -296,9 +296,33 @@ void URLocomotionComponent::SetClimbHeld(bool bHeld)
 	bClimbHeld = bHeld;
 }
 
-bool URLocomotionComponent::CanDeployGlider() const
+bool URLocomotionComponent::CanSkydive() const
 {
 	if (!MovementComponent || !MovementComponent->IsFalling())
+	{
+		return false;
+	}
+
+	const URLocomotionConfig& Cfg = GetConfigRef();
+	if (Cfg.SkydiveUnlockTag.IsValid())
+	{
+		const UAbilitySystemComponent* ASC = GetOwnerASC();
+		if (!ASC || !ASC->HasMatchingGameplayTag(Cfg.SkydiveUnlockTag))
+		{
+			return false;
+		}
+	}
+
+	// Its own gate, longer than the glider's: a hop should not throw the
+	// character into a dive.
+	return TimeFalling >= Cfg.MinFallTimeBeforeSkydive;
+}
+
+bool URLocomotionComponent::CanDeployGlider() const
+{
+	// Skydiving counts: opening the wing out of a dive is the point of carrying
+	// one, and a skydive is not MOVE_Falling.
+	if (!MovementComponent || !(MovementComponent->IsFalling() || MovementComponent->IsSkydiving()))
 	{
 		return false;
 	}
@@ -341,30 +365,39 @@ void URLocomotionComponent::SetFlying(bool bEnabled)
 	}
 }
 
-bool URLocomotionComponent::TryTraversal()
+bool URLocomotionComponent::TryTraversal(ERTraversalEntry Entry)
 {
 	if (!MovementComponent || MovementComponent->IsTraversing() || MovementComponent->IsSwimming())
 	{
 		return false;
 	}
 
-	FVector Start = FVector::ZeroVector;
-	FVector Mid = FVector::ZeroVector;
-	FVector End = FVector::ZeroVector;
-	ERLocomotionState Type = ERLocomotionState::Vault;
-
-	if (!MovementComponent->FindTraversal(Start, Mid, End, Type))
+	FRTraversalQuery Query;
+	if (!MovementComponent->FindTraversal(Entry, Query))
 	{
 		return false;
 	}
 
-	ActiveTraversalType = Type;
+	// The config picks the variant from the measurements. With no table, or no
+	// row that fits, the movement component's own verdict and durations stand,
+	// which is what keeps traversal working before any clips exist.
+	const FRTraversalAction* Action = GetConfigRef().FindTraversalAction(Query);
+
+	const ERLocomotionState Type = Action ? Action->State : Query.FallbackState;
 
 	// Clamped the same way BeginTraversal clamps it, so the play rate below is
 	// derived from the duration the move actually runs for.
-	const float Duration = FMath::Max(0.1f, Type == ERLocomotionState::Vault
-		? MovementComponent->VaultDuration
-		: MovementComponent->MantleDuration);
+	const float Duration = FMath::Max(0.1f, Action
+		? Action->Duration
+		: (Type == ERLocomotionState::Vault
+			? MovementComponent->VaultDuration
+			: MovementComponent->MantleDuration));
+
+	ActiveTraversalType = Type;
+
+	// Published before EnterState so the animation graph sees the clip on the
+	// same frame it is told to enter the traversal state, not one frame later.
+	AnimData.TraversalAnim = Action ? Action->Animation : nullptr;
 
 	// The traversal clips carry no root motion, so the capsule owns the movement
 	// and the clip has to be stretched onto it. A rate under one slows a clip
@@ -385,7 +418,7 @@ bool URLocomotionComponent::TryTraversal()
 	// Clear first so the traversal state is never refused by a stale lock, then
 	// hold it for the whole move.
 	StateLockRemaining = 0.f;
-	MovementComponent->BeginTraversal(Start, Mid, End, Duration);
+	MovementComponent->BeginTraversal(Query.Start, Query.Mid, Query.End, Duration);
 	EnterState(Type, MontagePlayRate);
 	StateLockRemaining = FMath::Max(StateLockRemaining, Duration);
 
@@ -411,7 +444,7 @@ void URLocomotionComponent::UpdateVolumetricModes(float DeltaTime)
 		else if (Cfg.bAutoMantleAtClimbLedge && MovementComponent->IsAtClimbLedge())
 		{
 			// Topping out hands over to a mantle instead of hovering at the lip.
-			TryTraversal();
+			TryTraversal(ERTraversalEntry::Climbing);
 		}
 		return;
 	}
@@ -439,6 +472,17 @@ void URLocomotionComponent::UpdateVolumetricModes(float DeltaTime)
 	if (bGlideHeld && CanDeployGlider())
 	{
 		MovementComponent->SetCustomMovementMode(ERCustomMovementMode::Glide);
+		return;
+	}
+
+	// Automatic. Once the skill is known, a long fall is a skydive; there is
+	// nothing to press. The wing is the deliberate act on top of it.
+	if (CanSkydive())
+	{
+		// Applied on entry because a glider pushes its own numbers onto the same
+		// properties, and whichever went last would otherwise win.
+		MovementComponent->ApplyGlideSettings(Cfg.SkydiveSettings);
+		MovementComponent->SetCustomMovementMode(ERCustomMovementMode::Skydive);
 	}
 }
 
@@ -489,6 +533,11 @@ ERLocomotionState URLocomotionComponent::EvaluateDesiredState() const
 	if (MovementComponent->IsGliding())
 	{
 		return ERLocomotionState::Glide;
+	}
+
+	if (MovementComponent->IsSkydiving())
+	{
+		return ERLocomotionState::Skydive;
 	}
 
 	if (MovementComponent->MovementMode == MOVE_Flying)
@@ -628,6 +677,12 @@ void URLocomotionComponent::DrawDebugState() const
 	const FVector Downhill = FVector::VectorPlaneProject(FVector::DownVector, MovementComponent->GetFloorNormal()).GetSafeNormal();
 	const float DownhillSpeed = FVector::DotProduct(MovementComponent->Velocity, Downhill);
 
+	// Skydive gating, split so it is clear which clause refuses.
+	const URLocomotionConfig& DebugCfg = GetConfigRef();
+	const UAbilitySystemComponent* DebugASC = GetOwnerASC();
+	const bool bHasSkydiveTag = DebugCfg.SkydiveUnlockTag.IsValid()
+		&& DebugASC && DebugASC->HasMatchingGameplayTag(DebugCfg.SkydiveUnlockTag);
+
 	// Splits "the key is not reaching us" from "the sweep finds nothing", which
 	// are the two ways a climb silently fails to start.
 	FHitResult ClimbSurface;
@@ -661,12 +716,14 @@ void URLocomotionComponent::DrawDebugState() const
 	// of the list growing every frame.
 	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.f, FColor::Green,
 		FString::Printf(
-			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | VertSpeed %.0f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ChannelHit %d | ClimbFound %d"),
+			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | VertSpeed %.0f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ChannelHit %d | ClimbFound %d | ASC %d | SkyTagSet %d | HasSkyTag %d | CanSky %d"),
 			*StateName, *GaitName, *StanceName,
 			AnimData.GroundSpeed, AnimData.YawSpeed, StateLockRemaining,
 			AnimData.TimeFalling, AnimData.VerticalSpeed, AnimData.FloorAngle, DownhillSpeed,
 			AnimData.bIsStrafing ? 1 : 0, AnimData.bIsTurningInPlace ? 1 : 0,
-			bClimbHeld ? 1 : 0, bRawBlocked ? 1 : 0, bClimbSurfaceFound ? 1 : 0));
+			bClimbHeld ? 1 : 0, bRawBlocked ? 1 : 0, bClimbSurfaceFound ? 1 : 0,
+			DebugASC ? 1 : 0, DebugCfg.SkydiveUnlockTag.IsValid() ? 1 : 0,
+			bHasSkydiveTag ? 1 : 0, CanSkydive() ? 1 : 0));
 }
 #endif
 
@@ -848,6 +905,7 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 	AnimData.ImmersionDepth = MovementComponent->GetImmersionFraction();
 	AnimData.TimeInState += DeltaTime;
 	AnimData.TimeFalling = TimeFalling;
+	AnimData.bIsLongFall = TimeFalling >= Cfg.LongFallTime;
 	AnimData.FloorAngle = MovementComponent->GetFloorAngle();
 	AnimData.bIsStrafing = bIsStrafing;
 
@@ -954,6 +1012,12 @@ FGameplayTagContainer URLocomotionComponent::GetTagsForState(ERLocomotionState S
 	case ERLocomotionState::Glide:
 		Result.AddTag(Tags.state_locomotion_gliding);
 		break;
+	case ERLocomotionState::Skydive:
+		// Separate from the ability.skydive unlock, which is permanent once learned.
+		// Fall damage keys off this one, so it is suppressed during a dive and not
+		// for the rest of the game.
+		Result.AddTag(Tags.state_locomotion_skydiving);
+		break;
 	default:
 		break;
 	}
@@ -1011,7 +1075,7 @@ void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 	const float FallDuration = TimeFalling;
 	TimeFalling = 0.f;
 
-	// Fold the glider on touchdown so the next fall does not auto deploy it.
+	// Fold whatever is out on touchdown, so the next fall does not auto deploy it.
 	bGlideHeld = false;
 
 	// Speed into the ground, not merely downward speed, so this is the same

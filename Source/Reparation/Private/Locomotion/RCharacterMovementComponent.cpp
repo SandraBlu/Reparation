@@ -42,6 +42,7 @@ float URCharacterMovementComponent::GetMaxSpeed() const
 	{
 		switch (GetCustomMovementModeEnum())
 		{
+		case ERCustomMovementMode::Skydive:
 		case ERCustomMovementMode::Glide:		return GlideMaxSpeed;
 		case ERCustomMovementMode::Climb:		return ClimbMaxSpeed;
 		case ERCustomMovementMode::Traversal:	return 0.f;
@@ -58,6 +59,7 @@ float URCharacterMovementComponent::GetMaxAcceleration() const
 	{
 		switch (GetCustomMovementModeEnum())
 		{
+		case ERCustomMovementMode::Skydive:
 		case ERCustomMovementMode::Glide:	return GlideAcceleration;
 		case ERCustomMovementMode::Climb:	return ClimbAcceleration;
 		default:							break;
@@ -73,6 +75,7 @@ float URCharacterMovementComponent::GetMaxBrakingDeceleration() const
 	{
 		switch (GetCustomMovementModeEnum())
 		{
+		case ERCustomMovementMode::Skydive:
 		case ERCustomMovementMode::Glide:	return GlideBrakingDeceleration;
 		case ERCustomMovementMode::Climb:	return ClimbBrakingDeceleration;
 		default:							break;
@@ -155,7 +158,7 @@ void URCharacterMovementComponent::HandleImpact(const FHitResult& Hit, float Tim
 
 	// Only airborne collisions. On the ground this fires constantly against every
 	// kerb and doorframe.
-	if (!IsFalling() && !IsGliding())
+	if (!IsFalling() && !IsGliding() && !IsSkydiving())
 	{
 		return;
 	}
@@ -268,7 +271,7 @@ void URCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousM
 		Velocity = FVector::ZeroVector;
 	}
 
-	if (IsGliding())
+	if (IsGliding() || IsSkydiving())
 	{
 		// Set explicitly rather than inherited. Coming off a targeted approach
 		// leaves bUseControllerDesiredRotation set, and the glider then refuses
@@ -294,6 +297,9 @@ void URCharacterMovementComponent::PhysCustom(float DeltaTime, int32 Iterations)
 
 	switch (GetCustomMovementModeEnum())
 	{
+	// Skydiving is a glide with a far steeper sink, so it shares the physics and
+	// differs only in the numbers applied when the mode is entered.
+	case ERCustomMovementMode::Skydive:
 	case ERCustomMovementMode::Glide:
 		PhysGlide(DeltaTime, Iterations);
 		break;
@@ -348,6 +354,18 @@ void URCharacterMovementComponent::PhysGlide(float DeltaTime, int32 Iterations)
 		if (bTouchedGround)
 		{
 			SetMovementMode(MOVE_Walking);
+
+			// Landing out of a glide or a skydive never passes through PhysFalling,
+			// so ProcessLanded does not run and the character's landing path is
+			// never entered: no LandedDelegate, no landed event, no roll, and the
+			// wing stays flagged as held into the next fall. Report it by hand.
+			// Done after the mode change, so anything reading movement state during
+			// the notification sees the character on the ground.
+			if (CharacterOwner && CharacterOwner->ShouldNotifyLanded(Hit))
+			{
+				CharacterOwner->Landed(Hit);
+			}
+
 			return;
 		}
 	}
@@ -492,6 +510,22 @@ void URCharacterMovementComponent::PhysClimb(float DeltaTime, int32 Iterations)
 		return;
 	}
 
+	// Climbing down the bottom of a wall leaves the surface trace succeeding, so
+	// nothing else here ends the climb: the character hangs at the base with
+	// their feet in the floor until the key is released. Descending onto
+	// walkable ground is a dismount.
+	if (Velocity.Z <= -ClimbDismountDescentSpeed)
+	{
+		FFindFloorResult Floor;
+		FindFloor(UpdatedComponent->GetComponentLocation(), Floor, false);
+
+		if (Floor.IsWalkableFloor())
+		{
+			SetMovementMode(MOVE_Walking);
+			return;
+		}
+	}
+
 	RestorePreAdditiveRootMotionVelocity();
 
 	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
@@ -552,7 +586,7 @@ bool URCharacterMovementComponent::HasRoomAt(const FVector& Location) const
 	return !GetWorld()->OverlapBlockingTestByChannel(Location, FQuat::Identity, TraceChannel, Shape, Params);
 }
 
-bool URCharacterMovementComponent::FindTraversal(FVector& OutStart, FVector& OutMid, FVector& OutEnd, ERLocomotionState& OutType) const
+bool URCharacterMovementComponent::FindTraversal(ERTraversalEntry Entry, FRTraversalQuery& OutQuery) const
 {
 	const UCapsuleComponent* Capsule = CharacterOwner ? CharacterOwner->GetCapsuleComponent() : nullptr;
 	if (!Capsule || !UpdatedComponent)
@@ -602,16 +636,37 @@ bool URCharacterMovementComponent::FindTraversal(FVector& OutStart, FVector& Out
 		return false;
 	}
 
-	// 3. How deep is it? Trace down beyond the far edge to find the landing.
-	const FVector FarProbeStart = TopHit.ImpactPoint + Forward * MaxVaultDepth + FVector::UpVector * TraversalClearance;
+	// 3. How deep is it? Walk forward along the top surface until it runs out.
+	// Sampled rather than traced back from beyond the obstacle, because a far
+	// face that is not vertical defeats that, and so does anything deeper than
+	// the probe. Never finding an edge is the honest answer for a wall.
+	float ObstacleDepth = MaxVaultDepth;
+	const int32 DepthSamples = 8;
+
+	for (int32 Sample = 1; Sample <= DepthSamples; ++Sample)
+	{
+		const float Offset = (MaxVaultDepth * Sample) / DepthSamples;
+		const FVector DepthStart = TopHit.ImpactPoint + Forward * Offset + FVector::UpVector * TraversalClearance;
+		const FVector DepthEnd = DepthStart - FVector::UpVector * (TraversalClearance * 2.f);
+
+		FHitResult DepthHit;
+		if (!GetWorld()->LineTraceSingleByChannel(DepthHit, DepthStart, DepthEnd, TraceChannel, Params))
+		{
+			ObstacleDepth = Offset;
+			break;
+		}
+	}
+
+	// 4. Trace down just past the far edge to find what there is to land on.
+	const FVector FarProbeStart = TopHit.ImpactPoint + Forward * (ObstacleDepth + Radius) + FVector::UpVector * TraversalClearance;
 	const FVector FarProbeEnd = FarProbeStart - FVector::UpVector * (MaxMantleHeight + HalfHeight * 2.f);
 
 	FHitResult FarHit;
 	const bool bFarGround = GetWorld()->LineTraceSingleByChannel(FarHit, FarProbeStart, FarProbeEnd, TraceChannel, Params);
 
 	// Thin and low enough to hop over, with ground waiting on the far side.
-	const bool bThin = bFarGround && FarHit.ImpactPoint.Z < TopHit.ImpactPoint.Z - 10.f;
-	const bool bVault = bThin && ObstacleHeight <= MaxVaultHeight;
+	const bool bDropsAway = bFarGround && FarHit.ImpactPoint.Z < TopHit.ImpactPoint.Z - 10.f;
+	const bool bVault = bDropsAway && ObstacleHeight <= MaxVaultHeight && ObstacleDepth < MaxVaultDepth;
 
 	const FVector TopSurface = TopHit.ImpactPoint + FVector::UpVector * (HalfHeight + 2.f);
 
@@ -619,13 +674,11 @@ bool URCharacterMovementComponent::FindTraversal(FVector& OutStart, FVector& Out
 	if (bVault)
 	{
 		Landing = FarHit.ImpactPoint + FVector::UpVector * (HalfHeight + 2.f);
-		OutType = ERLocomotionState::Vault;
 	}
 	else
 	{
 		// Stand on top, a little past the edge so the capsule is fully supported.
 		Landing = TopHit.ImpactPoint + Forward * Radius + FVector::UpVector * (HalfHeight + 2.f);
-		OutType = ERLocomotionState::Mantle;
 	}
 
 	if (!HasRoomAt(Landing))
@@ -633,9 +686,16 @@ bool URCharacterMovementComponent::FindTraversal(FVector& OutStart, FVector& Out
 		return false;
 	}
 
-	OutStart = Location;
-	OutMid = TopSurface;
-	OutEnd = Landing;
+	OutQuery.Start = Location;
+	OutQuery.Mid = TopSurface;
+	OutQuery.End = Landing;
+	OutQuery.ObstacleHeight = ObstacleHeight;
+	OutQuery.ObstacleDepth = ObstacleDepth;
+	OutQuery.FarSideDrop = bFarGround ? TopHit.ImpactPoint.Z - FarHit.ImpactPoint.Z : 0.f;
+	OutQuery.bHasFarSideGround = bFarGround;
+	OutQuery.ApproachSpeed = Velocity.Size2D();
+	OutQuery.Entry = Entry;
+	OutQuery.FallbackState = bVault ? ERLocomotionState::Vault : ERLocomotionState::Mantle;
 	return true;
 }
 
