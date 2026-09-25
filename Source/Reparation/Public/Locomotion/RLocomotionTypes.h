@@ -201,6 +201,14 @@ struct FRTraversalAction
 	float Duration = 0.6f;
 
 	/**
+	 * Starts on its own when the character moves into a fitting obstacle, with
+	 * no button press. Only when this row is the one the obstacle would pick
+	 * anyway, so the same obstacle always gets the same clip either way.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	bool bAutomatic = false;
+
+	/**
 	 * Where the capsule ends up. Leave on Auto unless the clip disagrees with the
 	 * limits: a fence climb taller than MaxVaultHeight still wants Far Side.
 	 */
@@ -208,10 +216,10 @@ struct FRTraversalAction
 	ERTraversalFinish Finish = ERTraversalFinish::Auto;
 
 	/**
-	 * Fraction of the clip at which the body passes over the obstacle edge.
-	 * Leave at 0 and it is found from the clip: the top of the jump for a
-	 * vault, the moment the body is nearly up for a mantle. Set it only if a
-	 * clip reaches the edge noticeably early or late.
+	 * Fraction of the clip at which the body reaches the obstacle's height.
+	 * Leave at 0: a vault's peak is found from the clip, and a mantle's end
+	 * already fixes its height. Set it only if a clip rises noticeably too
+	 * early or too late.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0", ClampMax = "0.95"))
 	float ApexTime = 0.f;

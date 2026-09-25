@@ -807,34 +807,41 @@ bool URCharacterMovementComponent::BuildTraversalPath(const UAnimSequenceBase* C
 		return false;
 	}
 
-	// The sample that should pass over the obstacle edge. For a vault that is
-	// the top of the jump; for a mantle, the moment the body is nearly up.
-	int32 Apex = Segments / 2;
+	// Only height is pinned to the obstacle. Pinning the horizontal position at
+	// the edge as well dragged the body into the block: when the clip's body
+	// is nearly up, its root is still well short of the edge, with the hands
+	// reaching over. Horizontally the clip keeps its own spacing, stretched
+	// from start to finish.
+	//
+	// A vault's peak is pinned to the obstacle's top, since a vault that ends
+	// low says nothing about how high it went. A mantle ends on top, so its end
+	// already fixes the height. ApexTime pins a mantle too, if a row sets it.
+	float MaxRise = 0.f;
+	int32 Peak = Segments / 2;
+	for (int32 Index = 0; Index <= Segments; ++Index)
+	{
+		if (Offsets[Index].Z > MaxRise)
+		{
+			MaxRise = Offsets[Index].Z;
+			Peak = Index;
+		}
+	}
+
+	const bool bEndsHigh = MaxRise > 10.f && Offsets[Segments].Z > MaxRise * 0.5f;
+
+	int32 Apex = INDEX_NONE;
 	if (ApexTime > 0.f)
 	{
 		Apex = FMath::RoundToInt(ApexTime * Segments);
 	}
-	else
+	else if (!bEndsHigh && MaxRise > 10.f)
 	{
-		float MaxRise = 0.f;
-		for (const FVector& Offset : Offsets)
-		{
-			MaxRise = FMath::Max(MaxRise, Offset.Z);
-		}
-
-		if (MaxRise > 10.f)
-		{
-			for (int32 Index = 0; Index <= Segments; ++Index)
-			{
-				if (Offsets[Index].Z >= MaxRise * 0.9f)
-				{
-					Apex = Index;
-					break;
-				}
-			}
-		}
+		Apex = Peak;
 	}
-	Apex = FMath::Clamp(Apex, 1, Segments - 1);
+	if (Apex != INDEX_NONE)
+	{
+		Apex = FMath::Clamp(Apex, 1, Segments - 1);
+	}
 
 	// Targets in the capsule's starting frame: over the edge, then the landing.
 	const FRotator Frame(0.f, TraversalStartYaw, 0.f);
@@ -855,25 +862,35 @@ bool URCharacterMovementComponent::BuildTraversalPath(const UAnimSequenceBase* C
 		return To0 + (Value - From0) * (To1 - To0) / Span;
 	};
 
+	const FVector& ClipEnd = Offsets[Segments];
+
 	TraversalPath.Reserve(Segments + 1);
 	for (int32 Index = 0; Index <= Segments; ++Index)
 	{
-		const bool bFirstHalf = Index <= Apex;
-		const int32 From = bFirstHalf ? 0 : Apex;
-		const int32 To = bFirstHalf ? Apex : Segments;
-		const FVector& A = Offsets[From];
-		const FVector& B = Offsets[To];
-		const FVector TargetA = bFirstHalf ? FVector::ZeroVector : ToMid;
-		const FVector TargetB = bFirstHalf ? ToMid : ToEnd;
-		const float TimeFraction = static_cast<float>(Index - From) / (To - From);
-
 		const FVector& Offset = Offsets[Index];
-		const FVector Warped(
-			WarpAxis(Offset.X, A.X, B.X, TargetA.X, TargetB.X, TimeFraction),
-			WarpAxis(Offset.Y, A.Y, B.Y, TargetA.Y, TargetB.Y, TimeFraction),
-			WarpAxis(Offset.Z, A.Z, B.Z, TargetA.Z, TargetB.Z, TimeFraction));
+		const float Fraction = static_cast<float>(Index) / Segments;
 
-		TraversalPath.Add(TraversalStart + Frame.RotateVector(Warped));
+		// Horizontal: start to finish in one stretch.
+		const float X = WarpAxis(Offset.X, 0.f, ClipEnd.X, 0.f, ToEnd.X, Fraction);
+		const float Y = WarpAxis(Offset.Y, 0.f, ClipEnd.Y, 0.f, ToEnd.Y, Fraction);
+
+		// Vertical: through the apex when there is one, otherwise one stretch.
+		float Z;
+		if (Apex == INDEX_NONE)
+		{
+			Z = WarpAxis(Offset.Z, 0.f, ClipEnd.Z, 0.f, ToEnd.Z, Fraction);
+		}
+		else if (Index <= Apex)
+		{
+			Z = WarpAxis(Offset.Z, 0.f, Offsets[Apex].Z, 0.f, ToMid.Z, static_cast<float>(Index) / Apex);
+		}
+		else
+		{
+			Z = WarpAxis(Offset.Z, Offsets[Apex].Z, ClipEnd.Z, ToMid.Z, ToEnd.Z,
+				static_cast<float>(Index - Apex) / (Segments - Apex));
+		}
+
+		TraversalPath.Add(TraversalStart + Frame.RotateVector(FVector(X, Y, Z)));
 	}
 
 	return true;

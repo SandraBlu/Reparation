@@ -315,7 +315,16 @@ bool URLocomotionComponent::CanSkydive() const
 
 	// Its own gate, longer than the glider's: a hop should not throw the
 	// character into a dive.
-	return TimeFalling >= Cfg.MinFallTimeBeforeSkydive;
+	if (TimeFalling < Cfg.MinFallTimeBeforeSkydive)
+	{
+		return false;
+	}
+
+	// And a real drop underneath, or a long jump would qualify on time alone.
+	const FVector From = OwningCharacter->GetActorLocation();
+	const FVector To = From - FVector::UpVector * Cfg.MinSkydiveHeight;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(RSkydiveGroundTrace), false, OwningCharacter);
+	return !GetWorld()->LineTraceTestByChannel(From, To, MovementComponent->TraceChannel, Params);
 }
 
 bool URLocomotionComponent::CanDeployGlider() const
@@ -367,6 +376,11 @@ void URLocomotionComponent::SetFlying(bool bEnabled)
 
 bool URLocomotionComponent::TryTraversal(ERTraversalEntry Entry)
 {
+	return StartTraversal(Entry, false);
+}
+
+bool URLocomotionComponent::StartTraversal(ERTraversalEntry Entry, bool bAutomaticOnly)
+{
 	if (!MovementComponent || MovementComponent->IsTraversing() || MovementComponent->IsSwimming())
 	{
 		return false;
@@ -382,6 +396,14 @@ bool URLocomotionComponent::TryTraversal(ERTraversalEntry Entry)
 	// row that fits, the movement component's own verdict and durations stand,
 	// which is what keeps traversal working before any clips exist.
 	const FRTraversalAction* Action = GetConfigRef().FindTraversalAction(Query);
+
+	// Checked against the row the obstacle picks, not the first automatic row
+	// that fits, so running into it never chooses a different clip than
+	// pressing jump would.
+	if (bAutomaticOnly && !(Action && Action->bAutomatic))
+	{
+		return false;
+	}
 
 	const ERLocomotionState Type = Action ? Action->State : Query.FallbackState;
 
@@ -477,6 +499,24 @@ void URLocomotionComponent::UpdateVolumetricModes(float DeltaTime)
 			MovementComponent->SetCustomMovementMode(ERCustomMovementMode::Climb);
 			return;
 		}
+	}
+
+	// A jump that falls short of a ledge catches it. Pushing toward it is
+	// required, so drifting past an edge does not snatch the character onto it.
+	if (Cfg.bCatchLedgesInAir && MovementComponent->IsFalling() && !MovementInput.IsNearlyZero()
+		&& TryTraversal())
+	{
+		return;
+	}
+
+	// Running into an obstacle whose row is marked Automatic crosses it without
+	// a button press. Not while strafing, where the capsule faces the target
+	// rather than the way it is going, nor crouched.
+	if (MovementComponent->IsMovingOnGround() && !MovementInput.IsNearlyZero() && !bIsStrafing
+		&& CurrentStance == ERStance::Standing
+		&& StartTraversal(ERTraversalEntry::Grounded, true))
+	{
+		return;
 	}
 
 	if (MovementComponent->IsGliding())
@@ -730,6 +770,24 @@ void URLocomotionComponent::DrawDebugState() const
 	{
 		DrawDebugDirectionalArrow(GetWorld(), ClimbSurface.ImpactPoint, ClimbSurface.ImpactPoint + ClimbSurface.ImpactNormal * 60.f, 12.f, FColor::Cyan, false, -1.f, 0, 1.f);
 	}
+
+	// What the traversal traces see ahead and which row they would pick, so
+	// tuning the table is reading numbers rather than guessing why a row did
+	// not fire. Row is 1 based, matching the order in the config.
+	FString TraversalLine = TEXT("Traversal ahead: nothing");
+	FRTraversalQuery DebugQuery;
+	if (!MovementComponent->IsTraversing() && MovementComponent->FindTraversal(ERTraversalEntry::Grounded, DebugQuery))
+	{
+		const FRTraversalAction* Row = DebugCfg.FindTraversalAction(DebugQuery);
+		const int32 RowNumber = Row ? static_cast<int32>(Row - DebugCfg.TraversalActions.GetData()) + 1 : 0;
+		TraversalLine = FString::Printf(
+			TEXT("Traversal ahead: Height %.0f | Depth %.0f | Speed %.0f | FarGround %d | OnTop %d | FarSide %d | Row %d %s%s"),
+			DebugQuery.ObstacleHeight, DebugQuery.ObstacleDepth, DebugQuery.ApproachSpeed,
+			DebugQuery.bHasFarSideGround ? 1 : 0, DebugQuery.bCanFinishOnTop ? 1 : 0, DebugQuery.bCanFinishFarSide ? 1 : 0,
+			RowNumber, Row ? *GetNameSafe(Row->Animation) : TEXT("(no row matches)"),
+			Row && Row->bAutomatic ? TEXT(" [automatic]") : TEXT(""));
+	}
+	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()) + 1, 0.f, FColor::Yellow, TraversalLine);
 
 	// Keyed on the component so each character overwrites its own line instead
 	// of the list growing every frame.

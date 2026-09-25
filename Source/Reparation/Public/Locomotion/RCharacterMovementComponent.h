@@ -137,10 +137,11 @@ public:
 	 * sane minimum.
 	 *
 	 * Given a Clip with root motion, the capsule follows the clip's own root
-	 * path, warped so the clip's high point passes over Mid and its end lands on
-	 * End, and turns wherever the clip turns. ApexTime pins that high point to a
-	 * fraction of the clip; 0 finds it from the clip. Without root motion the
-	 * capsule takes a plain arc, and bTurnAround turns it 180 degrees at the end.
+	 * path, stretched so its end lands on End and, for a vault, its peak clears
+	 * the obstacle at Mid's height. It turns wherever the clip turns. ApexTime
+	 * pins the moment the obstacle's height is reached; 0 finds it from the
+	 * clip. Without root motion the capsule takes a plain arc, and bTurnAround
+	 * turns it 180 degrees at the end.
 	 */
 	void BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration,
 		bool bTurnAround = false, const UAnimSequenceBase* Clip = nullptr, float ApexTime = 0.f);

@@ -184,6 +184,12 @@ private:
 	/** Starts and stops glide, climb and traversal before the state is evaluated. */
 	void UpdateVolumetricModes(float DeltaTime);
 
+	/**
+	 * TryTraversal's body. With bAutomaticOnly, starts only if the row the
+	 * obstacle picks is marked Automatic, which is how running into one works.
+	 */
+	bool StartTraversal(ERTraversalEntry Entry, bool bAutomaticOnly);
+
 	/** Mirrors the character's actual crouch state, which can refuse to change. */
 #if !UE_BUILD_SHIPPING
 	/** On screen state readout, toggled with r.Reparation.DebugLocomotion 1. */

@@ -123,6 +123,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skydive", meta = (ClampMin = "0.0"))
 	float MinFallTimeBeforeSkydive = 0.8f;
 
+	/**
+	 * Ground must be at least this far below before a fall becomes a skydive.
+	 * Time alone let a long running jump qualify, which a jump at a ledge that
+	 * fell short easily is. A drop worth diving is a tall one.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skydive", meta = (ClampMin = "0.0"))
+	float MinSkydiveHeight = 800.f;
+
+	/**
+	 * Airborne and pushing toward an obstacle, reaching a ledge mantles onto it,
+	 * so a jump that falls short of the top catches the edge instead of
+	 * sliding down the face.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	bool bCatchLedgesInAir = true;
+
 	/** Seconds of falling after which bIsLongFall is set, for the airborne pose. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Air", meta = (ClampMin = "0.0"))
 	float LongFallTime = 0.8f;
