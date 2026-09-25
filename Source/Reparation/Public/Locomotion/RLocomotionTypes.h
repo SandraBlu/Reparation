@@ -52,6 +52,24 @@ enum class ERTraversalEntry : uint8
 };
 
 /**
+ * Where a traversal leaves the capsule. The measurements cannot decide this on
+ * their own: a tall thin fence can be climbed over or stood on, and which one
+ * happens is a property of the clip, not the fence.
+ */
+UENUM(BlueprintType)
+enum class ERTraversalFinish : uint8
+{
+	/** The movement component's height and depth limits decide. */
+	Auto		UMETA(DisplayName = "Auto"),
+
+	/** Standing on top of the obstacle. */
+	OnTop		UMETA(DisplayName = "On Top"),
+
+	/** Down on the ground beyond it. Needs the far side to drop away. */
+	FarSide		UMETA(DisplayName = "Far Side")
+};
+
+/**
  * What the traversal traces measured. Filled by FindTraversal and matched
  * against the FRTraversalAction rows to choose a clip, so that adding a
  * variant is a row of data rather than a state in the animation graph.
@@ -69,9 +87,24 @@ struct FRTraversalQuery
 	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
 	FVector Mid = FVector::ZeroVector;
 
-	/** Capsule position where the move finishes. */
+	/** Capsule position where the move finishes, by the movement component's own verdict. */
 	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
 	FVector End = FVector::ZeroVector;
+
+	/** Where an On Top finish stands the capsule. Valid when bCanFinishOnTop. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	FVector OnTopEnd = FVector::ZeroVector;
+
+	/** Where a Far Side finish lands the capsule. Valid when bCanFinishFarSide. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	FVector FarSideEnd = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	bool bCanFinishOnTop = false;
+
+	/** The far side drops away and the capsule fits on the ground there. */
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
+	bool bCanFinishFarSide = false;
 
 	/** Top of the obstacle above the character's feet. */
 	UPROPERTY(BlueprintReadOnly, Category = "Traversal")
@@ -120,8 +153,12 @@ struct FRTraversalAction
 
 	/**
 	 * Played by the traversal state's sequence evaluator, scrubbed to the
-	 * capsule's progress rather than its own clock. Root motion is ignored;
-	 * PhysTraversal owns the movement.
+	 * capsule's progress rather than its own clock.
+	 *
+	 * A clip with root motion lends the capsule its path: the capsule follows
+	 * the root, warped to fit the obstacle, and turns where the root turns.
+	 * Tick Enable Root Motion on the clip, or the mesh travels the path a second
+	 * time on top of the capsule and snaps back at the end.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
 	TObjectPtr<UAnimSequenceBase> Animation = nullptr;
@@ -162,6 +199,82 @@ struct FRTraversalAction
 	/** How long the capsule takes. The clip is stretched onto this. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.1"))
 	float Duration = 0.6f;
+
+	/**
+	 * Where the capsule ends up. Leave on Auto unless the clip disagrees with the
+	 * limits: a fence climb taller than MaxVaultHeight still wants Far Side.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	ERTraversalFinish Finish = ERTraversalFinish::Auto;
+
+	/**
+	 * Fraction of the clip at which the body passes over the obstacle edge.
+	 * Leave at 0 and it is found from the clip: the top of the jump for a
+	 * vault, the moment the body is nearly up for a mantle. Set it only if a
+	 * clip reaches the edge noticeably early or late.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0", ClampMax = "0.95"))
+	float ApexTime = 0.f;
+
+	/**
+	 * For in place clips that finish facing back the way they came. The capsule
+	 * turns 180 degrees as the move completes. Clips with root motion ignore
+	 * this: the capsule follows their turn as it happens.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	bool bTurnAround = false;
+
+	/**
+	 * Played in the Land state once the move completes. The capsule arrives
+	 * resting on the ground, so without this a drop off the far side has no
+	 * landing at all.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal")
+	TObjectPtr<UAnimSequenceBase> LandingAnimation = nullptr;
+
+	/** Seconds LandingAnimation holds the character. 0 uses the clip length. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Traversal", meta = (ClampMin = "0.0"))
+	float LandingRecoveryTime = 0.f;
+};
+
+/**
+ * One landing variant. Rows are tested in order and the first that fits wins,
+ * the same way traversal actions are, so order them most specific first.
+ */
+USTRUCT(BlueprintType)
+struct FRLandingAction
+{
+	GENERATED_BODY()
+
+	/** Played by the Land state's sequence player. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Landing")
+	TObjectPtr<UAnimSequenceBase> Animation = nullptr;
+
+	/** Land or Roll. Both play in the same graph state; this is for gameplay and tags. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Landing")
+	ERLocomotionState State = ERLocomotionState::Land;
+
+	/** States the landing may come out of, such as Skydive or Glide. Empty means any. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Landing")
+	TArray<ERLocomotionState> FromStates;
+
+	/**
+	 * Speed into the ground, cm/s. Rows replace SoftLandingSpeed entirely, so a
+	 * row starting at 0 plays on every step off a kerb.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Landing", meta = (ClampMin = "0.0"))
+	float MinImpactSpeed = 500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Landing", meta = (ClampMin = "0.0"))
+	float MaxImpactSpeed = 100000.f;
+
+	/** Horizontal speed carried into the ground. Separates a running landing from a dead drop. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Landing", meta = (ClampMin = "0.0"))
+	float MinGroundSpeed = 0.f;
+
+	/** Seconds the landing holds the character. 0 uses the clip length. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Landing", meta = (ClampMin = "0.0"))
+	float RecoveryTime = 0.f;
 };
 
 /** Ground speed tier. Independent of state so Crouch/Walk/Run share one axis. */
@@ -431,4 +544,12 @@ struct FRLocomotionAnimData
 	 */
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	TObjectPtr<UAnimSequenceBase> TraversalAnim = nullptr;
+
+	/**
+	 * Clip the current landing picked, from the landing table or the traversal
+	 * that just finished. Bind the Land state's sequence player to this and one
+	 * state covers every landing and roll. Null when the landing table is empty.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
+	TObjectPtr<UAnimSequenceBase> LandingAnim = nullptr;
 };

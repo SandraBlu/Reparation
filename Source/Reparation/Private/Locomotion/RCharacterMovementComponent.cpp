@@ -3,7 +3,9 @@
 
 #include "Locomotion/RCharacterMovementComponent.h"
 
+#include "Animation/AnimSequenceBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 
 URCharacterMovementComponent::URCharacterMovementComponent()
@@ -286,6 +288,18 @@ void URCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousM
 		Velocity = FVector::ZeroVector;
 		TraversalElapsed = 0.f;
 	}
+}
+
+void URCharacterMovementComponent::PhysicsRotation(float DeltaTime)
+{
+	// Input still produces acceleration mid move, and orient to movement would
+	// turn the capsule toward it, undoing a clip that turns the character round.
+	if (IsTraversing())
+	{
+		return;
+	}
+
+	Super::PhysicsRotation(DeltaTime);
 }
 
 void URCharacterMovementComponent::PhysCustom(float DeltaTime, int32 Iterations)
@@ -664,31 +678,36 @@ bool URCharacterMovementComponent::FindTraversal(ERTraversalEntry Entry, FRTrave
 	FHitResult FarHit;
 	const bool bFarGround = GetWorld()->LineTraceSingleByChannel(FarHit, FarProbeStart, FarProbeEnd, TraceChannel, Params);
 
-	// Thin and low enough to hop over, with ground waiting on the far side.
 	const bool bDropsAway = bFarGround && FarHit.ImpactPoint.Z < TopHit.ImpactPoint.Z - 10.f;
-	const bool bVault = bDropsAway && ObstacleHeight <= MaxVaultHeight && ObstacleDepth < MaxVaultDepth;
 
 	const FVector TopSurface = TopHit.ImpactPoint + FVector::UpVector * (HalfHeight + 2.f);
 
-	FVector Landing;
-	if (bVault)
-	{
-		Landing = FarHit.ImpactPoint + FVector::UpVector * (HalfHeight + 2.f);
-	}
-	else
-	{
-		// Stand on top, a little past the edge so the capsule is fully supported.
-		Landing = TopHit.ImpactPoint + Forward * Radius + FVector::UpVector * (HalfHeight + 2.f);
-	}
+	// Both finishes are measured, because which one happens is the clip's choice.
+	// On top stands a little past the edge so the capsule is fully supported.
+	const FVector OnTopEnd = TopHit.ImpactPoint + Forward * Radius + FVector::UpVector * (HalfHeight + 2.f);
+	const FVector FarSideEnd = FarHit.ImpactPoint + FVector::UpVector * (HalfHeight + 2.f);
 
-	if (!HasRoomAt(Landing))
+	const bool bCanFinishOnTop = HasRoomAt(OnTopEnd);
+	const bool bCanFinishFarSide = bDropsAway && HasRoomAt(FarSideEnd);
+
+	if (!bCanFinishOnTop && !bCanFinishFarSide)
 	{
 		return false;
 	}
 
+	// The limits' own verdict, for Auto rows and an empty table: thin and low
+	// enough to hop over goes over, anything else stands on top. When the
+	// preferred finish has no room, the other one is all there is.
+	const bool bFitsVault = ObstacleHeight <= MaxVaultHeight && ObstacleDepth < MaxVaultDepth;
+	const bool bVault = bCanFinishFarSide && (bFitsVault || !bCanFinishOnTop);
+
 	OutQuery.Start = Location;
 	OutQuery.Mid = TopSurface;
-	OutQuery.End = Landing;
+	OutQuery.End = bVault ? FarSideEnd : OnTopEnd;
+	OutQuery.OnTopEnd = OnTopEnd;
+	OutQuery.FarSideEnd = FarSideEnd;
+	OutQuery.bCanFinishOnTop = bCanFinishOnTop;
+	OutQuery.bCanFinishFarSide = bCanFinishFarSide;
 	OutQuery.ObstacleHeight = ObstacleHeight;
 	OutQuery.ObstacleDepth = ObstacleDepth;
 	OutQuery.FarSideDrop = bFarGround ? TopHit.ImpactPoint.Z - FarHit.ImpactPoint.Z : 0.f;
@@ -709,15 +728,155 @@ float URCharacterMovementComponent::GetTraversalAlpha() const
 	return FMath::Clamp(TraversalElapsed / TraversalDuration, 0.f, 1.f);
 }
 
-void URCharacterMovementComponent::BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration)
+void URCharacterMovementComponent::BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration,
+	bool bTurnAround, const UAnimSequenceBase* Clip, float ApexTime)
 {
 	TraversalStart = Start;
 	TraversalMid = Mid;
 	TraversalEnd = End;
 	TraversalDuration = FMath::Max(0.1f, Duration);
 	TraversalElapsed = 0.f;
+	TraversalStartYaw = UpdatedComponent ? UpdatedComponent->GetComponentRotation().Yaw : 0.f;
+
+	// A clip that turns round is followed through the turn, so the flag is only
+	// needed by clips with no root motion to follow.
+	bTraversalTurnAround = !BuildTraversalPath(Clip, ApexTime) && bTurnAround;
 
 	SetCustomMovementMode(ERCustomMovementMode::Traversal);
+}
+
+bool URCharacterMovementComponent::BuildTraversalPath(const UAnimSequenceBase* Clip, float ApexTime)
+{
+	TraversalPath.Reset();
+	TraversalPathYaw.Reset();
+
+	const USkeletalMeshComponent* Mesh = CharacterOwner ? CharacterOwner->GetMesh() : nullptr;
+	if (!Clip || !Mesh || !UpdatedComponent)
+	{
+		return false;
+	}
+
+	const float Length = Clip->GetPlayLength();
+	if (Length <= KINDA_SMALL_NUMBER)
+	{
+		return false;
+	}
+
+	// Thirty a second is finer than the capsule moves in a frame at any sane
+	// frame rate, and the whole path is only built once per move.
+	const int32 Segments = FMath::Clamp(FMath::CeilToInt(Length * 30.f), 8, 300);
+
+	// The root track is in mesh space, and the mesh is usually turned to face
+	// the capsule's forward. Its relative transform takes the root's movement
+	// into the capsule's frame.
+	const FTransform MeshRelative = Mesh->GetRelativeTransform();
+	const FTransform Root0 = Clip->ExtractRootTrackTransform(FAnimExtractContext(0.0), nullptr);
+
+	TArray<FVector> Offsets;
+	Offsets.Reserve(Segments + 1);
+	TraversalPathYaw.Reserve(Segments + 1);
+
+	float Yaw = 0.f;
+	float PreviousRawYaw = 0.f;
+	float Reach = 0.f;
+
+	for (int32 Index = 0; Index <= Segments; ++Index)
+	{
+		const double Time = Length * Index / Segments;
+		const FTransform Root = Clip->ExtractRootTrackTransform(FAnimExtractContext(Time), nullptr);
+
+		const FVector Offset = MeshRelative.TransformVector(Root.GetLocation() - Root0.GetLocation());
+		Offsets.Add(Offset);
+		Reach = FMath::Max(Reach, Offset.Size());
+
+		// Accumulated step by step so a half turn does not wrap from +180 to -180
+		// and spin the capsule the long way round.
+		const float RawYaw = (Root.GetRotation() * Root0.GetRotation().Inverse()).Rotator().Yaw;
+		if (Index > 0)
+		{
+			Yaw += FMath::FindDeltaAngleDegrees(PreviousRawYaw, RawYaw);
+		}
+		PreviousRawYaw = RawYaw;
+		TraversalPathYaw.Add(Yaw);
+	}
+
+	// An in place clip has nothing to follow; the arc will do.
+	if (Reach < 10.f)
+	{
+		TraversalPathYaw.Reset();
+		return false;
+	}
+
+	// The sample that should pass over the obstacle edge. For a vault that is
+	// the top of the jump; for a mantle, the moment the body is nearly up.
+	int32 Apex = Segments / 2;
+	if (ApexTime > 0.f)
+	{
+		Apex = FMath::RoundToInt(ApexTime * Segments);
+	}
+	else
+	{
+		float MaxRise = 0.f;
+		for (const FVector& Offset : Offsets)
+		{
+			MaxRise = FMath::Max(MaxRise, Offset.Z);
+		}
+
+		if (MaxRise > 10.f)
+		{
+			for (int32 Index = 0; Index <= Segments; ++Index)
+			{
+				if (Offsets[Index].Z >= MaxRise * 0.9f)
+				{
+					Apex = Index;
+					break;
+				}
+			}
+		}
+	}
+	Apex = FMath::Clamp(Apex, 1, Segments - 1);
+
+	// Targets in the capsule's starting frame: over the edge, then the landing.
+	const FRotator Frame(0.f, TraversalStartYaw, 0.f);
+	const FVector ToMid = Frame.UnrotateVector(TraversalMid - TraversalStart);
+	const FVector ToEnd = Frame.UnrotateVector(TraversalEnd - TraversalStart);
+
+	// Stretches one axis of one half of the clip so it starts and ends where the
+	// geometry says. Where the clip barely moves on that axis, scaling would
+	// blow its jitter up into lurches, so the move is spread evenly over the
+	// half instead and the clip's own small motion kept on top.
+	auto WarpAxis = [](float Value, float From0, float From1, float To0, float To1, float TimeFraction)
+	{
+		const float Span = From1 - From0;
+		if (FMath::Abs(Span) < 10.f)
+		{
+			return To0 + (To1 - To0) * TimeFraction + (Value - From0);
+		}
+		return To0 + (Value - From0) * (To1 - To0) / Span;
+	};
+
+	TraversalPath.Reserve(Segments + 1);
+	for (int32 Index = 0; Index <= Segments; ++Index)
+	{
+		const bool bFirstHalf = Index <= Apex;
+		const int32 From = bFirstHalf ? 0 : Apex;
+		const int32 To = bFirstHalf ? Apex : Segments;
+		const FVector& A = Offsets[From];
+		const FVector& B = Offsets[To];
+		const FVector TargetA = bFirstHalf ? FVector::ZeroVector : ToMid;
+		const FVector TargetB = bFirstHalf ? ToMid : ToEnd;
+		const float TimeFraction = static_cast<float>(Index - From) / (To - From);
+
+		const FVector& Offset = Offsets[Index];
+		const FVector Warped(
+			WarpAxis(Offset.X, A.X, B.X, TargetA.X, TargetB.X, TimeFraction),
+			WarpAxis(Offset.Y, A.Y, B.Y, TargetA.Y, TargetB.Y, TimeFraction),
+			WarpAxis(Offset.Z, A.Z, B.Z, TargetA.Z, TargetB.Z, TimeFraction));
+
+		TraversalPath.Add(TraversalStart + Frame.RotateVector(Warped));
+	}
+
+	return true;
 }
 
 void URCharacterMovementComponent::PhysTraversal(float DeltaTime, int32 Iterations)
@@ -726,21 +885,52 @@ void URCharacterMovementComponent::PhysTraversal(float DeltaTime, int32 Iteratio
 
 	const float Alpha = FMath::Clamp(TraversalElapsed / TraversalDuration, 0.f, 1.f);
 
-	// Quadratic bezier through the obstacle top, which keeps the capsule clear of
-	// the edge instead of clipping the corner.
-	const float OneMinus = 1.f - Alpha;
-	const FVector Target =
-		OneMinus * OneMinus * TraversalStart +
-		2.f * OneMinus * Alpha * TraversalMid +
-		Alpha * Alpha * TraversalEnd;
+	FVector Target;
+	FQuat Facing = UpdatedComponent->GetComponentQuat();
+
+	if (TraversalPath.Num() >= 2)
+	{
+		// Wherever the clip's root is at this point in the clip, so the feet stay
+		// where the animation put them.
+		const float Position = Alpha * (TraversalPath.Num() - 1);
+		const int32 Index = FMath::Min(FMath::FloorToInt(Position), TraversalPath.Num() - 2);
+		const float Blend = Position - Index;
+
+		Target = FMath::Lerp(TraversalPath[Index], TraversalPath[Index + 1], Blend);
+		const float Yaw = TraversalStartYaw + FMath::Lerp(TraversalPathYaw[Index], TraversalPathYaw[Index + 1], Blend);
+		Facing = FRotator(0.f, Yaw, 0.f).Quaternion();
+	}
+	else
+	{
+		// Quadratic bezier through the obstacle top, which keeps the capsule clear
+		// of the edge instead of clipping the corner.
+		const float OneMinus = 1.f - Alpha;
+		Target =
+			OneMinus * OneMinus * TraversalStart +
+			2.f * OneMinus * Alpha * TraversalMid +
+			Alpha * Alpha * TraversalEnd;
+	}
 
 	// Swept but non-blocking: the path was validated before it started, and a
 	// blocking move here would stall the character halfway over the obstacle.
 	FHitResult Hit(1.f);
-	MoveUpdatedComponent(Target - UpdatedComponent->GetComponentLocation(), UpdatedComponent->GetComponentQuat(), false, &Hit);
+	MoveUpdatedComponent(Target - UpdatedComponent->GetComponentLocation(), Facing, false, &Hit);
 
 	if (Alpha >= 1.f)
 	{
+		TraversalPath.Reset();
+		TraversalPathYaw.Reset();
+
+		// The clip turned the character round inside itself and the capsule never
+		// followed. Turning it now, on the clip's last frame, lets the next state
+		// start facing where the clip left off instead of snapping back.
+		if (bTraversalTurnAround)
+		{
+			const FRotator TurnedAround = UpdatedComponent->GetComponentRotation() + FRotator(0.f, 180.f, 0.f);
+			MoveUpdatedComponent(FVector::ZeroVector, TurnedAround.Quaternion(), false);
+			bTraversalTurnAround = false;
+		}
+
 		Velocity = FVector::ZeroVector;
 		SetMovementMode(MOVE_Falling);
 	}

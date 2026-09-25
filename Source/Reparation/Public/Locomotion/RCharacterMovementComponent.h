@@ -132,8 +132,18 @@ public:
 	 */
 	bool FindTraversal(ERTraversalEntry Entry, FRTraversalQuery& OutQuery) const;
 
-	/** Begins a scripted move along Start, Mid, End. Duration is clamped to a sane minimum. */
-	void BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration);
+	/**
+	 * Begins a scripted move through Start, Mid, End. Duration is clamped to a
+	 * sane minimum.
+	 *
+	 * Given a Clip with root motion, the capsule follows the clip's own root
+	 * path, warped so the clip's high point passes over Mid and its end lands on
+	 * End, and turns wherever the clip turns. ApexTime pins that high point to a
+	 * fraction of the clip; 0 finds it from the clip. Without root motion the
+	 * capsule takes a plain arc, and bTurnAround turns it 180 degrees at the end.
+	 */
+	void BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration,
+		bool bTurnAround = false, const UAnimSequenceBase* Clip = nullptr, float ApexTime = 0.f);
 
 	// --- Glide tuning ---
 
@@ -230,9 +240,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Traversal")
 	float MaxVaultHeight = 120.f;
 
-	/** Obstacles up to this high are mantled onto instead. */
+	/**
+	 * Obstacles up to this high are mantled onto instead. Anything taller is a
+	 * climb, so this has to reach the tallest traversal clip, including the ones
+	 * that run a couple of steps up the wall first.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Traversal")
-	float MaxMantleHeight = 220.f;
+	float MaxMantleHeight = 320.f;
 
 	/** Anything deeper than this is mantled rather than vaulted. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Traversal")
@@ -259,6 +273,9 @@ protected:
 	virtual void PhysCustom(float DeltaTime, int32 Iterations) override;
 	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 
+	/** Stands aside during a traversal, which sets the capsule's facing itself. */
+	virtual void PhysicsRotation(float DeltaTime) override;
+
 	void PhysGlide(float DeltaTime, int32 Iterations);
 	void PhysClimb(float DeltaTime, int32 Iterations);
 	void PhysTraversal(float DeltaTime, int32 Iterations);
@@ -278,6 +295,13 @@ private:
 	/** Capsule fits at Location with nothing overlapping. */
 	bool HasRoomAt(const FVector& Location) const;
 
+	/**
+	 * Samples Clip's root bone and warps it onto the current traversal's Start,
+	 * Mid and End. Leaves the path empty, and returns false, when the clip has
+	 * no root motion to follow.
+	 */
+	bool BuildTraversalPath(const UAnimSequenceBase* Clip, float ApexTime);
+
 	/** Captured in the constructor so leaving a slide can put friction back. */
 	float DefaultGroundFriction = 8.f;
 
@@ -290,4 +314,13 @@ private:
 	FVector TraversalEnd = FVector::ZeroVector;
 	float TraversalDuration = 0.f;
 	float TraversalElapsed = 0.f;
+	bool bTraversalTurnAround = false;
+
+	/**
+	 * World positions and yaw offsets from the starting facing, sampled evenly
+	 * through the clip. Empty when the move takes the plain arc instead.
+	 */
+	TArray<FVector> TraversalPath;
+	TArray<float> TraversalPathYaw;
+	float TraversalStartYaw = 0.f;
 };

@@ -399,6 +399,22 @@ bool URLocomotionComponent::TryTraversal(ERTraversalEntry Entry)
 	// same frame it is told to enter the traversal state, not one frame later.
 	AnimData.TraversalAnim = Action ? Action->Animation : nullptr;
 
+	// Held until the move completes, when HandleMovementModeChanged plays it.
+	PendingTraversalLanding = Action ? Action->LandingAnimation : nullptr;
+	PendingTraversalLandingRecovery = Action ? Action->LandingRecoveryTime : 0.f;
+
+	// FindTraversalAction only returns a row whose finish has room, so the
+	// chosen end is always a valid one.
+	FVector End = Query.End;
+	if (Action && Action->Finish == ERTraversalFinish::OnTop)
+	{
+		End = Query.OnTopEnd;
+	}
+	else if (Action && Action->Finish == ERTraversalFinish::FarSide)
+	{
+		End = Query.FarSideEnd;
+	}
+
 	// The traversal clips carry no root motion, so the capsule owns the movement
 	// and the clip has to be stretched onto it. A rate under one slows a clip
 	// shorter than the move; over one speeds up a longer one.
@@ -418,7 +434,10 @@ bool URLocomotionComponent::TryTraversal(ERTraversalEntry Entry)
 	// Clear first so the traversal state is never refused by a stale lock, then
 	// hold it for the whole move.
 	StateLockRemaining = 0.f;
-	MovementComponent->BeginTraversal(Query.Start, Query.Mid, Query.End, Duration);
+	MovementComponent->BeginTraversal(Query.Start, Query.Mid, End, Duration,
+		Action && Action->bTurnAround,
+		Action ? Action->Animation.Get() : nullptr,
+		Action ? Action->ApexTime : 0.f);
 	EnterState(Type, MontagePlayRate);
 	StateLockRemaining = FMath::Max(StateLockRemaining, Duration);
 
@@ -1104,7 +1123,26 @@ void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		OwningCharacter, LandedEvent.EventTag, LandedEvent);
 
+	// A traversal's own landing is already playing. The capsule settling the last
+	// couple of centimetres onto the ground after it must not replace it.
+	if (StateLockRemaining > 0.f
+		&& (CurrentState == ERLocomotionState::Land || CurrentState == ERLocomotionState::Roll))
+	{
+		return;
+	}
+
 	const URLocomotionConfig& Cfg = GetConfigRef();
+
+	// Once the table has rows it decides every landing, including whether there
+	// is one at all.
+	if (Cfg.LandingActions.Num() > 0)
+	{
+		if (const FRLandingAction* Action = Cfg.FindLandingAction(CurrentState, ImpactSpeed, PreviousVelocity.Size2D()))
+		{
+			BeginLanding(Action->State, Action->Animation, Action->RecoveryTime);
+		}
+		return;
+	}
 
 	// A light landing needs no dedicated state; the ground states read fine.
 	if (ImpactSpeed < Cfg.SoftLandingSpeed)
@@ -1116,13 +1154,30 @@ void URLocomotionComponent::HandleLanded(const FHitResult& Hit)
 		? ERLocomotionState::Roll
 		: ERLocomotionState::Land;
 
+	BeginLanding(LandingState, nullptr, Cfg.LandRecoveryTime);
+}
+
+void URLocomotionComponent::BeginLanding(ERLocomotionState LandingState, UAnimSequenceBase* Animation, float RecoveryTime)
+{
+	// Published before EnterState, as the traversal clip is, so the graph never
+	// enters the Land state holding last landing's clip.
+	AnimData.LandingAnim = Animation;
+
 	// Clear any residual lock so the landing itself is never swallowed.
 	StateLockRemaining = 0.f;
 
-	if (EnterState(LandingState))
+	if (!EnterState(LandingState))
 	{
-		StateLockRemaining = FMath::Max(StateLockRemaining, Cfg.LandRecoveryTime);
+		return;
 	}
+
+	float Hold = RecoveryTime;
+	if (Hold <= 0.f)
+	{
+		Hold = Animation ? Animation->GetPlayLength() : GetConfigRef().LandRecoveryTime;
+	}
+
+	StateLockRemaining = FMath::Max(StateLockRemaining, Hold);
 }
 
 void URLocomotionComponent::HandleAirborneImpact(float SpeedIntoSurface, const FHitResult& Hit)
@@ -1162,6 +1217,17 @@ void URLocomotionComponent::HandleMovementModeChanged(ACharacter* Character, EMo
 	{
 		SwimVerticalInput = 0.f;
 		MovementComponent->ApplyGaitSettings(Cfg.GetGaitSettings(CurrentGait, CurrentStance));
+	}
+
+	// A traversal finishing hands over to its landing clip, if its row has one.
+	// Not into water, where there is nothing to land on.
+	if (PreviousMode == MOVE_Custom && PreviousCustomMode == static_cast<uint8>(ERCustomMovementMode::Traversal))
+	{
+		if (PendingTraversalLanding && !MovementComponent->IsSwimming())
+		{
+			BeginLanding(ERLocomotionState::Land, PendingTraversalLanding, PendingTraversalLandingRecovery);
+		}
+		PendingTraversalLanding = nullptr;
 	}
 
 	// The mode has already changed by the time this fires, so reflect it now.

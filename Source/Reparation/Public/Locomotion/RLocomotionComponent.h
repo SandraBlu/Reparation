@@ -12,6 +12,7 @@ class ACharacter;
 class UAbilitySystemComponent;
 class URCharacterMovementComponent;
 class URLocomotionConfig;
+class UAnimSequenceBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocomotionStateChanged, ERLocomotionState, PreviousState, ERLocomotionState, NewState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLandedWithImpact, float, ImpactSpeed, float, FallDuration);
@@ -153,6 +154,12 @@ protected:
 	UFUNCTION()
 	void HandleLanded(const FHitResult& Hit);
 
+	/**
+	 * Enters Land or Roll playing Animation, held for RecoveryTime. A zero
+	 * RecoveryTime holds for the clip length, or LandRecoveryTime without a clip.
+	 */
+	void BeginLanding(ERLocomotionState LandingState, UAnimSequenceBase* Animation, float RecoveryTime);
+
 	/** Turns a hard airborne collision into a gameplay event abilities can trigger on. */
 	void HandleAirborneImpact(float SpeedIntoSurface, const FHitResult& Hit);
 
@@ -236,6 +243,12 @@ private:
 
 	/** Which traversal is running, so the state machine can report Vault or Mantle. */
 	ERLocomotionState ActiveTraversalType = ERLocomotionState::Vault;
+
+	/** Landing clip of the running traversal, played when it completes. */
+	UPROPERTY()
+	TObjectPtr<UAnimSequenceBase> PendingTraversalLanding = nullptr;
+
+	float PendingTraversalLandingRecovery = 0.f;
 
 	/** Seconds remaining before another state change is considered. */
 	float StateLockRemaining = 0.f;

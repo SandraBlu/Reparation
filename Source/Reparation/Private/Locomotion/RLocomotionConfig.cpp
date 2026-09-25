@@ -125,6 +125,39 @@ const FRTraversalAction* URLocomotionConfig::FindTraversalAction(const FRTravers
 			continue;
 		}
 
+		// A clip that climbs over cannot be used where there is nowhere to land,
+		// nor one that stands on top where the capsule would not fit.
+		if ((Action.Finish == ERTraversalFinish::OnTop && !Query.bCanFinishOnTop)
+			|| (Action.Finish == ERTraversalFinish::FarSide && !Query.bCanFinishFarSide))
+		{
+			continue;
+		}
+
+		return &Action;
+	}
+
+	return nullptr;
+}
+
+const FRLandingAction* URLocomotionConfig::FindLandingAction(ERLocomotionState FromState, float ImpactSpeed, float GroundSpeed) const
+{
+	for (const FRLandingAction& Action : LandingActions)
+	{
+		if (Action.FromStates.Num() > 0 && !Action.FromStates.Contains(FromState))
+		{
+			continue;
+		}
+
+		if (ImpactSpeed < Action.MinImpactSpeed || ImpactSpeed > Action.MaxImpactSpeed)
+		{
+			continue;
+		}
+
+		if (GroundSpeed < Action.MinGroundSpeed)
+		{
+			continue;
+		}
+
 		return &Action;
 	}
 

@@ -70,6 +70,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Air", meta = (ClampMin = "0.0"))
 	float LandRecoveryTime = 0.25f;
 
+	/**
+	 * Landing variants, tested in order, first match wins. Once there is a row,
+	 * the table decides every landing and the speed thresholds above only apply
+	 * to an empty table: a touchdown no row matches plays no landing at all.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Air")
+	TArray<FRLandingAction> LandingActions;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Water")
 	float SwimSurfaceSpeed = 300.f;
 
@@ -255,4 +263,7 @@ public:
 
 	/** First action whose bounds all contain the measurement, or nullptr. */
 	const FRTraversalAction* FindTraversalAction(const FRTraversalQuery& Query) const;
+
+	/** First landing row that fits, or nullptr. */
+	const FRLandingAction* FindLandingAction(ERLocomotionState FromState, float ImpactSpeed, float GroundSpeed) const;
 };
