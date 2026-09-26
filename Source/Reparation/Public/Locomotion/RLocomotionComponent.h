@@ -256,6 +256,9 @@ private:
 
 	float PendingTraversalLandingRecovery = 0.f;
 
+	/** Root motion source carrying the current landing clip, 0 when none. */
+	uint16 LandingRootMotionID = 0;
+
 	/** Seconds remaining before another state change is considered. */
 	float StateLockRemaining = 0.f;
 

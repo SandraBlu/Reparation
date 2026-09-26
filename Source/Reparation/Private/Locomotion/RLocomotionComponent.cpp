@@ -789,6 +789,14 @@ void URLocomotionComponent::DrawDebugState() const
 	}
 	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()) + 1, 0.f, FColor::Yellow, TraversalLine);
 
+	// The two numbers landing rows match on, from the last touchdown, and the
+	// clip it chose. Ground speed is read live, which on the frames after a
+	// landing is still what it arrived with.
+	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()) + 2, 0.f, FColor::Cyan,
+		FString::Printf(TEXT("Last landing: Impact %.0f | Ground speed now %.0f | Clip %s"),
+			AnimData.LastLandingImpactSpeed, AnimData.GroundSpeed,
+			AnimData.LandingAnim ? *AnimData.LandingAnim->GetName() : TEXT("(none)")));
+
 	// Keyed on the component so each character overwrites its own line instead
 	// of the list growing every frame.
 	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.f, FColor::Green,
@@ -1221,6 +1229,13 @@ void URLocomotionComponent::BeginLanding(ERLocomotionState LandingState, UAnimSe
 	// enters the Land state holding last landing's clip.
 	AnimData.LandingAnim = Animation;
 
+	// A landing that interrupts another must not inherit its roll.
+	if (LandingRootMotionID != 0 && MovementComponent)
+	{
+		MovementComponent->RemoveRootMotionSourceByID(LandingRootMotionID);
+		LandingRootMotionID = 0;
+	}
+
 	// Clear any residual lock so the landing itself is never swallowed.
 	StateLockRemaining = 0.f;
 
@@ -1236,6 +1251,14 @@ void URLocomotionComponent::BeginLanding(ERLocomotionState LandingState, UAnimSe
 	}
 
 	StateLockRemaining = FMath::Max(StateLockRemaining, Hold);
+
+	// Landing clips are root locked like the traversal ones, so a roll would
+	// happen on the spot. The movement component carries the character along
+	// the clip's own path instead, for as long as the landing holds.
+	if (Animation && MovementComponent)
+	{
+		LandingRootMotionID = MovementComponent->ApplyClipRootMotion(Animation, Hold);
+	}
 }
 
 void URLocomotionComponent::HandleAirborneImpact(float SpeedIntoSurface, const FHitResult& Hit)

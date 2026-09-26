@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "Locomotion/RRootMotionSource_Clip.h"
 
 URCharacterMovementComponent::URCharacterMovementComponent()
 {
@@ -743,6 +744,43 @@ void URCharacterMovementComponent::BeginTraversal(const FVector& Start, const FV
 	bTraversalTurnAround = !BuildTraversalPath(Clip, ApexTime) && bTurnAround;
 
 	SetCustomMovementMode(ERCustomMovementMode::Traversal);
+}
+
+uint16 URCharacterMovementComponent::ApplyClipRootMotion(UAnimSequenceBase* Clip, float Duration)
+{
+	const USkeletalMeshComponent* Mesh = CharacterOwner ? CharacterOwner->GetMesh() : nullptr;
+	if (!Clip || !Mesh || Duration <= 0.f)
+	{
+		return 0;
+	}
+
+	// An in place clip has nothing to carry the character with, and running a
+	// source for it would only stop input steering for no reason.
+	const float Length = Clip->GetPlayLength();
+	const FVector Root0 = Clip->ExtractRootTrackTransform(FAnimExtractContext(0.0), nullptr).GetLocation();
+	float Reach = 0.f;
+	for (int32 Sample = 1; Sample <= 8; ++Sample)
+	{
+		const double Time = Length * Sample / 8.0;
+		const FVector Offset = Clip->ExtractRootTrackTransform(FAnimExtractContext(Time), nullptr).GetLocation() - Root0;
+		Reach = FMath::Max(Reach, FVector(Offset.X, Offset.Y, 0.f).Size());
+	}
+
+	if (Reach < 10.f)
+	{
+		return 0;
+	}
+
+	TSharedPtr<FRRootMotionSource_Clip> Source = MakeShared<FRRootMotionSource_Clip>();
+	Source->InstanceName = FName(TEXT("ClipRootMotion"));
+	Source->Clip = Clip;
+	Source->Duration = FMath::Min(Duration, Length);
+
+	// The mesh's world transform already combines the actor's heading with the
+	// mesh's own turn to face it, which is exactly mesh space to world.
+	Source->MeshToWorld = Mesh->GetComponentTransform();
+
+	return ApplyRootMotionSource(Source);
 }
 
 bool URCharacterMovementComponent::BuildTraversalPath(const UAnimSequenceBase* Clip, float ApexTime)

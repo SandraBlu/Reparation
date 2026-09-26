@@ -146,6 +146,14 @@ public:
 	void BeginTraversal(const FVector& Start, const FVector& Mid, const FVector& End, float Duration,
 		bool bTurnAround = false, const UAnimSequenceBase* Clip = nullptr, float ApexTime = 0.f);
 
+	/**
+	 * Carries the character along Clip's horizontal root motion for Duration,
+	 * clamped to the clip's length, under normal movement. For root locked clips
+	 * played in the graph, such as a landing roll, that would otherwise move on
+	 * the spot. Returns the source's ID, or 0 when the clip has no root motion.
+	 */
+	uint16 ApplyClipRootMotion(UAnimSequenceBase* Clip, float Duration);
+
 	// --- Glide tuning ---
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Locomotion|Glide")
