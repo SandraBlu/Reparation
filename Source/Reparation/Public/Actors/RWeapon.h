@@ -46,6 +46,12 @@ public:
 	FName FiringSocket;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+	FName MeleeStartSocket = "Socket_Start";
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+	FName MeleeEndSocket = "Socket_Tip";
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	UAnimMontage* EquipAnim;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
@@ -65,7 +71,7 @@ public:
 
 	/**collision mesh*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Components)
-	USkeletalMeshComponent* SKMesh;
+	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
 
 	UFUNCTION(BlueprintCallable)
 	void PlayEquipMontage(const FName SectionName);
@@ -78,6 +84,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnUnEquip();
 
+	/** An animation notify may call this at the exact sheath frame. */
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void FinishHolster();
+
 	/** attaches weapon mesh to pawn's mesh */
 	void AttachMeshToPawn(USceneComponent* InParent, FName InSocketName);
 
@@ -89,6 +99,9 @@ public:
 
 	
 protected:
+	float PlayWeaponMontage(UAnimMontage* Montage, FName SectionName);
+	FTimerHandle HolsterTimer;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void BeginPlay() override;
 	

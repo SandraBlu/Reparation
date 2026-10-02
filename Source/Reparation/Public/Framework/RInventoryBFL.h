@@ -14,6 +14,8 @@ class REPARATION_API URInventoryBFL : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
+public:
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory", meta = (DefaultToSelf = "Target"))
 	static class URInventoryComponent* GetInventoryComponentFromTarget(AActor* Target);
 

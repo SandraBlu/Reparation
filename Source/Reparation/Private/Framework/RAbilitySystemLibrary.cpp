@@ -5,9 +5,11 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "RAbilityTypes.h"
 #include "RDebugHelper.h"
 #include "RGameplayTags.h"
+#include "Actors/RWeapon.h"
 #include "Framework/RGameMode.h"
 #include "Framework/RPlayerState.h"
 #include "Interfaces/RCombatInterface.h"
@@ -15,8 +17,12 @@
 #include "UI/GAS/RHUD.h"
 #include "UI/GAS/Controllers/RWidgetController.h"
 #include "Components/Combat/PawnCombatComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/OverlapResult.h"
+#include "GAS/Ability/RMeleeAbility.h"
+#include "Interfaces/RPlayerInterface.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "RTypes/RCountdownAction.h"
 
 bool URAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContextObject,
@@ -516,6 +522,61 @@ void URAbilitySystemLibrary::GetTargetsWithinRadius(const UObject* WorldContextO
 			}
 		}
 	}
+}
+
+TArray<FHitResult> URAbilitySystemLibrary::TraceMeleeWeapon(AActor* WeaponOwner, float TraceRadius, bool bDrawDebug)
+{
+	TArray<FHitResult> Results;
+	if (!IsValid(WeaponOwner) || !WeaponOwner->GetWorld() ||
+		!WeaponOwner->Implements<URPlayerInterface>() || !FMath::IsFinite(TraceRadius) || TraceRadius <= 0.f)
+	{
+		return Results;
+	}
+
+	ARWeapon* Weapon = IRPlayerInterface::Execute_GetCurrentWeapon(WeaponOwner);
+	if (!IsValid(Weapon) || !Weapon->IsEquipped ||
+		(Weapon->CombatType != ECombatType::ECT_LightSword && Weapon->CombatType != ECombatType::ECT_Staff))
+	{
+		return Results;
+	}
+	USkeletalMeshComponent* Mesh = Weapon->GetWeaponMesh();
+	if (!IsValid(Mesh) || !Mesh->DoesSocketExist(Weapon->MeleeStartSocket) ||
+		!Mesh->DoesSocketExist(Weapon->MeleeEndSocket))
+	{
+		return Results;
+	}
+
+	const FVector Start = Mesh->GetSocketLocation(Weapon->MeleeStartSocket);
+	const FVector End = Mesh->GetSocketLocation(Weapon->MeleeEndSocket);
+	// Enemy capsules use Pawn; enemy skeletal meshes use WorldDynamic in this project.
+	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes = {
+		UEngineTypes::ConvertToObjectType(ECC_Pawn),
+		UEngineTypes::ConvertToObjectType(ECC_WorldDynamic)
+	};
+	const TArray<AActor*> ActorsToIgnore = { WeaponOwner, Weapon };
+	TArray<FHitResult> Hits;
+	UKismetSystemLibrary::SphereTraceMultiForObjects(WeaponOwner, Start, End, TraceRadius,
+		ObjectTypes, false, ActorsToIgnore,
+		bDrawDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
+		Hits, false, FLinearColor::Red, FLinearColor::Green, 0.1f);
+
+	TSet<AActor*> SeenActors;
+	for (const FHitResult& Hit : Hits)
+	{
+		AActor* Target = Hit.GetActor();
+		if (!IsValid(Target) || SeenActors.Contains(Target) || !IsNotFriend(WeaponOwner, Target) ||
+			!UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target))
+		{
+			continue;
+		}
+		if (Target->Implements<URCombatInterface>() && IRCombatInterface::Execute_IsDead(Target))
+		{
+			continue;
+		}
+		SeenActors.Add(Target);
+		Results.Add(Hit);
+	}
+	return Results;
 }
 
 bool URAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)

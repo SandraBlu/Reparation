@@ -18,17 +18,18 @@ class REPARATION_API URInputComponent : public UEnhancedInputComponent
 public:
 
 	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
-	void BindAbilityActions(const URInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType  ReleasedFunc);
+	void BindAbilityActions(const URInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, const TArray<const UInputAction*>& ExcludedActions = {});
 };
 
 template <class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 void URInputComponent::BindAbilityActions(const URInputConfig* InputConfig, UserClass* Object,
-	PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc)
+	PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, const TArray<const UInputAction*>& ExcludedActions)
 {
 	check(InputConfig);
 
 	for (const FRInputAction& Action : InputConfig->AbilityInput)
 	{
+		if (ExcludedActions.Contains(Action.InputAction)) continue;
 		if (Action.InputAction && Action.InputTag.IsValid())
 		{
 			if (PressedFunc)

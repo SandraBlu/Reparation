@@ -22,6 +22,8 @@
 #include "GAS/Data/LevelUpInfo.h"
 #include "Input/RInputComponent.h"
 #include "UI/GAS/RHUD.h"
+#include "UI/REquippedWeaponWidget.h"
+#include "UObject/ConstructorHelpers.h"
 
 ARPlayer::ARPlayer(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<URCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -32,6 +34,11 @@ ARPlayer::ARPlayer(const FObjectInitializer& ObjectInitializer)
 	Locomotion = CreateDefaultSubobject<URLocomotionComponent>(TEXT("LocomotionComp"));
 
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
+	EquippedWeaponWidgetClass = UREquippedWeaponWidget::StaticClass();
+	static ConstructorHelpers::FObjectFinder<UInputAction> DrawInput(TEXT("/Game/Input/IA_DrawWeapon"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> SwitchInput(TEXT("/Game/Input/IA_SwitchWeapon"));
+	ToggleWeaponAction = DrawInput.Object;
+	SwitchWeaponAction = SwitchInput.Object;
 	CharacterClass = ECharacterClass::Elementalist;
 
 	LevelUpFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("VFXComp"));
@@ -225,6 +232,7 @@ bool ARPlayer::SetIsUsingBlock(bool block)
 void ARPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	CreateWeaponWidget();
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
@@ -271,6 +279,8 @@ void ARPlayer::InitAbilityActorInfo()
 
 void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	if (InputTag.ToString() == TEXT("ability.weapon.equip")) { DrawWeapon(); return; }
+	if (InputTag.ToString() == TEXT("ability.weapon.disarm")) { DisarmWeapon(); return; }
 	if (Gear->EquippedWeapon == nullptr ) return;
 	if (GetASC() == nullptr) return;
 	if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
@@ -278,6 +288,7 @@ void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void ARPlayer::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+	if (InputTag.ToString() == TEXT("ability.weapon.equip") || InputTag.ToString() == TEXT("ability.weapon.disarm")) return;
 	if (GetASC() == nullptr) return;
 	GetASC()->AbilityInputTagReleased(InputTag);
 }
@@ -453,7 +464,10 @@ void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	if (URInputComponent* InputComp = CastChecked<URInputComponent>(InputComponent))
 	{
-		InputComp->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased);
+		if (ToggleWeaponAction) InputComp->BindAction(ToggleWeaponAction, ETriggerEvent::Started, this, &ARPlayer::ToggleWeapon);
+		if (SwitchWeaponAction) InputComp->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ARPlayer::SwitchWeapon);
+		InputComp->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased,
+			{ToggleWeaponAction.Get(), SwitchWeaponAction.Get()});
 		InputComp->BindAction(SwitchTarget, ETriggerEvent::Started, this, &ARPlayer::Input_SwitchTargetTriggered);
 		InputComp->BindAction(SwitchTarget, ETriggerEvent::Completed, this, &ARPlayer::Input_SwitchTargetCompleted);
 
@@ -507,4 +521,38 @@ void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 			InputComp->BindAction(FlyAction, ETriggerEvent::Started, this, &ARPlayer::Input_FlyToggled);
 		}
 	}
+}
+
+void ARPlayer::DrawWeapon() { if (Gear) Gear->DrawWeapon(); }
+void ARPlayer::DisarmWeapon() { if (Gear) Gear->DisarmWeapon(); }
+void ARPlayer::ToggleWeapon() { if (Gear) Gear->ToggleWeapon(); }
+void ARPlayer::SwitchWeapon() { if (Gear) Gear->SwitchWeapon(); }
+
+void ARPlayer::CreateWeaponWidget()
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC || !PC->IsLocalController() || EquippedWeaponWidget || !EquippedWeaponWidgetClass) return;
+	EquippedWeaponWidget = CreateWidget<UREquippedWeaponWidget>(PC, EquippedWeaponWidgetClass);
+	if (EquippedWeaponWidget)
+	{
+		EquippedWeaponWidget->SetEquipment(Gear);
+		EquippedWeaponWidget->AddToPlayerScreen();
+		EquippedWeaponWidget->SetDesiredSizeInViewport(FVector2D(220.f, 180.f));
+		EquippedWeaponWidget->SetPositionInViewport(FVector2D(-24.f, -24.f), false);
+		EquippedWeaponWidget->SetAnchorsInViewport(FAnchors(1.f, 1.f));
+		EquippedWeaponWidget->SetAlignmentInViewport(FVector2D(1.f, 1.f));
+	}
+}
+
+void ARPlayer::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+	CreateWeaponWidget();
+}
+
+void ARPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (EquippedWeaponWidget) EquippedWeaponWidget->RemoveFromParent();
+	EquippedWeaponWidget = nullptr;
+	Super::EndPlay(EndPlayReason);
 }

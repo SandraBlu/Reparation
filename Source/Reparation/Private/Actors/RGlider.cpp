@@ -37,10 +37,10 @@ void ARGlider::OnAcquired(ACharacter* NewOwner)
 	CarriedBy = NewOwner;
 	SetOwner(NewOwner);
 
-	AttachToComponent(
-		NewOwner->GetMesh(),
-		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		AttachSocket);
+	 AttachToComponent(
+	 	NewOwner->GetMesh(),
+	 	FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+	 	AttachSocket);
 
 	// This wing's handling replaces whatever was there, which is what makes a
 	// better glider actually better rather than merely a different mesh.
@@ -118,7 +118,7 @@ void ARGlider::OnLost()
 
 	// Visible again once dropped. SetDeployed hides it, which is right on a
 	// wearer carrying it in a pack and wrong for one lying on the ground.
-	Mesh->SetHiddenInGame(false);
+	Mesh->SetHiddenInGame(true);
 
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	CarriedBy = nullptr;
@@ -130,6 +130,7 @@ void ARGlider::HandleLocomotionStateChanged(ERLocomotionState PreviousState, ERL
 	if (NewState == ERLocomotionState::Glide)
 	{
 		SetDeployed(true);
+		Mesh->SetHiddenInGame(false);
 	}
 	else if (PreviousState == ERLocomotionState::Glide)
 	{

@@ -10,6 +10,7 @@
 /**Called on server when an item is added to this inventory*/
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemEquipped, const EEquipSlot, Slot, class UREquipItem*, Equippable);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemUnequipped, const EEquipSlot, Slot, class UREquipItem*, Equippable);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponChanged);
 
 USTRUCT()
 struct FDefaultClothingMeshMaterials
@@ -33,8 +34,24 @@ public:
 	// Sets default values for this component's properties
 	UREquipmentComponent();
 
+	UPROPERTY(BlueprintAssignable, Category = "Weapon")
+	FOnWeaponChanged OnWeaponChanged;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void DrawWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void DisarmWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void ToggleWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SwitchWeapon();
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	bool IsWeaponArmed() const;
+
 	friend class UREquipItem;
 	friend class ARWeapon;
+	// Switching keeps the previous draw/holster state without playing both montages.
+	bool bArmNewWeapon = true;
 
 	/**Initialize the equipment component, by telling it which meshes link to which slot.
 	

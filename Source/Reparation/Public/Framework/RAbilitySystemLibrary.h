@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/HitResult.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectTypes.h"
 #include "RAbilityTypes.h"
@@ -13,6 +14,7 @@
 #include "UI/GAS/RHUD.h"
 #include "RAbilitySystemLibrary.generated.h"
 
+class ARWeapon;
 class UAbilityInfo;
 class URAbilityMenuController;
 class UAbilitySystemComponent;
@@ -118,6 +120,15 @@ public:
 	
 
 	//Gameplay Ability Functions
+	/**
+	 * Reusable trace helper, called by URMeleeAbility while its damage window is open.
+	 * Sweeps a sphere between the equipped ARWeapon's melee sockets, ignoring owner
+	 * and weapon. Returns one hit per living hostile actor with an ability system.
+	 * This performs detection only; forward hits to the active melee ability for damage.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "RBFL|Melee", meta = (DisplayName = "Trace Melee Weapon"))
+	static TArray<FHitResult> TraceMeleeWeapon(AActor* WeaponOwner, float TraceRadius = 10.f, bool bDrawDebug = false);
+
 	UFUNCTION(BlueprintCallable, Category = "AOBFL|GAMelee")
 	static void GetTargetsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 
@@ -128,7 +139,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
-
+	
 	//Target Ability
 	UFUNCTION(BlueprintPure, Category = "RBFL|GAS")
 	static TArray<FRotator> EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators);

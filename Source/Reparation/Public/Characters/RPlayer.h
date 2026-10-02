@@ -42,6 +42,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void DrawWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void DisarmWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void ToggleWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SwitchWeapon();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	URLocomotionComponent* Locomotion;
 
@@ -84,6 +93,19 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
+	virtual void PawnClientRestart() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|UI")
+	TSubclassOf<class UREquippedWeaponWidget> EquippedWeaponWidgetClass;
+	UPROPERTY(Transient)
+	TObjectPtr<class UREquippedWeaponWidget> EquippedWeaponWidget;
+	void CreateWeaponWidget();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Weapon")
+	TObjectPtr<UInputAction> ToggleWeaponAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input|Weapon")
+	TObjectPtr<UInputAction> SwitchWeaponAction;
 	
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	AActor* CombatTarget;

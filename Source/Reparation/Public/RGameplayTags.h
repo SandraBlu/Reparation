@@ -186,6 +186,8 @@ public:
 	FGameplayTag Event_EquipKatana;
 	FGameplayTag Event_UnequipKatana;
 	FGameplayTag Event_HitMelee;
+	FGameplayTag Event_MeleeBegin;
+	FGameplayTag Event_MeleeEnd;
 	FGameplayTag Event_HitPause;
 	FGameplayTag Event_Death;
 	FGameplayTag Event_Landed;

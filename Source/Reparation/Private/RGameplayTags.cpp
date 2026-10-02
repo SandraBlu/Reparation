@@ -192,7 +192,9 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	 */
 	GameplayTags.Event_EquipKatana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.equip.katana"), FString("Equip Katana"));
 	GameplayTags.Event_UnequipKatana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.unequip.katana"), FString("Unequip Katana"));
-	GameplayTags.Event_HitMelee= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.hit.melee"), FString("Melee Hit"));
+	GameplayTags.Event_HitMelee= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.melee.hit"), FString("Melee Hit"));
+	GameplayTags.Event_MeleeBegin= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.melee.window.begin"), FString("Melee begin"));
+	GameplayTags.Event_MeleeEnd= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.melee.window.end"), FString("Melee end"));
 	GameplayTags.Event_HitPause = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.HitPause"), FString("Hit Pause"));
 	GameplayTags.Event_Death = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.death"), FString("Death"));
 	GameplayTags.Event_Landed = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("event.landed"), FString("Touched down, magnitude is the impact speed"));

@@ -164,48 +164,52 @@ void UREquipItem_Clothing::HandleEquip_Implementation()
 
 UREquipItem_Weapon::UREquipItem_Weapon()
 {
-
+	Slot = EEquipSlot::ES_Weapon;
 }
 
 void UREquipItem_Weapon::HandleUnequip_Implementation()
 {
+	if (!GetOwningPawn()) return;
 	UREquipmentComponent* EquipmentComponent = Cast<UREquipmentComponent>(GetOwningPawn()->GetComponentByClass(UREquipmentComponent::StaticClass()));
-	if (EquipmentComponent->EquippedWeapon)
+	if (EquipmentComponent && IsValid(EquipmentComponent->EquippedWeapon))
 	{
 		EquipmentComponent->EquippedWeapon->OnUnEquip();
 		EquipmentComponent->EquippedWeapon->Destroy();
 		EquipmentComponent->EquippedWeapon = nullptr;
-		EquipmentComponent->OnWeaponEquipped();
+		EquipmentComponent->OnWeaponChanged.Broadcast();
 	}
 }
 
 void UREquipItem_Weapon::HandleEquip_Implementation()
 {
+	if (!GetOwningPawn()) return;
 	if (WeaponClass)
 	{
 		UREquipmentComponent* EquipmentComponent = Cast<UREquipmentComponent>(GetOwningPawn()->GetComponentByClass(UREquipmentComponent::StaticClass()));
-		if (EquipmentComponent->EquippedWeapon)
-		{
-			EquipmentComponent->EquippedWeapon->OnUnEquip();
-			EquipmentComponent->EquippedWeapon->Destroy();
-			EquipmentComponent->EquippedWeapon = nullptr;
-			EquipmentComponent->OnWeaponEquipped();
-		}
+		if (!EquipmentComponent || IsValid(EquipmentComponent->EquippedWeapon)) return;
 		//Spawn in Weapon
 		FActorSpawnParameters SpawnParams;
-		SpawnParams.bNoFail = true;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		SpawnParams.Owner = SpawnParams.Instigator = GetOwningPawn();
 
 		if (ARWeapon* Weapon = GetWorld()->SpawnActor<ARWeapon>(WeaponClass, SpawnParams))
 		{
 			EquipmentComponent->EquippedWeapon = Weapon;
-			EquipmentComponent->OnWeaponEquipped();
 			//Attach Weapon to Pawn
-			Weapon->OnEquip();
+			Weapon->IsEquipped = false;
+			if (EquipmentComponent->bArmNewWeapon) Weapon->OnEquip();
+			else Weapon->OnUnEquip();
+			EquipmentComponent->OnWeaponChanged.Broadcast();
 		}
 	}
 }
 
 
 #undef LOCTEXT_NAMESPACE
+
+bool UREquipItem_Weapon::ShouldUseOnAdd_Implementation() const
+{
+	APawn* Pawn = GetOwningPawn();
+	UREquipmentComponent* Equipment = Pawn ? Pawn->FindComponentByClass<UREquipmentComponent>() : nullptr;
+	return WeaponClass && Equipment && !Equipment->GetEquippedItemAtSlot(Slot) && !IsValid(Equipment->GetEquippedWeapon());
+}

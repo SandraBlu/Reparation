@@ -95,6 +95,7 @@ class REPARATION_API UREquipItem_Weapon : public UREquipItem
 public:
 
 	UREquipItem_Weapon();
+	virtual bool ShouldUseOnAdd_Implementation() const override;
 
 	virtual void HandleEquip_Implementation() override;
 	virtual void HandleUnequip_Implementation() override;

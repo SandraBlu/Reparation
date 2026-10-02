@@ -9,10 +9,10 @@ public class Reparation : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Niagara", "GameplayAbilities",
-			"GameplayTasks", "GameplayTags", "AIModule", "AnimGraphRuntime", "MotionWarping", "CommonUI", "NavigationSystem"
+			"GameplayTasks", "GameplayTags", "AIModule", "AnimGraphRuntime", "MotionWarping", "CommonUI", "NavigationSystem", "UMG"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
