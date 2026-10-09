@@ -56,9 +56,22 @@ public:
 	/**Initialize the equipment component, by telling it which meshes link to which slot.
 	
 	@param ClothingMeshes The map which maps each clothing slot to the skeletal mesh component the clothing will equip to 
-	@param LeaderPoseComponent the component all of the equipped items will be told to follow upon equipping. */
+	@param LeaderPoseComponent The body mesh used for clothing poses and backpack/headwear socket attachments. */
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	virtual void Initialize(TMap<EEquipSlot, USkeletalMeshComponent*> ClothingMeshes, class USkeletalMeshComponent* LeaderPoseComponent);
+
+	/**Apply socket attachment for backpack/headwear, or leader pose for body clothing.*/
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void ConfigureSlotComponent(EEquipSlot Slot);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment|Attachments")
+	FName BackpackSocket = TEXT("spine_05");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment|Attachments")
+	FName BackpackFallbackSocket = TEXT("spine_04");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment|Attachments")
+	FName HeadwearSocket = TEXT("head");
 
 	//Return the item equipped at the given slot
 	UFUNCTION(BlueprintPure, Category = "Equipment")
@@ -78,7 +91,7 @@ public:
 	virtual void EquipItem(class UREquipItem* Equippable);
 	virtual void UnequipItem(class UREquipItem* Equippable);
 
-	/**When we put a new item on, we need to tell it to follow the leader pose component, so we store that here. */
+	/**Body mesh supplying clothing poses and accessory attachment sockets.*/
 	UPROPERTY()
 	class USkeletalMeshComponent* LeaderPoseComponent;
 

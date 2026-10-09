@@ -34,10 +34,11 @@ ARPlayer::ARPlayer(const FObjectInitializer& ObjectInitializer)
 	Locomotion = CreateDefaultSubobject<URLocomotionComponent>(TEXT("LocomotionComp"));
 
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
-	EquippedWeaponWidgetClass = UREquippedWeaponWidget::StaticClass();
-	static ConstructorHelpers::FObjectFinder<UInputAction> DrawInput(TEXT("/Game/Input/IA_DrawWeapon"));
+	static ConstructorHelpers::FClassFinder<UREquippedWeaponWidget> WeaponWidgetBlueprint(TEXT("/Game/UI/World/UI_EquippedWeapon"));
+	EquippedWeaponWidgetClass = WeaponWidgetBlueprint.Succeeded() ? WeaponWidgetBlueprint.Class.Get() : UREquippedWeaponWidget::StaticClass();
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleInput(TEXT("/Game/Input/IA_ToggleWeapon"));
 	static ConstructorHelpers::FObjectFinder<UInputAction> SwitchInput(TEXT("/Game/Input/IA_SwitchWeapon"));
-	ToggleWeaponAction = DrawInput.Object;
+	ToggleWeaponAction = ToggleInput.Object;
 	SwitchWeaponAction = SwitchInput.Object;
 	CharacterClass = ECharacterClass::Elementalist;
 

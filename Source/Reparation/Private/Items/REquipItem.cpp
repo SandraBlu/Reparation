@@ -106,21 +106,18 @@ void UREquipItem_Clothing::HandleUnequip_Implementation()
 					SlotComponent->SetSkeletalMesh(nullptr);
 				}
 
-				if (EquipmentComponent->LeaderPoseComponent)
-				{
-					SlotComponent->SetLeaderPoseComponent(EquipmentComponent->LeaderPoseComponent);
-				}
+				EquipmentComponent->ConfigureSlotComponent(Slot);
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Narrative Equipment tried unequipping item %s but the Equipment Component doesn't have a skeletal mesh component added. Have you called initialize?"), *GetNameSafe(this));
+			UE_LOG(LogTemp, Warning, TEXT("Equipment tried unequipping item %s but the Equipment Component doesn't have a skeletal mesh component added. Have you called initialize?"), *GetNameSafe(this));
 		}
 
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Narrative Equipment tried unequipping your item, but your pawn doesn't have an Equipment Component added. Please add one."));
+		UE_LOG(LogTemp, Warning, TEXT("Equipment tried unequipping your item, but your pawn doesn't have an Equipment Component added. Please add one."));
 	}
 }
 
@@ -144,21 +141,18 @@ void UREquipItem_Clothing::HandleEquip_Implementation()
 						++Idx;
 					}
 
-					if (EquipmentComponent->LeaderPoseComponent)
-					{
-						SlotComponent->SetLeaderPoseComponent(EquipmentComponent->LeaderPoseComponent);
-					}
+					EquipmentComponent->ConfigureSlotComponent(Slot);
 				}
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Narrative Equipment tried equipping %s but the Equipment Component doesn't have a skeletal mesh component added. Have you called Initialize?"), *GetNameSafe(this));
+				UE_LOG(LogTemp, Warning, TEXT("Equipment tried equipping %s but the Equipment Component doesn't have a skeletal mesh component added. Have you called Initialize?"), *GetNameSafe(this));
 			}
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Narrative Equipment tried putting an item on, but your pawn doesn't have an Equipment Component added. Please add one."));
+		UE_LOG(LogTemp, Warning, TEXT("Equipment tried putting an item on, but your pawn doesn't have an Equipment Component added. Please add one."));
 	}
 }
 

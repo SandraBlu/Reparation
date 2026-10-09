@@ -28,37 +28,65 @@ ARWeapon::ARWeapon()
 
 void ARWeapon::OnEquip()
 {
+    CancelWeaponTransition();
     if (!IsValid(PawnOwner) || IsEquipped) return;
-    GetWorldTimerManager().ClearTimer(HolsterTimer);
     AttachMeshToPawn(PawnOwner->GetMesh(), ActiveWeaponSocket);
-    PlayEquipMontage("Draw");
     IsEquipped = true;
     if (EquipSFX) UGameplayStatics::PlaySoundAtLocation(this, EquipSFX, GetActorLocation());
 }
 
 void ARWeapon::OnUnEquip()
 {
+    CancelWeaponTransition();
     if (!IsValid(PawnOwner)) return;
     const bool bWasEquipped = IsEquipped;
-    float HolsterDuration = 0.f;
-    if (bWasEquipped)
-    {
-        // Some weapons use one montage with Draw and Disarm sections.
-        UAnimMontage* Montage = DisarmAnim;
-        if (!Montage && EquipAnim && EquipAnim->GetSectionIndex(TEXT("Disarm")) != INDEX_NONE)
-        {
-            Montage = EquipAnim;
-        }
-        HolsterDuration = PlayWeaponMontage(Montage, TEXT("Disarm"));
-    }
     IsEquipped = false;
-    GetWorldTimerManager().ClearTimer(HolsterTimer);
-    if (HolsterDuration > 0.f)
+    FinishHolster();
+    if (bWasEquipped && DisarmSFX) UGameplayStatics::PlaySoundAtLocation(this, DisarmSFX, GetActorLocation());
+}
+
+void ARWeapon::ArmWithMontage()
+{
+    OnEquip();
+    if (IsValid(PawnOwner) && IsEquipped)
     {
-        GetWorldTimerManager().SetTimer(HolsterTimer, this, &ThisClass::FinishHolster, HolsterDuration, false);
+        TransitionMontage = EquipAnim;
+        PlayEquipMontage(TEXT("Draw"));
+    }
+}
+
+void ARWeapon::DisarmWithMontage()
+{
+    if (!IsValid(PawnOwner) || !IsEquipped) return;
+    CancelWeaponTransition();
+    UAnimMontage* Montage = DisarmAnim;
+    if (!Montage && EquipAnim && EquipAnim->GetSectionIndex(TEXT("Disarm")) != INDEX_NONE) Montage = EquipAnim;
+    TransitionMontage = Montage;
+    const float Duration = PlayWeaponMontage(Montage, TEXT("Disarm"));
+    IsEquipped = false;
+    if (Duration > 0.f)
+    {
+        GetWorldTimerManager().SetTimer(HolsterTimer, this, &ThisClass::FinishHolster, Duration, false);
     }
     else FinishHolster();
-    if (bWasEquipped && DisarmSFX) UGameplayStatics::PlaySoundAtLocation(this, DisarmSFX, GetActorLocation());
+    if (DisarmSFX) UGameplayStatics::PlaySoundAtLocation(this, DisarmSFX, GetActorLocation());
+}
+
+void ARWeapon::CancelWeaponTransition()
+{
+    GetWorldTimerManager().ClearTimer(HolsterTimer);
+    UAnimInstance* AnimInstance = IsValid(PawnOwner) ? PawnOwner->GetMesh()->GetAnimInstance() : nullptr;
+    if (AnimInstance && TransitionMontage && AnimInstance->Montage_IsPlaying(TransitionMontage))
+    {
+        AnimInstance->Montage_Stop(0.1f, TransitionMontage);
+    }
+    TransitionMontage = nullptr;
+}
+
+void ARWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    CancelWeaponTransition();
+    Super::EndPlay(EndPlayReason);
 }
 
 USkeletalMeshComponent* ARWeapon::GetWeaponMesh() const
@@ -102,12 +130,6 @@ void ARWeapon::FinishHolster()
     {
         AttachMeshToPawn(PawnOwner->GetMesh(), InactiveWeaponSocket);
     }
-}
-
-void ARWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-    GetWorldTimerManager().ClearTimer(HolsterTimer);
-    Super::EndPlay(EndPlayReason);
 }
 
 class ARPlayer* ARWeapon::GetPawnOwner() const

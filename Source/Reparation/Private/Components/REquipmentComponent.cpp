@@ -28,8 +28,40 @@ void UREquipmentComponent::Initialize(TMap<EEquipSlot, USkeletalMeshComponent*> 
 		{
 			DefaultClothing.Add(ClothingMeshKP.Key, ClothingMeshKP.Value->GetSkeletalMeshAsset());
 			DefaultClothingMaterials.Add(ClothingMeshKP.Key, FDefaultClothingMeshMaterials(ClothingMeshKP.Value->GetMaterials()));
+			ConfigureSlotComponent(ClothingMeshKP.Key);
 		}
 	}
+}
+
+void UREquipmentComponent::ConfigureSlotComponent(EEquipSlot Slot)
+{
+	USkeletalMeshComponent* const* FoundComponent = EquippableComponents.Find(Slot);
+	USkeletalMeshComponent* SlotComponent = FoundComponent ? *FoundComponent : nullptr;
+	if (!SlotComponent || SlotComponent == LeaderPoseComponent) return;
+
+	const bool bSocketAttachment = Slot == EEquipSlot::ES_Backpack || Slot == EEquipSlot::ES_Headwear;
+	if (!bSocketAttachment)
+	{
+		if (LeaderPoseComponent) SlotComponent->SetLeaderPoseComponent(LeaderPoseComponent);
+		return;
+	}
+
+	// Accessories follow a body socket rather than copying the body's skeleton.
+	SlotComponent->SetLeaderPoseComponent(nullptr);
+	if (!LeaderPoseComponent) return;
+
+	FName Socket = Slot == EEquipSlot::ES_Backpack ? BackpackSocket : HeadwearSocket;
+	if (Slot == EEquipSlot::ES_Backpack && !LeaderPoseComponent->DoesSocketExist(Socket))
+	{
+		Socket = BackpackFallbackSocket;
+	}
+	if (Socket.IsNone() || !LeaderPoseComponent->DoesSocketExist(Socket))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Equipment on %s cannot attach slot %d: body socket/bone %s is missing."),
+			*GetNameSafe(GetOwner()), static_cast<int32>(Slot), *Socket.ToString());
+		return;
+	}
+	SlotComponent->AttachToComponent(LeaderPoseComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
 }
 
 UREquipItem* UREquipmentComponent::GetEquippedItemAtSlot(const EEquipSlot Slot)
@@ -113,6 +145,7 @@ bool UREquipmentComponent::IsWeaponArmed() const
 
 void UREquipmentComponent::DrawWeapon()
 {
+	const bool bWasArmed = IsWeaponArmed();
 	if (!IsValid(EquippedWeapon))
 	{
 		if (UREquipItem_Weapon* Item = Cast<UREquipItem_Weapon>(GetEquippedItemAtSlot(EEquipSlot::ES_Weapon)))
@@ -132,13 +165,13 @@ void UREquipmentComponent::DrawWeapon()
 			}
 		}
 	}
-	if (IsValid(EquippedWeapon) && !IsWeaponArmed()) EquippedWeapon->OnEquip();
+	if (IsValid(EquippedWeapon) && !bWasArmed) EquippedWeapon->ArmWithMontage();
 	OnWeaponChanged.Broadcast();
 }
 
 void UREquipmentComponent::DisarmWeapon()
 {
-	if (IsWeaponArmed()) EquippedWeapon->OnUnEquip();
+	if (IsWeaponArmed()) EquippedWeapon->DisarmWithMontage();
 	OnWeaponChanged.Broadcast();
 }
 

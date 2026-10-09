@@ -84,7 +84,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnUnEquip();
 
-	/** An animation notify may call this at the exact sheath frame. */
+	// Toggle uses these; inventory replacement uses the immediate methods above.
+	void ArmWithMontage();
+	void DisarmWithMontage();
+
+	/** Attach a disarmed weapon to its inactive socket immediately. */
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void FinishHolster();
 
@@ -100,7 +104,10 @@ public:
 	
 protected:
 	float PlayWeaponMontage(UAnimMontage* Montage, FName SectionName);
+	void CancelWeaponTransition();
 	FTimerHandle HolsterTimer;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimMontage> TransitionMontage;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void BeginPlay() override;

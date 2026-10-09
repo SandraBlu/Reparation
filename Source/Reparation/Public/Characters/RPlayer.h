@@ -77,6 +77,7 @@ public:
 	virtual ARWeapon* GetCurrentWeapon_Implementation() override;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	
 	UNiagaraComponent* LevelUpFX;
 	
 	UPROPERTY()
@@ -96,7 +97,7 @@ protected:
 	virtual void PawnClientRestart() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon|UI")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|UI")
 	TSubclassOf<class UREquippedWeaponWidget> EquippedWeaponWidgetClass;
 	UPROPERTY(Transient)
 	TObjectPtr<class UREquippedWeaponWidget> EquippedWeaponWidget;
