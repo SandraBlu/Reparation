@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "GAS/Data/RCombatBalanceSettings.h"
 #include "RGameMode.generated.h"
 
 enum class ERGameDifficulty : uint8;
@@ -18,6 +19,12 @@ class REPARATION_API ARGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat Balance")
+	TObjectPtr<URCombatBalanceSettings> CombatBalanceSettings;
+	UFUNCTION(BlueprintPure, Category="Combat Balance")
+	FRCombatDifficultyProfile GetCombatDifficultyProfile() const;
+	UFUNCTION(BlueprintCallable, Category="Game Settings")
+	void SetGameDifficulty(ERGameDifficulty Difficulty) { CurrentGameDifficulty = Difficulty; }
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
 	URCharacterClassInfo* CharacterClassInfo;
@@ -25,7 +32,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
 	UAbilityInfo* AbilityInfo;
 
-	FORCEINLINE ERGameDifficulty GetCurrentGameDifficulty() const { return CurrentGameDifficulty;}
+	UFUNCTION(BlueprintPure, Category="Game Settings")
+	ERGameDifficulty GetCurrentGameDifficulty() const { return CurrentGameDifficulty; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game Settings")

@@ -52,6 +52,11 @@ void URLocomotionComponent::BeginPlay()
 	}
 
 	const URLocomotionConfig& Cfg = GetConfigRef();
+	// Blueprint defaults may still enable direct camera-to-capsule rotation.
+	// Movement owns body facing; camera rotation is consumed by idle head look.
+	OwningCharacter->bUseControllerRotationYaw = false;
+	OwningCharacter->bUseControllerRotationPitch = false;
+	OwningCharacter->bUseControllerRotationRoll = false;
 	MovementComponent->JumpZVelocity = Cfg.JumpZVelocity;
 	MovementComponent->AirControl = Cfg.AirControl;
 	MovementComponent->MaxAscendableSlopeAngle = Cfg.SlideMinSlopeAngle;
@@ -787,19 +792,20 @@ void URLocomotionComponent::DrawDebugState() const
 			RowNumber, Row ? *GetNameSafe(Row->Animation) : TEXT("(no row matches)"),
 			Row && Row->bAutomatic ? TEXT(" [automatic]") : TEXT(""));
 	}
-	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()) + 1, 0.f, FColor::Yellow, TraversalLine);
+	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()) + 1, 0.2f, FColor::Yellow, TraversalLine);
 
 	// The two numbers landing rows match on, from the last touchdown, and the
 	// clip it chose. Ground speed is read live, which on the frames after a
 	// landing is still what it arrived with.
-	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()) + 2, 0.f, FColor::Cyan,
+	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()) + 2, 0.2f, FColor::Cyan,
 		FString::Printf(TEXT("Last landing: Impact %.0f | Ground speed now %.0f | Clip %s"),
 			AnimData.LastLandingImpactSpeed, AnimData.GroundSpeed,
 			AnimData.LandingAnim ? *AnimData.LandingAnim->GetName() : TEXT("(none)")));
 
 	// Keyed on the component so each character overwrites its own line instead
 	// of the list growing every frame.
-	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.f, FColor::Green,
+	// Keep messages alive between viewport draws during possessed PIE.
+	GEngine->AddOnScreenDebugMessage(static_cast<int32>(GetUniqueID()), 0.2f, FColor::Green,
 		FString::Printf(
 			TEXT("%s | %s | %s | Speed %.0f | Yaw %.0f | Lock %.2f | Falling %.2f | VertSpeed %.0f | Floor %.0f | Downhill %.0f | Strafe %d | Turn %d | ClimbHeld %d | ChannelHit %d | ClimbFound %d | ASC %d | SkyTagSet %d | HasSkyTag %d | CanSky %d"),
 			*StateName, *GaitName, *StanceName,
@@ -954,6 +960,21 @@ void URLocomotionComponent::UpdateAnimData(float DeltaTime)
 	AnimData.GroundSpeed = Velocity.Size2D();
 	AnimData.VerticalSpeed = Velocity.Z;
 	AnimData.Direction = UKismetAnimationLibrary::CalculateDirection(Velocity, OwningCharacter->GetActorRotation());
+
+	const bool bIdleHeadLook = Cfg.bEnableIdleHeadLook && OwningCharacter->IsPlayerControlled()
+		&& MovementComponent->IsMovingOnGround() && !bIsStrafing
+		&& (CurrentState == ERLocomotionState::Idle || CurrentState == ERLocomotionState::Crouch)
+		&& AnimData.GroundSpeed <= Cfg.IdleSpeedThreshold && MovementInput.IsNearlyZero()
+		&& !OwningCharacter->IsPlayingRootMotion();
+	FRotator HeadTarget = FRotator::ZeroRotator;
+	if (bIdleHeadLook)
+	{
+		const FRotator RelativeAim = (OwningCharacter->GetBaseAimRotation() - OwningCharacter->GetActorRotation()).GetNormalized();
+		HeadTarget = FRotator(
+			FMath::Clamp(RelativeAim.Pitch, -Cfg.IdleHeadLookMaxPitch, Cfg.IdleHeadLookMaxPitch),
+			FMath::Clamp(RelativeAim.Yaw, -Cfg.IdleHeadLookMaxYaw, Cfg.IdleHeadLookMaxYaw), 0.f);
+	}
+	AnimData.HeadLookRotation = FMath::RInterpTo(AnimData.HeadLookRotation, HeadTarget, DeltaTime, Cfg.IdleHeadLookInterpSpeed);
 
 	// Turning on the spot has no velocity to read, so publish the capsule turn
 	// rate instead. Orient to movement spins the character toward new input while

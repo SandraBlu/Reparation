@@ -26,6 +26,9 @@ struct FDamageEffectParams
 
 	UPROPERTY(BlueprintReadWrite)
 	float BaseDamage = 0.f;
+	/** Preserve silent attacks through delayed projectiles and damage application. */
+	UPROPERTY(BlueprintReadWrite)
+	bool bSilentAttack = false;
 
 	UPROPERTY(BlueprintReadWrite)
 	float AbilityLevel = 1.f;

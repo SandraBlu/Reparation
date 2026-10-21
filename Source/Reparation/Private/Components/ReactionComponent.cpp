@@ -13,7 +13,7 @@ UReactionComponent::UReactionComponent()
 	InteractableItemName = LOCTEXT("InteractNameText", "Interact Object");
 	InteractableActionText = LOCTEXT("InteractActionText", "Interact");
 	
-	auto FocusedOverlayFinder = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/NarrativeInteraction/Materials/M_Pulse.M_Pulse'"));
+	auto FocusedOverlayFinder = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Inventory/M_ItemPulse.M_ItemPulse"));
 	if (FocusedOverlayFinder.Succeeded())
 	{
 		FocusedOverlayMaterial = FocusedOverlayFinder.Object;

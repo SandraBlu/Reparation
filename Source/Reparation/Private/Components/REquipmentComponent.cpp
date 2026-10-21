@@ -9,6 +9,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/RInventoryComponent.h"
 #include "Framework/RInventoryBFL.h"
+#include "GameFramework/Actor.h"
 
 // Sets default values for this component's properties
 UREquipmentComponent::UREquipmentComponent()
@@ -22,7 +23,23 @@ void UREquipmentComponent::Initialize(TMap<EEquipSlot, USkeletalMeshComponent*> 
 
 	EquippableComponents = ClothingMeshes;
 
-	for (auto& ClothingMeshKP : ClothingMeshes)
+	// Accessory slots may be omitted from the Blueprint's clothing map.
+	// Give each accessory its own registered mesh instead of silently failing to equip.
+	for (const EEquipSlot Slot : {EEquipSlot::ES_Backpack, EEquipSlot::ES_Headwear})
+	{
+		USkeletalMeshComponent*& SlotComponent = EquippableComponents.FindOrAdd(Slot);
+		if (!IsValid(SlotComponent) && GetOwner())
+		{
+			const FName ComponentName = MakeUniqueObjectName(GetOwner(), USkeletalMeshComponent::StaticClass(),
+				Slot == EEquipSlot::ES_Backpack ? FName(TEXT("EquipmentBackpack")) : FName(TEXT("EquipmentHeadwear")));
+			SlotComponent = NewObject<USkeletalMeshComponent>(GetOwner(), ComponentName);
+			GetOwner()->AddInstanceComponent(SlotComponent);
+			SlotComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			SlotComponent->RegisterComponent();
+		}
+	}
+
+	for (auto& ClothingMeshKP : EquippableComponents)
 	{
 		if (ClothingMeshKP.Value)
 		{
@@ -48,20 +65,25 @@ void UREquipmentComponent::ConfigureSlotComponent(EEquipSlot Slot)
 
 	// Accessories follow a body socket rather than copying the body's skeleton.
 	SlotComponent->SetLeaderPoseComponent(nullptr);
+	SlotComponent->bUseBoundsFromLeaderPoseComponent = false;
+	SlotComponent->bUseAttachParentBound = false;
+	SlotComponent->SetHiddenInGame(false);
+	SlotComponent->SetVisibility(true);
 	if (!LeaderPoseComponent) return;
 
-	FName Socket = Slot == EEquipSlot::ES_Backpack ? BackpackSocket : HeadwearSocket;
-	if (Slot == EEquipSlot::ES_Backpack && !LeaderPoseComponent->DoesSocketExist(Socket))
-	{
-		Socket = BackpackFallbackSocket;
-	}
+	const FName Socket = Slot == EEquipSlot::ES_Backpack ? BackpackSocket : HeadwearSocket;
 	if (Socket.IsNone() || !LeaderPoseComponent->DoesSocketExist(Socket))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Equipment on %s cannot attach slot %d: body socket/bone %s is missing."),
 			*GetNameSafe(GetOwner()), static_cast<int32>(Slot), *Socket.ToString());
 		return;
 	}
-	SlotComponent->AttachToComponent(LeaderPoseComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
+	// Match the socket preview: inherit its complete transform with no component offset.
+	SlotComponent->SetAbsolute(false, false, false);
+	if (SlotComponent->AttachToComponent(LeaderPoseComponent, FAttachmentTransformRules::SnapToTargetIncludingScale, Socket))
+	{
+		SlotComponent->SetRelativeTransform(FTransform::Identity);
+	}
 }
 
 UREquipItem* UREquipmentComponent::GetEquippedItemAtSlot(const EEquipSlot Slot)

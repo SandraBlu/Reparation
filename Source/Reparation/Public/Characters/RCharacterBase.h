@@ -5,12 +5,15 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "Perception/AISightTargetInterface.h"
 #include "Interfaces/RCombatInterface.h"
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "RCharacterBase.generated.h"
 
 class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
+class URElementalResistanceProfile;
+class URProtectionComponent;
 class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
@@ -20,16 +23,26 @@ class UMotionWarpingComponent;
 class USceneComponent;
 class UAnimMontage;
 class USoundBase;
+class URStealthComponent;
 
 UCLASS()
-class REPARATION_API ARCharacterBase : public ACharacter, public IAbilitySystemInterface, public IRCombatInterface
+class REPARATION_API ARCharacterBase : public ACharacter, public IAbilitySystemInterface, public IRCombatInterface, public IAISightTargetInterface
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Roles") TObjectPtr<URProtectionComponent> Protection;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat|Resistances")
+	TObjectPtr<URElementalResistanceProfile> ElementalResistanceProfile;
 	
 	ARCharacterBase(const FObjectInitializer& ObjectInitializer);
 	virtual void Tick(float DeltaSeconds) override;
+	virtual UAISense_Sight::EVisibilityResult CanBeSeenFrom(const FCanBeSeenFromContext& Context, FVector& OutSeenLocation,
+		int32& OutNumberOfLoSChecksPerformed, int32& OutNumberOfAsyncLosCheckRequested, float& OutSightStrength,
+		int32* UserData = nullptr, const FOnPendingVisibilityQueryProcessedDelegate* Delegate = nullptr) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Stealth")
+	TObjectPtr<URStealthComponent> Stealth;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 

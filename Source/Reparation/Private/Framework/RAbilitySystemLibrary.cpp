@@ -17,6 +17,10 @@
 #include "UI/GAS/RHUD.h"
 #include "UI/GAS/Controllers/RWidgetController.h"
 #include "Components/Combat/PawnCombatComponent.h"
+#include "AI/REnemy.h"
+#include "Characters/RPlayer.h"
+#include "Components/RCompanionPartyComponent.h"
+#include "Components/Combat/REnemyMeleeSweepComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GAS/Ability/RMeleeAbility.h"
@@ -158,6 +162,10 @@ int32 URAbilitySystemLibrary::GetXPRewardForEnemySlay(const UObject* WorldContex
 
 FGameplayEffectContextHandle URAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
 {
+	AActor* CombatSource = DamageEffectParams.SourceAbilitySystemComponent ? DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor() : nullptr;
+	AActor* CombatTarget = DamageEffectParams.TargetAbilitySystemComponent ? DamageEffectParams.TargetAbilitySystemComponent->GetAvatarActor() : nullptr;
+	if (!DamageEffectParams.bSilentAttack && IsValid(CombatSource) && IsValid(CombatTarget) && CombatTarget->ActorHasTag(TEXT("enemy")))
+		if (URCompanionPartyComponent* Party = CombatSource->FindComponentByClass<URCompanionPartyComponent>()) Party->NotifyNormalCombat(CombatTarget);
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 	const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
 
@@ -524,6 +532,19 @@ void URAbilitySystemLibrary::GetTargetsWithinRadius(const UObject* WorldContextO
 	}
 }
 
+void URAbilitySystemLibrary::GetEnemyMeleeTargets(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors,
+	const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin)
+{
+	const AREnemy* Enemy = Cast<AREnemy>(WorldContextObject);
+	if (Enemy && Enemy->MeleeSweep && Enemy->MeleeSweep->bUseHeadSweep)
+	{
+		Enemy->MeleeSweep->ConsumeTargets(OutOverlappingActors);
+		OutOverlappingActors.RemoveAll([&ActorsToIgnore](AActor* Target) { return ActorsToIgnore.Contains(Target); });
+		return;
+	}
+	GetTargetsWithinRadius(WorldContextObject, OutOverlappingActors, ActorsToIgnore, Radius, SphereOrigin);
+}
+
 TArray<FHitResult> URAbilitySystemLibrary::TraceMeleeWeapon(AActor* WeaponOwner, float TraceRadius, bool bDrawDebug)
 {
 	TArray<FHitResult> Results;
@@ -589,14 +610,13 @@ bool URAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor
 
 URAbilitySystemComponent* URAbilitySystemLibrary::NativeGetRASCFromActor(AActor* InActor)
 {
-	check(InActor);
-	return CastChecked<URAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
+	return IsValid(InActor) ? Cast<URAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor)) : nullptr;
 }
 
 void URAbilitySystemLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGameplayTag TagToAdd)
 {
 	URAbilitySystemComponent* ASC = NativeGetRASCFromActor(InActor);
-	if (!ASC->HasMatchingGameplayTag(TagToAdd))
+	if (ASC && !ASC->HasMatchingGameplayTag(TagToAdd))
 	{
 		ASC->AddLooseGameplayTag(TagToAdd);
 	}
@@ -605,7 +625,7 @@ void URAbilitySystemLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGamep
 void URAbilitySystemLibrary::RemoveGameplayTagFromActorIfFound(AActor* InActor, FGameplayTag TagToRemove)
 {
 	URAbilitySystemComponent* ASC = NativeGetRASCFromActor(InActor);
-	if (ASC->HasMatchingGameplayTag(TagToRemove))
+	if (ASC && ASC->HasMatchingGameplayTag(TagToRemove))
 	{
 		ASC->RemoveLooseGameplayTag(TagToRemove);
 	}
@@ -614,7 +634,7 @@ void URAbilitySystemLibrary::RemoveGameplayTagFromActorIfFound(AActor* InActor, 
 bool URAbilitySystemLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck)
 {
 	URAbilitySystemComponent* ASC = NativeGetRASCFromActor(InActor);
-	return ASC->HasMatchingGameplayTag(TagToCheck);
+	return ASC && ASC->HasMatchingGameplayTag(TagToCheck);
 }
 
 void URAbilitySystemLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck, ERConfirmType& OutConfirmType)
@@ -681,13 +701,27 @@ FGameplayTag URAbilitySystemLibrary::ComputeHitReactDirection(AActor* InAttacker
 
 bool URAbilitySystemLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender)
 {
-	check(InAttacker && InDefender);
+	if (!IsValid(InAttacker) || !IsValid(InDefender)) return false;
 
 	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
 
 	const FString DebugString = FString::Printf(TEXT("DotResult: %f %s"), DotResult, DotResult<0.f? TEXT("Valid Block") : TEXT("NO Block"));
 	Debug::Print(DebugString,DotResult<0.f? FColor::Green : FColor::Red);
-	return DotResult < 0.f? true : false;;
+	return DotResult < 0.f;
+}
+
+bool URAbilitySystemLibrary::IsActorBlocking(AActor* Defender)
+{
+	if (!IsValid(Defender)) return false;
+	if (ARPlayer* Player = Cast<ARPlayer>(Defender); Player && Player->GetIsUsingBlock()) return true;
+	const UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Defender);
+	return ASC && ASC->HasMatchingGameplayTag(FRGameplayTags::Get().status_blocking);
+}
+
+void URAbilitySystemLibrary::NotifySuccessfulBlock(AActor* Attacker, AActor* Defender)
+{
+	if (IsValid(Defender) && Defender->HasAuthority())
+		if (auto* ASC = Cast<URAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Defender))) ASC->RecordSuccessfulBlock(Attacker);
 }
 
 void URAbilitySystemLibrary::CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval,float& OutRemainingTime, ERCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") ERCountDownActionOutput& CountDownOutput,FLatentActionInfo LatentInfo)

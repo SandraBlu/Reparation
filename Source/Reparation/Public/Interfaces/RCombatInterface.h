@@ -17,6 +17,9 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamageSignature, float);
 
+UENUM(BlueprintType)
+enum class EAttackTargetStance : uint8 { Any, Standing, Crouching };
+
 USTRUCT(BlueprintType)
 struct FTaggedMontage
 {
@@ -33,6 +36,9 @@ struct FTaggedMontage
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	USoundBase* ImpactSound = nullptr;
+	/** Optional target-aware selection; existing attacks default to Any. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EAttackTargetStance TargetStance = EAttackTargetStance::Any;
 };
 
 // This class does not need to be modified.

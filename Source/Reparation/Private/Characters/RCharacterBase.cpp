@@ -2,12 +2,15 @@
 
 
 #include "Characters/RCharacterBase.h"
+#include "AI/RProtectionComponent.h"
 #include "AbilitySystemComponent.h"
 #include "MotionWarpingComponent.h"
 #include "RGameplayTags.h"
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/Debuff/DebuffNiagaraComponent.h"
 #include "GAS/Passive/PassiveNiagaraComponent.h"
+#include "Stealth/RStealthComponent.h"
+#include "Engine/World.h"
 
 
 class ARGameMode;
@@ -16,7 +19,9 @@ ARCharacterBase::ARCharacterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
+	Stealth = CreateDefaultSubobject<URStealthComponent>(TEXT("Stealth"));
 	EffectDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("EffectDebuffComponent");
+	Protection = CreateDefaultSubobject<URProtectionComponent>(TEXT("Protection"));
 	EffectDebuffComponent->SetupAttachment(GetRootComponent());
 	EffectDebuffComponent->DebuffTag = FRGameplayTags::Get().Debuff_Stun;
 
@@ -36,6 +41,30 @@ void ARCharacterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	EffectAttachComp->SetWorldRotation((FRotator::ZeroRotator));
+}
+
+UAISense_Sight::EVisibilityResult ARCharacterBase::CanBeSeenFrom(const FCanBeSeenFromContext& Context,
+	FVector& OutSeenLocation, int32& OutNumberOfLoSChecksPerformed, int32& OutNumberOfAsyncLosCheckRequested,
+	float& OutSightStrength, int32* UserData, const FOnPendingVisibilityQueryProcessedDelegate* Delegate)
+{
+	OutNumberOfLoSChecksPerformed = 0;
+	OutNumberOfAsyncLosCheckRequested = 0;
+	OutSightStrength = 0.f;
+	if (bDead || !GetWorld() || (Stealth && Stealth->IsConcealedFrom(Context.ObserverLocation,
+		Context.bWasVisible && *Context.bWasVisible))) return UAISense_Sight::EVisibilityResult::NotVisible;
+
+	OutSeenLocation = GetActorLocation();
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(StealthSight), false);
+	if (Context.IgnoreActor) Params.AddIgnoredActor(Context.IgnoreActor);
+	FHitResult Hit;
+	++OutNumberOfLoSChecksPerformed;
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Context.ObserverLocation, OutSeenLocation, ECC_Visibility, Params);
+	if (!bHit || Hit.GetActor() == this || (Hit.GetActor() && Hit.GetActor()->IsOwnedBy(this)))
+	{
+		OutSightStrength = 1.f;
+		return UAISense_Sight::EVisibilityResult::Visible;
+	}
+	return UAISense_Sight::EVisibilityResult::NotVisible;
 }
 
 float ARCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

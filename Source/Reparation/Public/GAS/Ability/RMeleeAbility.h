@@ -11,6 +11,9 @@ class ARWeapon;
 class UAnimMontage;
 class UPawnCombatComponent;
 
+UENUM(BlueprintType)
+enum class ERMeleeAttackSelection : uint8 { SequentialCombo, RandomByCharacterLevel };
+
 /** Ordered attack entry; ability points upgrade the GAS ability level. */
 USTRUCT(BlueprintType)
 struct FRMeleeAttack
@@ -26,6 +29,9 @@ struct FRMeleeAttack
 	/** Ignored for entry zero, which always unlocks at level 1. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee", meta = (ClampMin = "2"))
 	int32 RequiredAbilityLevel = 2;
+	/** Used only by RandomByCharacterLevel. Character level is separate from GAS ability rank. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee", meta=(ClampMin="1",ClampMax="40"))
+	int32 RequiredCharacterLevel = 1;
 };
 
 /**
@@ -57,6 +63,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Melee|Combo")
 	int32 GetUnlockedAttackCount() const;
+	UFUNCTION(BlueprintPure, Category="Melee|Progression") virtual TArray<int32> GetAvailableAttackIndices() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Melee|Combo")
 	bool BeginMeleeAttack();
@@ -72,7 +79,7 @@ public:
 	bool AdvanceCombo();
 
 	UFUNCTION(BlueprintPure, Category = "Melee|Combo")
-	FRMeleeAttack GetCurrentAttack() const;
+	virtual FRMeleeAttack GetCurrentAttack() const;
 
 	/** Starts/stops ability-owned tracing. Call from the window gameplay-event listeners. */
 	UFUNCTION(BlueprintCallable, Category = "Melee|Damage")
@@ -95,6 +102,19 @@ public:
 		bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+    /** Opt in for a full-combo montage: a closed/reopened window represents a new strike. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Damage")
+    bool bResetHitsPerDamageWindow = false;
+	/** Sequential is retained for existing combos and companion/follow-up abilities. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Progression")
+	ERMeleeAttackSelection AttackSelection = ERMeleeAttackSelection::SequentialCombo;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Progression") bool bUseTechniquePurchases = false;
+	virtual float GetDamageScalingLevel() const override;
+	virtual void ProcessMeleeHit(const FHitResult& Hit) { OnMeleeHit(Hit); }
+	/** Use existing damage-window notifies to accept combo input when separate combo notifies are absent. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Combo")
+	bool bUseDamageWindowForCombo = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Trace", meta = (ClampMin = "0.1"))
 	float TraceRadius = 10.f;
 
@@ -105,7 +125,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Trace")
 	bool bDrawDebugTrace = false;
 
-	/** Missing or locked entries stop the chain; configure entries in execution order. */
+	/** Sequential: execution order. Random: individual alternatives with character-level gates. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Combo")
 	TArray<FRMeleeAttack> Attacks;
 

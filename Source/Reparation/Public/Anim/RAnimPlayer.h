@@ -33,6 +33,10 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AnimData|Combat")
 	ECombatType CombatType = ECombatType::ECT_None;
 
+	/** Additive component-space head rotation, accounting for the mesh's import axes. */
+	UPROPERTY(BlueprintReadOnly, Category="AnimData|Head Look")
+	FRotator HeadLookComponentRotation = FRotator::ZeroRotator;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AnimData|References")
 	float EnterRelaxStateThreshold = 5.f;
 	

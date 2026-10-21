@@ -517,6 +517,10 @@ struct FRLocomotionAnimData
 	UPROPERTY(BlueprintReadOnly, Category = "Locomotion")
 	float YawSpeed = 0.f;
 
+	/** Clamped idle camera offset in actor space; never rotates the capsule. */
+	UPROPERTY(BlueprintReadOnly, Category="Locomotion|Head Look")
+	FRotator HeadLookRotation = FRotator::ZeroRotator;
+
 	/**
 	 * True while the capsule turns on the spot: yaw changing quickly with little
 	 * translation. Latched with hysteresis so it cannot flicker at the threshold.

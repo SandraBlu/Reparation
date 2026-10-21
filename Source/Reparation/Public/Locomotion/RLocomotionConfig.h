@@ -40,6 +40,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ground", meta = (ClampMin = "0.0"))
 	float IdleSpeedThreshold = 10.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idle Head Look")
+	bool bEnableIdleHeadLook = true;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idle Head Look", meta=(ClampMin="0", ClampMax="85"))
+	float IdleHeadLookMaxYaw = 65.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idle Head Look", meta=(ClampMin="0", ClampMax="80"))
+	float IdleHeadLookMaxPitch = 35.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Idle Head Look", meta=(ClampMin="0.1"))
+	float IdleHeadLookInterpSpeed = 8.f;
+
 	/** Sprint is refused below this forward input magnitude. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ground", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 	float SprintInputThreshold = 0.5f;

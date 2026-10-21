@@ -11,6 +11,23 @@
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "Interfaces/RCombatInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "AI/REnemy.h"
+#include "Framework/RGameMode.h"
+#include "Engine/World.h"
+#include "Characters/RCharacterBase.h"
+#include "GAS/Data/RElementalResistanceProfile.h"
+
+float UGEC_Damage::CalculateArmorMultiplier(float Armor, float Penetration, float PenetrationCoefficient, float ArmorCoefficient)
+{
+	const float IgnoredArmor = FMath::Clamp(FMath::Max(0.f, Penetration) * FMath::Max(0.f, PenetrationCoefficient), 0.f, 100.f);
+	const float EffectiveArmor = FMath::Max(0.f, Armor) * (1.f - IgnoredArmor / 100.f);
+	return 1.f - FMath::Clamp(EffectiveArmor * FMath::Max(0.f, ArmorCoefficient), 0.f, 100.f) / 100.f;
+}
+
+bool UGEC_Damage::RollChance(float Chance)
+{
+	return FMath::RandRange(1, 100) <= FMath::Clamp(Chance, 0.f, 100.f);
+}
 
 struct RDamageStatics
 {
@@ -90,9 +107,14 @@ void UGEC_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParameters
 			float TargetDebuffResist = 0.f;
 			const FGameplayTag& ResistanceTag = Tag.DamageTypeToResist[DamageType];
 			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(InTagsToDefs[ResistanceTag], EvalParams, TargetDebuffResist);
-			TargetDebuffResist = FMath::Max<float>(TargetDebuffResist, 0.f);
-			const float EffectiveDebuffChance = SourceDebuffChance * (100 - TargetDebuffResist) / 100.f;
-			const bool bDebuff  = FMath::RandRange(1, 100) < EffectiveDebuffChance;
+			TargetDebuffResist = FMath::Clamp(TargetDebuffResist, 0.f, 100.f);
+			const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
+			const ARCharacterBase* Target = TargetASC ? Cast<ARCharacterBase>(TargetASC->GetAvatarActor()) : nullptr;
+			const float TypeMultiplier = Target && Target->ElementalResistanceProfile
+				? Target->ElementalResistanceProfile->GetDamageMultiplier(DamageType, const_cast<ARCharacterBase*>(Target)->GetPlayerLevel_Implementation()) : 1.f;
+			const float EffectMultiplier = (100 - TargetDebuffResist) / 100.f * TypeMultiplier;
+			const float EffectiveDebuffChance = SourceDebuffChance * EffectMultiplier;
+			const bool bDebuff = RollChance(EffectiveDebuffChance);
 			if (bDebuff)
 			{
 				FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
@@ -102,7 +124,7 @@ void UGEC_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParameters
 				const float DebuffDuration = Spec.GetSetByCallerMagnitude(Tag.Debuff_Duration, false, -1.f);
 				const float DebuffFrequency = Spec.GetSetByCallerMagnitude(Tag.Debuff_Frequency, false, -1.f);
 
-				URAbilitySystemLibrary::SetDebuffDamage(ContextHandle, DebuffDamage);
+				URAbilitySystemLibrary::SetDebuffDamage(ContextHandle, FMath::Max(0.f, DebuffDamage * EffectMultiplier));
 				URAbilitySystemLibrary::SetDebuffDuration(ContextHandle, DebuffDuration);
 				URAbilitySystemLibrary::SetDebuffFrequency(ContextHandle, DebuffFrequency);
 			}
@@ -135,13 +157,13 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
 
 	int32 SourceCharacterLevel = 1;
-	if (SourceAvatar->Implements<URCombatInterface>())
+	if (IsValid(SourceAvatar) && SourceAvatar->Implements<URCombatInterface>())
 	{
 		SourceCharacterLevel = IRCombatInterface::Execute_GetPlayerLevel(SourceAvatar);
 	}
 
 	int32 TargetCharacterLevel = 1;
-	if (TargetAvatar->Implements<URCombatInterface>())
+	if (IsValid(TargetAvatar) && TargetAvatar->Implements<URCombatInterface>())
 	{
 		TargetCharacterLevel = IRCombatInterface::Execute_GetPlayerLevel(TargetAvatar);
 	}
@@ -168,7 +190,8 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 		checkf(TagsToCaptureDefs.Contains(ResistanceTag), TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"), *ResistanceTag.ToString());
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDefs[ResistanceTag];
 
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key);
+		// A single-type attack need not supply magnitudes for every other damage type.
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false, 0.f);
 		if (DamageTypeValue <= 0)
 		{
 			continue;// skips rest of code inside for loop
@@ -178,6 +201,8 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 
 		DamageTypeValue *= (100.f - Resistance) / 100.f;
+		if (const ARCharacterBase* Character = Cast<ARCharacterBase>(TargetAvatar); Character && Character->ElementalResistanceProfile)
+			DamageTypeValue *= Character->ElementalResistanceProfile->GetDamageMultiplier(DamageTypeTag, TargetCharacterLevel);
 
 		//Radial Falloff Scales Damage Down further from center of blast
 		if (URAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
@@ -201,7 +226,7 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	float TargetBlockChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvalParams, TargetBlockChance);
 	TargetBlockChance = FMath::Max<float>(TargetBlockChance, 0.f);
-	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
+	const bool bBlocked = RollChance(TargetBlockChance);
 	URAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
 	//If block, halve the damage
 	Damage = bBlocked ? Damage / 2.f : Damage;
@@ -210,7 +235,7 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	float TargetDodgeChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DodgeChanceDef, EvalParams, TargetDodgeChance);
 	TargetDodgeChance = FMath::Max<float>(TargetDodgeChance, 0.f);
-	const bool bDodged = FMath::RandRange(1, 100) < TargetDodgeChance;
+	const bool bDodged = RollChance(TargetDodgeChance);
 	URAbilitySystemLibrary::SetIsDodgedHit(EffectContextHandle, bDodged);
 	//Dodge, Damage reduced by 90%
 	Damage = bDodged ? Damage / 10.f : Damage;
@@ -226,17 +251,19 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	SourceArmorPenetration = FMath::Max<float>(SourceArmorPenetration, 0.f);
 
 	const URCharacterClassInfo* CharClassInfo = URAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
-	const FRealCurve* ArmorPenetrationCurve = CharClassInfo->DamageCalcCoefficients->FindCurve(FName("ArmorPenetration"), FString());
-	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceCharacterLevel);
+	auto Coefficient = [CharClassInfo](FName Name, int32 Level)
+	{
+		const FRealCurve* Curve = CharClassInfo && CharClassInfo->DamageCalcCoefficients ? CharClassInfo->DamageCalcCoefficients->FindCurve(Name, FString(), false) : nullptr;
+		return Curve ? FMath::Max(0.f, Curve->Eval(FMath::Max(1, Level))) : 0.f;
+	};
+	const float ArmorPenetrationCoefficient = Coefficient(TEXT("ArmorPenetration"), SourceCharacterLevel);
 	
 	//Armor penetration ignores percent of target Armor
-	const float EffectiveArmor = TargetArmor*= (100 - SourceArmorPenetration * ArmorPenetrationCoefficient) / 100.f;
 
-	const FRealCurve* EffectiveArmorCurve = CharClassInfo->DamageCalcCoefficients->FindCurve(FName("EffectiveArmor"), FString());
-	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetCharacterLevel);
+	const float EffectiveArmorCoefficient = Coefficient(TEXT("EffectiveArmor"), TargetCharacterLevel);
 	
 	// Armor ignores a percentage of incoming Damage.
-	Damage *= (100 - EffectiveArmor * EffectiveArmorCoefficient) / 100.f;
+	Damage *= CalculateArmorMultiplier(TargetArmor, SourceArmorPenetration, ArmorPenetrationCoefficient, EffectiveArmorCoefficient);
 
 	//Critical Chances
 	float SourceCriticalHitChance = 0.f;
@@ -251,15 +278,17 @@ void UGEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPar
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CritHitDamageDef, EvalParams, SourceCriticalHitDamage);
 	SourceCriticalHitDamage = FMath::Max<float>(SourceCriticalHitDamage, 0.f);
 
-	const FRealCurve* CriticalHitResistanceCurve = CharClassInfo->DamageCalcCoefficients->FindCurve(FName("CriticalHitResistance"), FString());
-	const float CriticalHitResistanceCoefficient = CriticalHitResistanceCurve->Eval(TargetCharacterLevel);
+	const float CriticalHitResistanceCoefficient = Coefficient(TEXT("CriticalHitResistance"), TargetCharacterLevel);
 
 	// Critical Hit Resistance reduces Critical Hit Chance by a certain percentage
 	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;
-	const bool bCriticalHit = FMath::RandRange(1, 100) < EffectiveCriticalHitChance;
+	const bool bCriticalHit = RollChance(EffectiveCriticalHitChance);
 	URAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
 	// Double damage, plus bonus if critical hit
 	Damage = bCriticalHit ? 2.f * Damage + SourceCriticalHitDamage : Damage;
+	if (const AREnemy* Enemy = Cast<AREnemy>(SourceAvatar))
+		if (const ARGameMode* GM = Enemy->GetWorld()->GetAuthGameMode<ARGameMode>()) Damage *= FMath::Clamp(GM->GetCombatDifficultyProfile().EnemyDamageMultiplier, 0.1f, 5.f);
+	Damage = FMath::IsFinite(Damage) ? FMath::Max(0.f, Damage) : 0.f;
 	
 	const FGameplayModifierEvaluatedData EvaluatedData(URAttributeSet::GetDamageAttribute(), EGameplayModOp::Additive, Damage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);

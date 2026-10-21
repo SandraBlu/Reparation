@@ -19,6 +19,9 @@ void UROverlayWidgetController::BroadcastInitialValues()
 	OnMaxStaminaChange.Broadcast(GetRAS()->GetMaxStamina());
 	OnEnergyChange.Broadcast(GetRAS()->GetEnergy());
 	OnMaxEnergyChange.Broadcast(GetRAS()->GetMaxEnergy());
+	// The HUD can bind after possession has already set progression (including PIE overrides).
+	OnLevelChangeDelegate.Broadcast(GetRPS()->GetPlayerLevel());
+	OnXPChange(GetRPS()->GetXP());
 }
 
 void UROverlayWidgetController::BindCallbacksToDependencies()
@@ -72,23 +75,7 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 void UROverlayWidgetController::OnXPChange(int32 NewXP)
 {
 	const ULevelUpInfo* LevelUpInfo = GetRPS()->LevelUpInfo;
-	checkf(LevelUpInfo, TEXT("Unable to find XPinfo, Enter in BP_PlayerState"));
-
-	const int32 CurrentLevel = LevelUpInfo->FindLevelForXP(NewXP);
-	const int32 MaxLevel = LevelUpInfo->LevelUpInfo.Num();
-
-	if (CurrentLevel <= MaxLevel && CurrentLevel >0)
-	{
-		const int32 LevelUpReq = LevelUpInfo->LevelUpInfo[CurrentLevel].LevelUpRequirement;
-		const int32 PrevLevelUpReq = LevelUpInfo->LevelUpInfo[CurrentLevel -1].LevelUpRequirement;
-
-		const int32 DeltaLevelReq = LevelUpReq - PrevLevelUpReq;
-		const int32 XPForThisLevel = NewXP - PrevLevelUpReq;
-
-		const float XPBarPercent = static_cast<float>(XPForThisLevel)/ static_cast<float>(DeltaLevelReq);
-
-		OnXPPercentChangeDelegate.Broadcast(XPBarPercent);
-	}
+	OnXPPercentChangeDelegate.Broadcast(LevelUpInfo ? LevelUpInfo->GetProgressForXP(NewXP) : 0.f);
 }
 
 void UROverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PrevSlot) const

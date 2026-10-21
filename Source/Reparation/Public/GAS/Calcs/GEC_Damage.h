@@ -15,6 +15,8 @@ class REPARATION_API UGEC_Damage : public UGameplayEffectExecutionCalculation
 	GENERATED_BODY()
 
 public:
+	static float CalculateArmorMultiplier(float Armor, float Penetration, float PenetrationCoefficient, float ArmorCoefficient);
+	static bool RollChance(float Chance);
 
 	UGEC_Damage();
 	void DetermineDebuff(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& Spec, FAggregatorEvaluateParameters EvalParams,

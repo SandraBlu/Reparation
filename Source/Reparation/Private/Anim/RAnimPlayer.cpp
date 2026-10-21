@@ -4,6 +4,7 @@
 #include "Anim/RAnimPlayer.h"
 
 #include "Characters/RPlayer.h"
+#include "Components/SkeletalMeshComponent.h"
 
 void URAnimPlayer::NativeInitializeAnimation()
 {
@@ -35,6 +36,15 @@ void URAnimPlayer::NativeUpdateAnimation(float DeltaSeconds)
 	CombatType = (OwningPlayerCharacter && OwningPlayerCharacter->Weapon)
 		? OwningPlayerCharacter->Weapon->CombatType
 		: ECombatType::ECT_None;
+
+	HeadLookComponentRotation = FRotator::ZeroRotator;
+	if (OwningPlayerCharacter && GetSkelMeshComponent())
+	{
+		const FQuat ActorRotation = OwningPlayerCharacter->GetActorQuat();
+		const FQuat MeshRotation = GetSkelMeshComponent()->GetComponentQuat();
+		const FQuat WorldOffset = ActorRotation * Locomotion.HeadLookRotation.Quaternion() * ActorRotation.Inverse();
+		HeadLookComponentRotation = (MeshRotation.Inverse() * WorldOffset * MeshRotation).Rotator();
+	}
 
 	// Relax only while genuinely standing still on the ground. Acceleration alone
 	// would also read as idle mid-fall or while pinned against a wall.

@@ -37,5 +37,9 @@ public:
 	TArray<FRLevelUpInfo> LevelUpInfo;
 
 	int32 FindLevelForXP(int32 XP) const;
+	int32 GetMaxLevel() const { return FMath::Max(1, LevelUpInfo.Num() - 1); }
+	float GetProgressForXP(int32 XP) const;
+	int32 GetAttributeReward(int32 FromLevel) const;
+	int32 GetAbilityReward(int32 FromLevel) const;
 	
 };

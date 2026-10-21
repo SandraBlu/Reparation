@@ -10,7 +10,7 @@
  * 
  */
  //Singleton  containing Native Gameplay Tags
-struct FRGameplayTags
+struct REPARATION_API FRGameplayTags
 {
 
 public:
@@ -87,6 +87,7 @@ public:
 	//De-buff
 	FGameplayTag Debuff_KnockOut;
 	FGameplayTag Debuff_Dark;
+	FGameplayTag Debuff_Poison;
 	FGameplayTag Debuff_Stun;
 	FGameplayTag Debuff_Burn;
 	FGameplayTag Debuff_Freeze;

@@ -74,6 +74,9 @@ public:
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 	
 private:
+	struct FRDebuffState { FActiveGameplayEffectHandle Handle; int32 Stacks = 0; };
+	TMap<FGameplayTag, FRDebuffState> ActiveDebuffs;
+	double NextDarkStunTime = 0.0;
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 	void HandleEnergy(const FEffectProperties& Props);
 	void HandleIncomingDamage(const FEffectProperties& Props);

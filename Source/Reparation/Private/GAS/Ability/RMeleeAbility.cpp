@@ -9,6 +9,32 @@
 #include "Engine/World.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "Interfaces/RPlayerInterface.h"
+#include "GAS/RAbilitySystemComponent.h"
+#include "Characters/RPlayer.h"
+#include "Framework/RPlayerState.h"
+
+TArray<int32> URMeleeAbility::GetAvailableAttackIndices() const
+{
+	TArray<int32> Result;
+	if (AttackSelection == ERMeleeAttackSelection::RandomByCharacterLevel)
+	{
+		const auto* Player = Cast<ARPlayer>(GetAvatarActorFromActorInfo());
+		const auto* PS = Player ? Player->GetPlayerState<ARPlayerState>() : nullptr;
+		const int32 Level = PS ? PS->GetPlayerLevel() : 1;
+		for (int32 Index=0; Index<Attacks.Num(); ++Index)
+			if (IsValid(Attacks[Index].Montage) && Level >= FMath::Clamp(Attacks[Index].RequiredCharacterLevel,1,40)) Result.Add(Index);
+	}
+	else
+	{
+		for (int32 Index=0; Index<Attacks.Num(); ++Index)
+		{
+			const int32 Required = Index==0 ? 1 : FMath::Max(2,Attacks[Index].RequiredAbilityLevel);
+			if (!IsValid(Attacks[Index].Montage) || GetDamageScalingLevel()<Required) break;
+			Result.Add(Index);
+		}
+	}
+	return Result;
+}
 
 URMeleeAbility::URMeleeAbility()
 {
@@ -48,14 +74,19 @@ bool URMeleeAbility::GetMeleeTraceLocations(FVector& Start, FVector& End) const
 
 int32 URMeleeAbility::GetUnlockedAttackCount() const
 {
-	int32 Count = 0;
-	for (int32 Index = 0; Index < Attacks.Num(); ++Index)
-	{
-		const int32 RequiredLevel = Index == 0 ? 1 : FMath::Max(2, Attacks[Index].RequiredAbilityLevel);
-		if (!IsValid(Attacks[Index].Montage) || GetAbilityLevel() < RequiredLevel) break;
-		++Count;
-	}
-	return Count;
+	return GetAvailableAttackIndices().Num();
+}
+
+float URMeleeAbility::GetDamageScalingLevel() const
+{
+	int32 Rank = GetAbilityLevel();
+	if (bUseTechniquePurchases && AttackSelection == ERMeleeAttackSelection::SequentialCombo)
+		if (auto* ASC = Cast<URAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
+		{
+			if (ASC->GetLearnedSkillRank(FGameplayTag::RequestGameplayTag(TEXT("ability.technique.heavyStrike"))) > 0) Rank = FMath::Max(Rank,2);
+			if (ASC->GetLearnedSkillRank(FGameplayTag::RequestGameplayTag(TEXT("ability.technique.chainAttack"))) > 0) Rank = FMath::Max(Rank,3);
+		}
+	return Rank;
 }
 
 bool URMeleeAbility::BeginMeleeAttack()
@@ -63,14 +94,23 @@ bool URMeleeAbility::BeginMeleeAttack()
 	if (!IsActive() || CurrentAttackIndex != INDEX_NONE) return false;
 	ResetMeleeState();
 	ARWeapon* Weapon = GetMeleeWeapon();
-	if (!Weapon || GetUnlockedAttackCount() == 0) return false;
+	const TArray<int32> Available = GetAvailableAttackIndices();
+	if (!Weapon || Available.IsEmpty()) return false;
 	ActiveMeleeWeapon = Weapon;
-	CurrentAttackIndex = 0;
+	if (AttackSelection == ERMeleeAttackSelection::RandomByCharacterLevel)
+	{
+		// Predicted client/server activations use the same seed and select the same montage.
+		const int32 PredictionSeed = CurrentActivationInfo.GetActivationPredictionKey().Current;
+		FRandomStream Stream(PredictionSeed);
+		CurrentAttackIndex = Available[PredictionSeed != 0 ? Stream.RandRange(0,Available.Num()-1) : FMath::RandRange(0,Available.Num()-1)];
+	}
+	else CurrentAttackIndex = Available[0];
 	return true;
 }
 
 bool URMeleeAbility::QueueComboAttack()
 {
+	if (AttackSelection == ERMeleeAttackSelection::RandomByCharacterLevel) return false;
 	if (!IsActive() || CurrentAttackIndex == INDEX_NONE || !bComboWindowOpen ||
 		!IsValid(ActiveMeleeWeapon) || GetMeleeWeapon() != ActiveMeleeWeapon ||
 		CurrentAttackIndex + 1 >= GetUnlockedAttackCount()) return false;
@@ -85,6 +125,7 @@ void URMeleeAbility::SetComboWindowOpen(bool bOpen)
 
 bool URMeleeAbility::AdvanceCombo()
 {
+	if (AttackSelection == ERMeleeAttackSelection::RandomByCharacterLevel) return false;
 	if (!IsActive() || CurrentAttackIndex == INDEX_NONE || !bComboInputQueued ||
 		!IsValid(ActiveMeleeWeapon) || GetMeleeWeapon() != ActiveMeleeWeapon ||
 		CurrentAttackIndex + 1 >= GetUnlockedAttackCount()) return false;
@@ -102,6 +143,7 @@ FRMeleeAttack URMeleeAbility::GetCurrentAttack() const
 
 void URMeleeAbility::SetDamageWindowOpen(bool bOpen)
 {
+	if (bUseDamageWindowForCombo) SetComboWindowOpen(bOpen);
 	UWorld* World = GetWorld();
 	const bool bCanOpen = bOpen && World && IsActive() && CurrentAttackIndex != INDEX_NONE &&
 		IsValid(ActiveMeleeWeapon) && GetMeleeWeapon() == ActiveMeleeWeapon;
@@ -113,6 +155,7 @@ void URMeleeAbility::SetDamageWindowOpen(bool bOpen)
 	}
 	// Repeated begin events must not restart the timer or reset the swing's hit history.
 	if (bDamageWindowOpen && World->GetTimerManager().IsTimerActive(MeleeTraceTimer)) return;
+	if (bResetHitsPerDamageWindow && !bDamageWindowOpen) HitActors.Reset();
 	bDamageWindowOpen = true;
 	const float Interval = FMath::IsFinite(TraceInterval) ? FMath::Max(0.001f, TraceInterval) : 0.01f;
 	World->GetTimerManager().SetTimer(MeleeTraceTimer, this,
@@ -133,7 +176,7 @@ void URMeleeAbility::TraceCurrentAttack()
 	{
 		if (RegisterMeleeHit(Hit.GetActor()))
 		{
-			OnMeleeHit(Hit);
+			ProcessMeleeHit(Hit);
 		}
 	}
 }

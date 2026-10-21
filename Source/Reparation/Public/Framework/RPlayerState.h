@@ -52,6 +52,9 @@ public:
 	void SetXP(int32 InXP);
 	void SetLevel(int32 InLevel);
 
+	// Called before player attributes and eligible abilities initialize. Once per PIE player state.
+	void ApplyPIETestOverrides();
+
 protected:
 	
 	UPROPERTY(VisibleAnywhere)
@@ -61,6 +64,7 @@ protected:
 	UAttributeSet* AttributeSet;
 
 private:
+	bool bPIETestOverridesApplied = false;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
 	int32 Level = 1;

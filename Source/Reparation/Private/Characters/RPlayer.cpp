@@ -12,6 +12,8 @@
 #include "Actors/RWeapon.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/REquipmentComponent.h"
+#include "Components/RCompanionPartyComponent.h"
+#include "Components/RCompanionCommandComponent.h"
 #include "Components/RFootstepsComponent.h"
 #include "Framework/RPlayerController.h"
 #include "Framework/RPlayerState.h"
@@ -29,11 +31,16 @@ ARPlayer::ARPlayer(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<URCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
 
 	// Speeds come from the locomotion config, not from here.
 	Locomotion = CreateDefaultSubobject<URLocomotionComponent>(TEXT("LocomotionComp"));
 
 	Gear = CreateDefaultSubobject<UREquipmentComponent>("GearComp");
+	CompanionParty = CreateDefaultSubobject<URCompanionPartyComponent>(TEXT("CompanionParty"));
+	CompanionCommands = CreateDefaultSubobject<URCompanionCommandComponent>(TEXT("CompanionCommands"));
 	static ConstructorHelpers::FClassFinder<UREquippedWeaponWidget> WeaponWidgetBlueprint(TEXT("/Game/UI/World/UI_EquippedWeapon"));
 	EquippedWeaponWidgetClass = WeaponWidgetBlueprint.Succeeded() ? WeaponWidgetBlueprint.Class.Get() : UREquippedWeaponWidget::StaticClass();
 	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleInput(TEXT("/Game/Input/IA_ToggleWeapon"));
@@ -55,8 +62,17 @@ void ARPlayer::PossessedBy(AController* NewController)
 {
 	//server
 	Super::PossessedBy(NewController);
+	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
+	if (!IsValid(NewController) || !NewController->IsPlayerController() || !IsValid(RPS))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Skipping player ability initialization for %s: controller=%s, player state=%s. Player pawns require a player controller and RPlayerState."),
+			*GetPathName(), *GetNameSafe(NewController), *GetNameSafe(GetPlayerState()));
+		return;
+	}
+	RPS->ApplyPIETestOverrides();
 	InitAbilityActorInfo();
 	GrantAbilities();
+	if (URAbilitySystemComponent* ASC = Cast<URAbilitySystemComponent>(GetAbilitySystemComponent())) ASC->UpdateAbilityStatus(RPS->GetPlayerLevel());
 }
 
 void ARPlayer::OnRep_PlayerState()
@@ -148,21 +164,21 @@ int32 ARPlayer::FindLevelForXP_Implementation(int32 InXP) const
 {
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
 	check(RPS);
-	return RPS->LevelUpInfo->FindLevelForXP(InXP);
+	return RPS->LevelUpInfo ? RPS->LevelUpInfo->FindLevelForXP(InXP) : 1;
 }
 
 int32 ARPlayer::GetAttributePtsReward_Implementation(int32 Level) const
 {
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
 	check(RPS);
-	return RPS->LevelUpInfo->LevelUpInfo[Level].AttributePointReward;
+	return RPS->LevelUpInfo ? RPS->LevelUpInfo->GetAttributeReward(Level) : 0;
 }
 
 int32 ARPlayer::GetAbilityPtsReward_Implementation(int32 Level) const
 {
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
 	check(RPS);
-	return RPS->LevelUpInfo->LevelUpInfo[Level].AbilityPointReward;
+	return RPS->LevelUpInfo ? RPS->LevelUpInfo->GetAbilityReward(Level) : 0;
 }
 
 void ARPlayer::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
@@ -261,7 +277,9 @@ void ARPlayer::Input_SwitchTargetCompleted(const FInputActionValue& Value)
 void ARPlayer::InitAbilityActorInfo()
 {
 	ARPlayerState* RPS = GetPlayerState<ARPlayerState>();
-	check(RPS);
+	// Replication can arrive before the state is ready; AI-possessed placed copies
+	// do not own a player state at all. Neither can initialize player GAS safely.
+	if (!IsValid(RPS)) return;
 	RPS->GetAbilitySystemComponent()->InitAbilityActorInfo(RPS, this);
 	Cast<URAbilitySystemComponent>(RPS->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = RPS->GetAbilitySystemComponent();
@@ -280,6 +298,7 @@ void ARPlayer::InitAbilityActorInfo()
 
 void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	if (CompanionCommands && CompanionCommands->IsCommandInputActive()) return;
 	if (InputTag.ToString() == TEXT("ability.weapon.equip")) { DrawWeapon(); return; }
 	if (InputTag.ToString() == TEXT("ability.weapon.disarm")) { DisarmWeapon(); return; }
 	if (Gear->EquippedWeapon == nullptr ) return;
@@ -305,13 +324,14 @@ URAbilitySystemComponent* ARPlayer::GetASC()
 {
 	if (RAbilitySystemComponent == nullptr)
 	{
-		RAbilitySystemComponent = CastChecked<URAbilitySystemComponent>(AbilitySystemComponent);
+		RAbilitySystemComponent = Cast<URAbilitySystemComponent>(AbilitySystemComponent);
 	}
 	return RAbilitySystemComponent;
 }
 
 void ARPlayer::Input_Move(const FInputActionValue& Value)
 {
+	if (CompanionCommands && CompanionCommands->IsCommandInputActive()) return;
 	const FVector2D Axis = Value.Get<FVector2D>();
 
 	if (Locomotion)
@@ -463,6 +483,7 @@ void ARPlayer::Input_FlyToggled(const FInputActionValue& Value)
 void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (CompanionCommands) CompanionCommands->SetupInput(Cast<UEnhancedInputComponent>(PlayerInputComponent));
 	if (URInputComponent* InputComp = CastChecked<URInputComponent>(InputComponent))
 	{
 		if (ToggleWeaponAction) InputComp->BindAction(ToggleWeaponAction, ETriggerEvent::Started, this, &ARPlayer::ToggleWeapon);
@@ -524,10 +545,10 @@ void ARPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	}
 }
 
-void ARPlayer::DrawWeapon() { if (Gear) Gear->DrawWeapon(); }
+void ARPlayer::DrawWeapon() { if (CompanionCommands && CompanionCommands->IsCommandInputActive()) return; if (Gear) Gear->DrawWeapon(); }
 void ARPlayer::DisarmWeapon() { if (Gear) Gear->DisarmWeapon(); }
-void ARPlayer::ToggleWeapon() { if (Gear) Gear->ToggleWeapon(); }
-void ARPlayer::SwitchWeapon() { if (Gear) Gear->SwitchWeapon(); }
+void ARPlayer::ToggleWeapon() { if (CompanionCommands && CompanionCommands->IsCommandInputActive()) return; if (Gear) Gear->ToggleWeapon(); }
+void ARPlayer::SwitchWeapon() { if (CompanionCommands && CompanionCommands->IsCommandInputActive()) return; if (Gear) Gear->SwitchWeapon(); }
 
 void ARPlayer::CreateWeaponWidget()
 {

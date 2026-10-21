@@ -131,6 +131,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AOBFL|GAMelee")
 	static void GetTargetsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
+	/** Enemy head-window hits, with the existing radius query retained for other attacks. */
+	UFUNCTION(BlueprintCallable, Category="Combat|Enemy Melee")
+	static void GetEnemyMeleeTargets(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 
 	UFUNCTION(BlueprintPure, Category = "AOBFL|GAMelee")
 	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
@@ -161,6 +164,7 @@ public:
 
 	//--- added Melee CombatFunctions
 
+	/** Nullable: streamed/unpossessed actors may not have an initialized ability component. */
 	static URAbilitySystemComponent* NativeGetRASCFromActor(AActor* InActor);
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL")
@@ -187,6 +191,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "RBFL")
 	static bool IsValidBlock(AActor* InAttacker, AActor* InDefender);
+	UFUNCTION(BlueprintPure, Category="Combat|Blocking")
+	static bool IsActorBlocking(AActor* Defender);
+	UFUNCTION(BlueprintCallable, Category="Combat|Blocking") static void NotifySuccessfulBlock(AActor* Attacker, AActor* Defender);
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", ExpandEnumAsExecs = "CountDownInput|CountDownOutput",TotalTime = "1.0",UpdateInterval = "0.1"))
 	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval, float& OutRemainingTime, ERCountDownActionInput CountDownInput, UPARAM(DisplayName = "Output") ERCountDownActionOutput& CountDownOutput, FLatentActionInfo LatentInfo);

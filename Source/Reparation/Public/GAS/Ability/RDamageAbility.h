@@ -8,6 +8,7 @@
 #include "Interfaces/RCombatInterface.h"
 #include "RDamageAbility.generated.h"
 class UGameplayEffect;
+class ACharacter;
 /**
  * 
  */
@@ -17,6 +18,18 @@ class REPARATION_API URDamageAbility : public URGameplayAbility
 	GENERATED_BODY()
 
 public:
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr,
+		FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	/** Silent takedowns do not release companions from sneaking. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Companion|Assistance")
+	bool bSilentAttack = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Skills") bool bUseMeleeSpecialization = false;
+	static FTaggedMontage SelectMontageForTarget(const TArray<FTaggedMontage>& Montages, const ACharacter* Target);
 
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* TargetActor);
@@ -26,6 +39,7 @@ public:
 		FVector KnockbackOverride = FVector::ZeroVector, bool bOverrideDeathImpulse = false, FVector DeathImpulseOverride = FVector::ZeroVector, bool bOverridePitch = false, float PitchOverride = 0.f) const;
 
 protected:
+	virtual float GetDamageScalingLevel() const { return GetAbilityLevel(); }
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;

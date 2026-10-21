@@ -2,6 +2,8 @@
 
 
 #include "GAS/RAttributeSet.h"
+#include "GAS/Data/RElementalResistanceProfile.h"
+#include "Characters/RCharacterBase.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -14,6 +16,12 @@
 #include "Interfaces/RCombatInterface.h"
 #include "Interfaces/RPlayerInterface.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/RCompanionPartyComponent.h"
+#include "AI/RAIController.h"
+#include "AI/REnemy.h"
+#include "GAS/RAbilitySystemComponent.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
 
 URAttributeSet::URAttributeSet()
 {
@@ -133,6 +141,7 @@ void URAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& D
 		{
 			Props.SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
 		}
+		if (!Props.SourceCharacter) Props.SourceCharacter = Cast<ACharacter>(Props.SourceAvatarActor);
 	}
 	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 	{
@@ -149,12 +158,12 @@ void URAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Dama
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
-		if(ARPlayerController* PC = Cast<ARPlayerController>(Props.SourceCharacter->Controller))
+		if(ARPlayerController* PC = Props.SourceCharacter ? Cast<ARPlayerController>(Props.SourceCharacter->Controller) : nullptr)
 		{
 			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter, bBlockedHit, bDodgedHit, bCriticalHit);
 			return;
 		}
-		if(ARPlayerController* PC = Cast<ARPlayerController>(Props.TargetCharacter->Controller))
+		if(ARPlayerController* PC = Props.TargetCharacter ? Cast<ARPlayerController>(Props.TargetCharacter->Controller) : nullptr)
 		{
 			PC->ShowDamageNumber(DamageAmount, Props.TargetCharacter, bBlockedHit, bDodgedHit, bCriticalHit);
 		}
@@ -230,6 +239,9 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 	SetDamage(0.f);
 	if (LocalDamage > 0.f)
 	{
+		URCompanionPartyComponent::NotifyReceivedDamage(Props.TargetAvatarActor, Props.SourceAvatarActor);
+		if (AREnemy* Enemy = Cast<AREnemy>(Props.TargetAvatarActor))
+			if (ARAIController* AI = Cast<ARAIController>(Enemy->GetController())) AI->NotifyDamagedBy(Props.SourceAvatarActor, LocalDamage);
 		const float NewHealth = GetHealth() - LocalDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
@@ -270,6 +282,7 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 
 void URAttributeSet::Debuff(const FEffectProperties& Props)
 {
+	if (!Props.SourceASC || !Props.TargetASC || !Props.TargetAvatarActor) return;
 	//SetEffectProperties----------------------------------------------------------------------
 	const FRGameplayTags& Tag = FRGameplayTags::Get();
 	FGameplayEffectContextHandle EffectContext = Props.SourceASC->MakeEffectContext();
@@ -279,17 +292,28 @@ void URAttributeSet::Debuff(const FEffectProperties& Props)
 	const float DebuffDamage = URAbilitySystemLibrary::GetDebuffDamage(Props.EffectContextHandle);
 	const float DebuffDuration = URAbilitySystemLibrary::GetDebuffDuration(Props.EffectContextHandle);
 	const float DebuffFrequency = URAbilitySystemLibrary::GetDebuffFrequency(Props.EffectContextHandle);
+	if (!FMath::IsFinite(DebuffDamage) || !FMath::IsFinite(DebuffDuration) || !FMath::IsFinite(DebuffFrequency) || DebuffDuration <= 0.f || DebuffFrequency <= 0.f) return;
+	FRDebuffState& State = ActiveDebuffs.FindOrAdd(DamageType);
+	const FActiveGameplayEffect* Previous = Props.TargetASC->GetActiveGameplayEffect(State.Handle);
+	const bool bStillActive = Previous != nullptr;
+	const float NextTickDelay = Previous ? Props.TargetAvatarActor->GetWorld()->GetTimerManager().GetTimerRemaining(Previous->PeriodHandle) : -1.f;
+	State.Stacks = DamageType == Tag.Damage_Poison ? FMath::Min(bStillActive ? State.Stacks + 1 : 1, 3) : 1;
+	if (bStillActive) Props.TargetASC->RemoveActiveGameplayEffect(State.Handle);
 	
 	FString DebuffName = FString::Printf(TEXT("DynamicDebuff_%s"), *DamageType.ToString());
-	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
+	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), MakeUniqueObjectName(GetTransientPackage(), UGameplayEffect::StaticClass(), FName(DebuffName)));
 
 	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
 	Effect->Period = DebuffFrequency;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
+	Effect->bExecutePeriodicEffectOnApplication = false;
 
 	UTargetTagsGameplayEffectComponent& AssetTagsComponent = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer InheritedTagContainer;
-	InheritedTagContainer.Added.AddTag(Tag.DamageTypeToDebuff[DamageType]);
+	const ARCharacterBase* DebuffTarget = Cast<ARCharacterBase>(Props.TargetAvatarActor);
+	const bool bImmuneToControl = DebuffTarget && DebuffTarget->ElementalResistanceProfile && DebuffTarget->ElementalResistanceProfile->bImmuneToControl;
+	const FGameplayTag Affliction = Tag.DamageTypeToDebuff[DamageType];
+	if (!(bImmuneToControl && (Affliction == Tag.Debuff_Stun || Affliction == Tag.Debuff_Freeze))) InheritedTagContainer.Added.AddTag(Affliction);
 	AssetTagsComponent.SetAndApplyTargetTagChanges(InheritedTagContainer);
 	// StackingType is deprecated in favour of GetStackingType(), but the matching
 	// SetStackingType() is WITH_EDITOR only and this effect is built at runtime,
@@ -303,16 +327,33 @@ void URAttributeSet::Debuff(const FEffectProperties& Props)
 	Effect->Modifiers.Add(FGameplayModifierInfo());
 	FGameplayModifierInfo& ModInfo = Effect->Modifiers[Index];
 
-	ModInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
+	// Poison multiplies per-tick damage by 1.5 per stack, capped at three stacks (2.25x).
+	ModInfo.ModifierMagnitude = FScalableFloat(FMath::Max(0.f, DebuffDamage) * FMath::Pow(1.5f, State.Stacks - 1));
 	ModInfo.ModifierOp = EGameplayModOp::Additive;
 	ModInfo.Attribute = URAttributeSet::GetDamageAttribute();
 	
-	if  (FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f))
+	FGameplayEffectSpec Spec(Effect, EffectContext, 1.f);
 	{
-		FRGameplayEffectContext* RContext = static_cast<FRGameplayEffectContext*>(MutableSpec->GetContext().Get());
+		FRGameplayEffectContext* RContext = static_cast<FRGameplayEffectContext*>(Spec.GetContext().Get());
 		TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
 		RContext->SetDamageType(DebuffDamageType);
-		Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
+		State.Handle = Props.TargetASC->ApplyGameplayEffectSpecToSelf(Spec);
+		if (URAbilitySystemComponent* TargetASC = Cast<URAbilitySystemComponent>(Props.TargetASC)) TargetASC->PreserveDebuffPeriod(State.Handle, NextTickDelay);
+	}
+	const ARCharacterBase* Target = Cast<ARCharacterBase>(Props.TargetAvatarActor);
+	const bool bControlImmune = Target && Target->ElementalResistanceProfile && Target->ElementalResistanceProfile->bImmuneToControl;
+	const double Now = Props.TargetAvatarActor->GetWorld()->GetTimeSeconds();
+	if (DamageType == Tag.Damage_Dark && !bControlImmune && Now >= NextDarkStunTime)
+	{
+		NextDarkStunTime = Now + 8.0;
+		UGameplayEffect* Stun = NewObject<UGameplayEffect>(GetTransientPackage());
+		Stun->DurationPolicy = EGameplayEffectDurationType::HasDuration;
+		Stun->DurationMagnitude = FScalableFloat(FMath::Min(DebuffDuration, 1.f));
+		FInheritedTagContainer StunTags;
+		StunTags.Added.AddTag(Tag.Debuff_Stun);
+		Stun->FindOrAddComponent<UTargetTagsGameplayEffectComponent>().SetAndApplyTargetTagChanges(StunTags);
+		FGameplayEffectSpec StunSpec(Stun, EffectContext, 1.f);
+		Props.TargetASC->ApplyGameplayEffectSpecToSelf(StunSpec);
 	}
 }
 
@@ -320,10 +361,13 @@ void URAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 {
 	const float LocalXP = GetXP();
 	SetXP(0.f);
+	if (!IsValid(Props.SourceCharacter) || !Props.SourceCharacter->Implements<URPlayerInterface>() || !FMath::IsFinite(LocalXP)) return;
 	//Add to XP
 	const int32 CurrentLevel = IRCombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
 	const int32 CurrentXP = IRPlayerInterface::Execute_GetXP(Props.SourceCharacter);
-	const int32 NewLevel = IRPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalXP);
+	const int32 IncomingXP = static_cast<int32>(FMath::Clamp<double>(LocalXP, MIN_int32, MAX_int32));
+	const int32 TotalXP = static_cast<int32>(FMath::Clamp<int64>(static_cast<int64>(CurrentXP) + IncomingXP, 0, MAX_int32));
+	const int32 NewLevel = IRPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, TotalXP);
 	const int32 NumLevelUps = NewLevel - CurrentLevel;
 	if (NumLevelUps > 0)
 	{
@@ -347,7 +391,7 @@ void URAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 			
 		IRPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
 	}
-	IRPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalXP);
+	IRPlayerInterface::Execute_AddToXP(Props.SourceCharacter, IncomingXP);
 }
 
 void URAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)

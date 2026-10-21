@@ -2,6 +2,18 @@
 
 
 #include "GAS/RAbilitySystemComponent.h"
+#include "GAS/Ability/RElementalMastery.h"
+#include "GAS/Ability/RMeleeAbility.h"
+#include "Net/UnrealNetwork.h"
+#include "TimerManager.h"
+#include "Engine/World.h"
+
+void URAbilitySystemComponent::PreserveDebuffPeriod(FActiveGameplayEffectHandle Handle, float NextTickDelay)
+{
+	FActiveGameplayEffect* Active = const_cast<FActiveGameplayEffect*>(GetActiveGameplayEffect(Handle));
+	if (!Active || !GetOwner()->HasAuthority() || NextTickDelay <= 0.f || Active->Spec.GetPeriod() <= 0.f) return;
+	GetWorld()->GetTimerManager().SetTimer(Active->PeriodHandle, FTimerDelegate::CreateUObject(this, &URAbilitySystemComponent::ExecutePeriodicEffect, Handle), Active->Spec.GetPeriod(), true, NextTickDelay);
+}
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "RGameplayTags.h"
@@ -9,6 +21,10 @@
 #include "GAS/Ability/RGameplayAbility.h"
 #include "GAS/Data/AbilityInfo.h"
 #include "Interfaces/RPlayerInterface.h"
+#include "Characters/RPlayer.h"
+#include "Framework/RPlayerState.h"
+#include "GAS/Data/LevelUpInfo.h"
+#include "GAS/RAttributeSet.h"
 
 void URAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -20,6 +36,11 @@ void URAbilitySystemComponent::AddGrantedAbilities(const TArray<TSubclassOf<UGam
 	for (TSubclassOf<UGameplayAbility> AbilityClass  : GrantedAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		if (const UAbilityInfo* Data = GetSkillData(); Cast<ARPlayer>(GetAvatarActor()) && Data)
+		{
+			const FRAbilityInfo Info = Data->FindAbilityInfoForTag(GetAbilityTagFromSpec(AbilitySpec));
+			if (Info.AbilityTag.IsValid() && (!Info.bSkillTreePurchasable || Info.AbilityTag == Data->AutomaticTierReward)) continue;
+		}
 		if (const URGameplayAbility* RAbility = Cast<URGameplayAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(RAbility->StartupInputTag);
@@ -36,7 +57,20 @@ void URAbilitySystemComponent::AddPassiveAbilities(const TArray<TSubclassOf<UGam
 	for (TSubclassOf<UGameplayAbility> AbilityClass  : PassiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-		GiveAbilityAndActivateOnce(AbilitySpec);
+		const UAbilityInfo* Data = GetSkillData();
+		const FRAbilityInfo Info = Data ? Data->FindAbilityInfoForTag(GetAbilityTagFromSpec(AbilitySpec)) : FRAbilityInfo();
+		// Gear-only effects are granted by equipment, not by the player's skill loadout startup list.
+		if (Cast<ARPlayer>(GetAvatarActor()) && Info.AbilityTag.IsValid() && !Info.bSkillTreePurchasable) continue;
+		if (Cast<ARPlayer>(GetAvatarActor()) && Info.AbilityType == FRGameplayTags::Get().ability_type_passive)
+		{
+			if (GetSpecFromAbilityTag(Info.AbilityTag)) continue;
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FRGameplayTags::Get().ability_status_unlocked);
+			GiveAbility(AbilitySpec);
+			const auto& T = FRGameplayTags::Get();
+			for (FGameplayTag Slot : {T.InputTag_Passive01, T.InputTag_Passive02, T.InputTag_Passive03, T.InputTag_Passive04})
+				if (IsLoadoutSlotUnlocked(Slot) && InputSlotIsEmpty(Slot)) { ServerEquipAbility_Implementation(Info.AbilityTag, Slot); break; }
+		}
+		else GiveAbilityAndActivateOnce(AbilitySpec); // Preserve non-loadout innate effects and NPC setup.
 	}
 }
 
@@ -48,6 +82,15 @@ void URAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputT
 	for (auto& AbilitySpec : GetActivatableAbilities())
 	{
 		if(!AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag)) continue;
+		if (AbilitySpec.IsActive())
+		{
+			if (URMeleeAbility* Melee = Cast<URMeleeAbility>(AbilitySpec.GetPrimaryInstance()))
+			{
+				Melee->QueueComboAttack();
+				if (!IsOwnerActorAuthoritative()) ServerQueueMeleeCombo(AbilitySpec.Handle);
+				continue;
+			}
+		}
 		if (InputTag.MatchesTag(GameplayTags.InputTag_Toggle) && AbilitySpec.IsActive())
 		{
 			CancelAbilityHandle(AbilitySpec.Handle);
@@ -85,6 +128,12 @@ void URAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Input
 			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, ActivationPredictionKey);
  		}
  	}
+}
+
+void URAbilitySystemComponent::ServerQueueMeleeCombo_Implementation(FGameplayAbilitySpecHandle Handle)
+{
+	if (FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(Handle); Spec && Spec->IsActive())
+		if (URMeleeAbility* Melee = Cast<URMeleeAbility>(Spec->GetPrimaryInstance())) Melee->QueueComboAttack();
 }
 
 void URAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate)
@@ -194,7 +243,8 @@ FGameplayAbilitySpec* URAbilitySystemComponent::GetSpecWithInputSlot(const FGame
 
 bool URAbilitySystemComponent::IsPassiveAbility(const FGameplayAbilitySpec& Spec) const
 {
-	const UAbilityInfo* AbilityInfo = URAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	const UAbilityInfo* AbilityInfo = GetSkillData();
+	if (!AbilityInfo) return false;
 	const FGameplayTag AbilityTag = GetAbilityTagFromSpec(Spec);
 	const FRAbilityInfo& Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
 	const FGameplayTag AbilityType = Info.AbilityType;
@@ -220,7 +270,7 @@ FGameplayAbilitySpec* URAbilitySystemComponent::GetSpecFromAbilityTag(const FGam
 	{
 		for(FGameplayTag Tag : AbilitySpec.Ability.Get()->GetAssetTags())
 		{
-			if (Tag.MatchesTag(AbilityTag))
+			if (Tag.MatchesTagExact(AbilityTag))
 			{
 				return &AbilitySpec;
 			}
@@ -242,10 +292,11 @@ void URAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag
 
 void URAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 {
-	UAbilityInfo* AbilityInfo = URAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	const UAbilityInfo* AbilityInfo = GetSkillData();
+	if (!AbilityInfo) return;
 	for (const FRAbilityInfo& Info : AbilityInfo->AbilityInfo)
 	{
-		if (!Info.AbilityTag.IsValid())continue;
+		if (!Info.AbilityTag.IsValid() || !Info.Ability || !Info.bSkillTreePurchasable)continue;
 		if (Level < Info.LevelRequirement) continue;
 		if (GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
 		{
@@ -256,18 +307,39 @@ void URAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 			ClientUpdateAbilityStatus(Info.AbilityTag, FRGameplayTags::Get().ability_status_available, 1);
 		}
 	}
+	RefreshTierReward();
 }
 
 void URAbilitySystemComponent::ServerSpendAbilityPoint_Implementation(const FGameplayTag& AbilityTag)
 {
+	if (!GetSkillUpgradeIssue(AbilityTag).IsEmpty()) return;
+	ARPlayer* Player = Cast<ARPlayer>(GetAvatarActor());
+	ARPlayerState* PS = Player ? Player->GetPlayerState<ARPlayerState>() : nullptr;
+	if (!PS || PS->GetAbilityPts() <= 0) return;
 	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
-		if (GetAvatarActor()->Implements<URPlayerInterface>())
-		{
-			IRPlayerInterface::Execute_AddToAbilityPts(GetAvatarActor(), -1);
-		}
 		const FRGameplayTags GameplayTags = FRGameplayTags::Get();
 		FGameplayTag Status = GetStatusFromSpec(*AbilitySpec);
+		const bool bAvailable = Status.MatchesTagExact(GameplayTags.ability_status_available);
+		if (!bAvailable && !Status.MatchesTagExact(GameplayTags.ability_status_equipped) && !Status.MatchesTagExact(GameplayTags.ability_status_unlocked)) return;
+		const UAbilityInfo* Info = GetSkillData();
+		const FRAbilityInfo Entry = Info ? Info->FindAbilityInfoForTag(AbilityTag) : FRAbilityInfo();
+		if (Entry.LevelRequirement > PS->GetPlayerLevel()) return;
+		const int32 ProgressionCap = PS->LevelUpInfo ? PS->LevelUpInfo->GetMaxLevel() : FMath::Max(1, PS->GetPlayerLevel());
+		const int32 RankCap = Entry.MaximumAbilityLevel > 0 ? FMath::Min(Entry.MaximumAbilityLevel, ProgressionCap) : ProgressionCap;
+		if (!bAvailable && AbilitySpec->Level >= RankCap) return;
+		const int32 Cost = FMath::Clamp(Entry.SkillPointCost, 1, 5);
+		FRSkillPurchaseRecord* Record = SkillPurchases.FindByPredicate([AbilityTag](const FRSkillPurchaseRecord& R) { return R.Skill == AbilityTag; });
+		if (!Record)
+		{
+			FRSkillPurchaseRecord NewRecord; NewRecord.Skill = AbilityTag; NewRecord.BaselineRank = GetLearnedSkillRank(AbilityTag);
+			Record = &SkillPurchases.Add_GetRef(NewRecord);
+		}
+		Record->Points += Cost;
+		if (Entry.bCountsTowardsCoreInvestment) Record->CorePoints += Cost;
+		PS->AddToAbilityPts(-Cost);
+		if (Entry.bCountsTowardsCoreInvestment)
+			CoreSkillPointsSpent = static_cast<int32>(FMath::Min<int64>(MAX_int32, static_cast<int64>(CoreSkillPointsSpent) + Cost));
 		if (Status.MatchesTagExact(GameplayTags.ability_status_available))
 		{
 			AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.ability_status_available);
@@ -280,25 +352,130 @@ void URAbilitySystemComponent::ServerSpendAbilityPoint_Implementation(const FGam
 		}
 		ClientUpdateAbilityStatus(AbilityTag, Status, AbilitySpec->Level);
 		MarkAbilitySpecDirty(*AbilitySpec);
+		UpdateAbilityStatus(PS->GetPlayerLevel());
+	}
+}
+
+const UAbilityInfo* URAbilitySystemComponent::GetSkillData() const { return SkillDefinitions ? SkillDefinitions.Get() : URAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor()); }
+
+bool URAbilitySystemComponent::IsSkillQuestEligible(FName UnlockId) const
+{
+	if (UnlockId.IsNone()) return false;
+	const UAbilityInfo* Data = GetSkillData();
+	const ARPlayer* Player = Cast<ARPlayer>(GetAvatarActor());
+	const ARPlayerState* PS = Player ? Player->GetPlayerState<ARPlayerState>() : nullptr;
+	if (!Data || !PS) return false;
+	for (const FRSkillQuestUnlock& Unlock : Data->QuestUnlocks)
+		if (Unlock.Id == UnlockId) return PS->GetPlayerLevel() >= Unlock.OfferAtLevel || CoreSkillPointsSpent >= Unlock.OfferAtCorePointsSpent;
+	return false;
+}
+
+void URAbilitySystemComponent::GrantProgressionUnlock(FName UnlockId)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority() || UnlockId.IsNone()) return;
+	const UAbilityInfo* Data = GetSkillData();
+	if (Data && Data->QuestUnlocks.ContainsByPredicate([UnlockId](const FRSkillQuestUnlock& Unlock) { return Unlock.Id == UnlockId; }))
+		ProgressionUnlocks.AddUnique(UnlockId);
+}
+
+int32 URAbilitySystemComponent::GetLearnedSkillRank(const FGameplayTag& AbilityTag)
+{
+	if (!AbilityTag.IsValid()) return 0;
+	const FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag);
+	if (!Spec) return 0;
+	const FGameplayTag Status = GetStatusFromSpec(*Spec);
+	const FRGameplayTags& Tags = FRGameplayTags::Get();
+	return Status == Tags.ability_status_unlocked || Status == Tags.ability_status_equipped ? Spec->Level : 0;
+}
+
+FText URAbilitySystemComponent::GetSkillUpgradeIssue(const FGameplayTag& AbilityTag)
+{
+	const ARPlayer* Player = Cast<ARPlayer>(GetAvatarActor());
+	const ARPlayerState* PS = Player ? Player->GetPlayerState<ARPlayerState>() : nullptr;
+	if (!PS) return FText::FromString(TEXT("Player progression is unavailable."));
+	const UAbilityInfo* Data = GetSkillData();
+	const FRAbilityInfo Entry = Data ? Data->FindAbilityInfoForTag(AbilityTag) : FRAbilityInfo();
+	if (Data && (!Entry.AbilityTag.IsValid() || !Entry.Ability)) return FText::FromString(TEXT("This technique is not available yet."));
+	if (!Entry.bSkillTreePurchasable) return FText::FromString(Data && AbilityTag == Data->AutomaticTierReward
+		? TEXT("Granted automatically after completing the required tier; no purchase needed.") : TEXT("This effect is not purchased through the skill tree."));
+	if (PS->GetPlayerLevel() < Entry.LevelRequirement) return FText::FromString(FString::Printf(TEXT("Requires character level %d."), Entry.LevelRequirement));
+	if (!IsBranchTierUnlocked(Entry.Discipline, Entry.BranchTier, Entry.PreviousTierSkillsRequired))
+		return FText::FromString(FString::Printf(TEXT("Learn %d skill(s) in the preceding branch tier first."), FMath::Max(1, Entry.PreviousTierSkillsRequired)));
+	if (CoreSkillPointsSpent < Entry.MinimumCorePointsSpent)
+		return FText::FromString(FString::Printf(TEXT("Invest %d more point(s) across Stealth, Melee or Archer."), Entry.MinimumCorePointsSpent - CoreSkillPointsSpent));
+	if (!Entry.RequiredProgressionUnlock.IsNone() && !ProgressionUnlocks.Contains(Entry.RequiredProgressionUnlock))
+	{
+		FString Name = Entry.RequiredProgressionUnlock.ToString();
+		if (Data) for (const FRSkillQuestUnlock& Unlock : Data->QuestUnlocks)
+			if (Unlock.Id == Entry.RequiredProgressionUnlock) Name = Unlock.DisplayName.ToString();
+		return FText::FromString(FString::Printf(TEXT("Complete %s. %s"), *Name,
+			IsSkillQuestEligible(Entry.RequiredProgressionUnlock) ? TEXT("Quest eligible; quest content is not authored yet.") : TEXT("Quest eligibility requires more levels or branch investment.")));
+	}
+	for (const FRSkillPrerequisite& Required : Entry.Prerequisites)
+	{
+		if (GetLearnedSkillRank(Required.AbilityTag) < FMath::Max(1, Required.RequiredRank))
+		{
+			const FRAbilityInfo Prerequisite = Data->FindAbilityInfoForTag(Required.AbilityTag);
+			const FString Name = Prerequisite.DisplayName.IsEmpty() ? Required.AbilityTag.ToString() : Prerequisite.DisplayName.ToString();
+			return FText::FromString(FString::Printf(TEXT("Requires %s rank %d."), *Name, Required.RequiredRank));
+		}
+	}
+	const FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag);
+	if (!Spec) return FText::FromString(TEXT("This technique is not available yet."));
+	const FGameplayTag Status = GetStatusFromSpec(*Spec);
+	const FRGameplayTags& Tags = FRGameplayTags::Get();
+	if (Status != Tags.ability_status_available && Status != Tags.ability_status_unlocked && Status != Tags.ability_status_equipped)
+		return FText::FromString(TEXT("This technique is locked."));
+	const int32 Cap = PS->LevelUpInfo ? PS->LevelUpInfo->GetMaxLevel() : FMath::Max(1, PS->GetPlayerLevel());
+	const int32 RankCap = Entry.MaximumAbilityLevel > 0 ? FMath::Min(Cap, Entry.MaximumAbilityLevel) : Cap;
+	if (GetLearnedSkillRank(AbilityTag) >= RankCap) return FText::FromString(TEXT("Maximum rank reached."));
+	if (PS->GetAbilityPts() < FMath::Clamp(Entry.SkillPointCost, 1, 5)) return FText::FromString(FString::Printf(TEXT("Requires %d skill point(s)."), FMath::Clamp(Entry.SkillPointCost, 1, 5)));
+	return FText::GetEmpty();
+}
+
+void URAbilitySystemComponent::BuildSkillDescriptions(const FGameplayTag& AbilityTag, FString& Current, FString& Next)
+{
+	const UAbilityInfo* Data = GetSkillData();
+	if (!Data) return;
+	const FRAbilityInfo Entry = Data->FindAbilityInfoForTag(AbilityTag);
+	if (!Entry.AbilityTag.IsValid()) return;
+	const int32 Rank = GetLearnedSkillRank(AbilityTag);
+	const ARPlayer* Player = Cast<ARPlayer>(GetAvatarActor());
+	const ARPlayerState* PS = Player ? Player->GetPlayerState<ARPlayerState>() : nullptr;
+	const int32 Cap = PS && PS->LevelUpInfo ? PS->LevelUpInfo->GetMaxLevel() : 40;
+	const int32 RankCap = Entry.MaximumAbilityLevel > 0 ? FMath::Min(Cap, Entry.MaximumAbilityLevel) : Cap;
+	if (!Entry.DisplayName.IsEmpty()) Current = Entry.DisplayName.ToString() + FString::Printf(TEXT(" — Rank %d/%d\n"), Rank, RankCap) + Current;
+	if (!Entry.Summary.IsEmpty()) Current += TEXT("\n") + Entry.Summary.ToString();
+	if (Entry.RankDescriptions.IsValidIndex(Rank - 1)) Current += TEXT("\n") + Entry.RankDescriptions[Rank - 1].ToString();
+	if (Rank >= RankCap) Next = TEXT("Maximum rank reached.");
+	else
+	{
+		if (Entry.RankDescriptions.IsValidIndex(Rank)) Next = Entry.RankDescriptions[Rank].ToString();
+		Next += FString::Printf(TEXT("\nCost: %d skill point(s)."), FMath::Clamp(Entry.SkillPointCost, 1, 5));
+		const FText Issue = GetSkillUpgradeIssue(AbilityTag);
+		if (!Issue.IsEmpty()) Next += TEXT("\n") + Issue.ToString();
 	}
 }
 
 void URAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
 {
+	ARPlayer* Player = Cast<ARPlayer>(GetAvatarActor());
+	ARPlayerState* PS = Player ? Player->GetPlayerState<ARPlayerState>() : nullptr;
+	const URAttributeSet* Attributes = PS ? Cast<URAttributeSet>(PS->GetAttributeSet()) : nullptr;
+	const FGameplayTag Primary = FGameplayTag::RequestGameplayTag(TEXT("Attributes.Primary"), false);
+	if (!PS || PS->GetAttributePts() <= 0 || !Attributes || !Attributes->TagsToAttributes.Contains(AttributeTag) || !AttributeTag.MatchesTag(Primary)) return;
+	PS->AddToAttributePts(-1);
 	FGameplayEventData Payload;
 	Payload.EventTag = AttributeTag;
 	Payload.EventMagnitude = 1.f;
 
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
-	if (GetAvatarActor()->Implements<URPlayerInterface>())
-	{
-		IRPlayerInterface::Execute_AddToAttributePts(GetAvatarActor(), -1);
-	}
 }
 
 void URAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplayTag& AbilityTag,
 	const FGameplayTag& Slot)
 {
+	if (!GetEquipIssue(AbilityTag, Slot).IsEmpty()) return;
 	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
 		const FRGameplayTags& Tag = FRGameplayTags::Get();
@@ -324,8 +501,13 @@ void URAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplay
 					{
 						MulticastActivatePassiveEffect(GetAbilityTagFromSpec(*SpecWithSlot), false);
 						DeactivatePassiveAbilityDelegate.Broadcast(GetAbilityTagFromSpec(*SpecWithSlot));
+						CancelAbilityHandle(SpecWithSlot->Handle);
 					}
 					ClearSlot(SpecWithSlot);
+					SpecWithSlot->GetDynamicSpecSourceTags().RemoveTag(Tag.ability_status_equipped);
+					SpecWithSlot->GetDynamicSpecSourceTags().AddTag(Tag.ability_status_unlocked);
+					MarkAbilitySpecDirty(*SpecWithSlot);
+					ClientUpdateAbilityStatus(GetAbilityTagFromSpec(*SpecWithSlot), Tag.ability_status_unlocked, SpecWithSlot->Level);
 				}
 			}
 			//new ability
@@ -338,10 +520,90 @@ void URAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplay
 				}
 			}
 			AssignInputSlotToAbility(*AbilitySpec, Slot);
+			AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(Tag.ability_status_unlocked);
+			AbilitySpec->GetDynamicSpecSourceTags().AddTag(Tag.ability_status_equipped);
 			MarkAbilitySpecDirty(*AbilitySpec);
 		}
 		ClientEquipAbility(AbilityTag, Tag.ability_status_equipped, Slot, PrevSlot);
 	}
+}
+
+int32 URAbilitySystemComponent::GetPassiveSlotUnlockLevel(int32 Index) const
+{
+	const UAbilityInfo* Data = GetSkillData();
+	return Index >= 0 && Index < 4 && Data && Data->PassiveSlotUnlockLevels.IsValidIndex(Index)
+		? FMath::Max(1, Data->PassiveSlotUnlockLevels[Index]) : MAX_int32;
+}
+
+bool URAbilitySystemComponent::IsLoadoutSlotUnlocked(FGameplayTag Slot) const
+{
+	const auto& Tags = FRGameplayTags::Get();
+	if (Slot == Tags.InputTag_LMB || Slot == Tags.InputTag_RMB || Slot == Tags.InputTag_1 || Slot == Tags.InputTag_2) return true;
+	const TArray<FGameplayTag> Passive{Tags.InputTag_Passive01, Tags.InputTag_Passive02, Tags.InputTag_Passive03, Tags.InputTag_Passive04};
+	const int32 Index = Passive.IndexOfByKey(Slot);
+	const ARPlayerState* PS = Cast<ARPlayerState>(GetOwnerActor());
+	if (!PS) if (const ARPlayer* Player = Cast<ARPlayer>(GetAvatarActor())) PS = Player->GetPlayerState<ARPlayerState>();
+	return Index != INDEX_NONE && PS && PS->GetPlayerLevel() >= GetPassiveSlotUnlockLevel(Index);
+}
+
+FText URAbilitySystemComponent::GetEquipIssue(FGameplayTag AbilityTag, FGameplayTag Slot)
+{
+	if (GetLearnedSkillRank(AbilityTag) <= 0) return FText::FromString(TEXT("Learn this skill first."));
+	const UAbilityInfo* Data = GetSkillData();
+	const FRAbilityInfo Info = Data ? Data->FindAbilityInfoForTag(AbilityTag) : FRAbilityInfo();
+	const auto& Tags = FRGameplayTags::Get();
+	if (!Info.bSkillTreePurchasable) return FText::FromString(TEXT("This effect does not use a skill loadout slot."));
+	const bool bPassive = Info.AbilityType == Tags.ability_type_passive;
+	if (!bPassive && Info.AbilityType != Tags.ability_type_dynamic) return FText::FromString(TEXT("This technique does not use a loadout slot."));
+	const bool bPassiveSlot = Slot == Tags.InputTag_Passive01 || Slot == Tags.InputTag_Passive02 || Slot == Tags.InputTag_Passive03 || Slot == Tags.InputTag_Passive04;
+	if (bPassive != bPassiveSlot) return FText::FromString(TEXT("Choose a matching active or passive slot."));
+	if (!IsLoadoutSlotUnlocked(Slot)) return FText::FromString(TEXT("This slot is locked or unavailable."));
+	return FText();
+}
+
+void URAbilitySystemComponent::ServerUnequipAbility_Implementation(FGameplayTag AbilityTag)
+{
+	FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag);
+	if (!Spec || GetLearnedSkillRank(AbilityTag) <= 0) return;
+	const FGameplayTag Prev = GetInputTagFromSpec(*Spec);
+	if (!Prev.IsValid()) return;
+	if (IsPassiveAbility(*Spec))
+	{
+		DeactivatePassiveAbilityDelegate.Broadcast(AbilityTag);
+		CancelAbilityHandle(Spec->Handle);
+		MulticastActivatePassiveEffect(AbilityTag, false);
+	}
+	ClearSlot(Spec);
+	const auto& Tags = FRGameplayTags::Get();
+	Spec->GetDynamicSpecSourceTags().RemoveTag(Tags.ability_status_equipped);
+	Spec->GetDynamicSpecSourceTags().AddTag(Tags.ability_status_unlocked);
+	MarkAbilitySpecDirty(*Spec);
+	ClientEquipAbility(AbilityTag, Tags.ability_status_unlocked, FGameplayTag(), Prev);
+}
+
+void URAbilitySystemComponent::RefreshPassiveSlotLimits()
+{
+	if (!IsOwnerActorAuthoritative()) return;
+	TArray<FGameplayTag> Remove;
+	for (const FGameplayAbilitySpec& Spec : GetActivatableAbilities())
+		if (IsPassiveAbility(Spec) && AbilityHasAnySlot(Spec) && !IsLoadoutSlotUnlocked(GetInputTagFromSpec(Spec))) Remove.Add(GetAbilityTagFromSpec(Spec));
+	for (FGameplayTag Skill : Remove) ServerUnequipAbility_Implementation(Skill);
+}
+
+void URAbilitySystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(URAbilitySystemComponent, SelectedMeleeElement);
+	DOREPLIFETIME(URAbilitySystemComponent, CoreSkillPointsSpent);
+	DOREPLIFETIME(URAbilitySystemComponent, SkillPurchases);
+	DOREPLIFETIME(URAbilitySystemComponent, ProgressionUnlocks);
+}
+
+void URAbilitySystemComponent::ServerSelectMeleeElement_Implementation(FGameplayTag DamageType)
+{
+	if (!DamageType.IsValid() || DamageType == FRGameplayTags::Get().Damage_Physical) { SelectedMeleeElement = FGameplayTag(); return; }
+	const FGameplayTag Skill = URElementalMastery::GetSkillForDamage(DamageType);
+	if (Skill.IsValid() && GetLearnedSkillRank(Skill) > 0) SelectedMeleeElement = DamageType;
 }
 
 void URAbilitySystemComponent::ClientEquipAbility_Implementation(const FGameplayTag& AbilityTag,
@@ -359,6 +621,9 @@ bool URAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& Ab
 		{
 			OutDescription = RAbility->GetDescription(AbilitySpec->Level);
 			OutNextLevelDescription = RAbility->GetNextLevelDescription(AbilitySpec->Level + 1);
+			if (OutDescription.Contains(TEXT("LoremIpsum"))) { OutDescription.Reset(); OutNextLevelDescription.Reset(); }
+			if (RAbility->IsA<URElementalMastery>()) { OutDescription.Reset(); OutNextLevelDescription.Reset(); }
+			BuildSkillDescriptions(AbilityTag, OutDescription, OutNextLevelDescription);
 			return true;
 		}
 	}
@@ -369,9 +634,10 @@ bool URAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& Ab
 	}
 	else
 	{
-		OutDescription = URGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement);
+		OutDescription = URGameplayAbility::GetLockedDescription(AbilityInfo ? AbilityInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement : 1);
 	}
 	OutNextLevelDescription = FString();
+	BuildSkillDescriptions(AbilityTag, OutDescription, OutNextLevelDescription);
 	return false;
 }
 

@@ -21,6 +21,8 @@ class UNiagaraComponent;
 class URInputConfig;
 class UInputMappingContext;
 class UREquipmentComponent;
+class URCompanionPartyComponent;
+class URCompanionCommandComponent;
 class URLocomotionComponent;
 class URAbilitySystemComponent;
 
@@ -41,6 +43,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UREquipmentComponent* Gear;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Companion")
+	TObjectPtr<URCompanionPartyComponent> CompanionParty;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Companion")
+	TObjectPtr<URCompanionCommandComponent> CompanionCommands;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void DrawWeapon();

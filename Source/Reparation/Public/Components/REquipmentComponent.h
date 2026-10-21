@@ -65,10 +65,7 @@ public:
 	void ConfigureSlotComponent(EEquipSlot Slot);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment|Attachments")
-	FName BackpackSocket = TEXT("spine_05");
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment|Attachments")
-	FName BackpackFallbackSocket = TEXT("spine_04");
+	FName BackpackSocket = TEXT("BackpackSocket");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment|Attachments")
 	FName HeadwearSocket = TEXT("head");

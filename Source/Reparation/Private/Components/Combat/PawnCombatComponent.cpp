@@ -38,6 +38,7 @@ void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
 
 	if (bIsValidBlock)
 	{
+		URAbilitySystemLibrary::NotifySuccessfulBlock(GetOwningPawn(), HitActor);
 		//TODO::Handle successful block
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			HitActor,

@@ -13,6 +13,7 @@ class UPawnSensingComponent;
 class ARAIController;
 class UBehaviorTree;
 class UWidgetComponent;
+class UREnemyMeleeSweepComponent;
 /**
  * 
  */
@@ -26,6 +27,24 @@ public:
 	AREnemy(const FObjectInitializer& ObjectInitializer);
 
 	virtual void PossessedBy(AController* NewController) override;
+	USkeletalMeshComponent* GetMeleeDamageMesh() const;
+	FName GetMeleeDamageSocket() const { return WeaponDamageSocket; }
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat")
+	TObjectPtr<UREnemyMeleeSweepComponent> MeleeSweep;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Melee Spacing|Crouched", meta=(ClampMin="1", DisplayName="Crouched Minimum Distance"))
+	float MinMeleeDistance = 150.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Melee Spacing|Crouched", meta=(ClampMin="1", DisplayName="Crouched Preferred Distance"))
+	float PreferredMeleeDistance = 190.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Melee Spacing|Crouched", meta=(ClampMin="1", DisplayName="Crouched Maximum Distance"))
+	float MaxMeleeDistance = 230.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Melee Spacing|Standing", meta=(ClampMin="1"))
+	float StandingMinMeleeDistance = 100.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Melee Spacing|Standing", meta=(ClampMin="1"))
+	float StandingPreferredMeleeDistance = 120.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat|Melee Spacing|Standing", meta=(ClampMin="1"))
+	float StandingMaxMeleeDistance = 140.f;
+	UFUNCTION(BlueprintPure, Category="Combat|Melee Spacing")
+	void GetMeleeRangeForTarget(const AActor* Target, float& Minimum, float& Preferred, float& Maximum) const;
 
 	//Combat Interface
 	virtual int32 GetPlayerLevel_Implementation() override;
@@ -44,9 +63,12 @@ public:
 	FOnAttributeChangeSignature OnMaxHealthChange;
 
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	void FreezeTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	bool bFrozen = false;
 	
 	UFUNCTION(BlueprintCallable)
-	void SetToStunned(bool bIsStunned) const;
+	void SetToStunned(bool bIsStunned);
 
 	UFUNCTION(BlueprintCallable)
 	void SetToEndStun();

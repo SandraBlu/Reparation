@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
+#include "Components/Combat/REnemyMeleeSweepComponent.h"
 #include "Framework/RAbilitySystemLibrary.h"
 #include "Framework/RGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -18,12 +19,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
+#include "GAS/Data/RElementalResistanceProfile.h"
 
 AREnemy::AREnemy(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<URAbilitySystemComponent>("ASC");
 	AttributeSet = CreateDefaultSubobject<URAttributeSet>("Attributes");
+	MeleeSweep = CreateDefaultSubobject<UREnemyMeleeSweepComponent>(TEXT("MeleeSweep"));
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("Health");
 	HealthBar->SetupAttachment(GetRootComponent());
@@ -87,6 +90,8 @@ void AREnemy::BeginPlay()
 		);
 		//Call Hit React/Stunned function
 		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::HitReactTagChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::StunTagChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().Debuff_Freeze, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::FreezeTagChanged);
 		//Broadcast Initial Values
 		OnHealthChange.Broadcast(AS->GetHealth());
 		OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
@@ -107,50 +112,41 @@ void AREnemy::PossessedBy(AController* NewController)
 
 int32 AREnemy::GetPlayerLevel_Implementation()
 {
-	if (ARGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<ARGameMode>())
-	{
-		switch (BaseGameMode->GetCurrentGameDifficulty())
-		{
-		case ERGameDifficulty::Easy:
-			Level = 1;
-			break;
-		case ERGameDifficulty::Normal:
-			Level = 10;
-			break;
-		case ERGameDifficulty::Hard:
-			Level = 20;
-			break;
-
-		default:
-			break;
-		}
-	}
-	return Level;
+	return FMath::Max(1, Level);
 }
 
 FVector AREnemy::GetCombatSocketLocation_Implementation(const FGameplayTag& CombatSocketTag)
 {
 	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
-	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon) && IsValid(WeaponRH) || IsValid(WeaponLH))
+	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_weapon))
 	{
-		if (WeaponRH)
-		{
-			return WeaponRH->GetSocketLocation(WeaponDamageSocket);
-		}
-		else
-		{
-			return WeaponLH->GetSocketLocation(WeaponDamageSocket);
-		}
+		if (USkeletalMeshComponent* DamageMesh = GetMeleeDamageMesh()) return DamageMesh->GetSocketLocation(WeaponDamageSocket);
 	}
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handL))
 	{
-		return GetMesh()->GetSocketLocation(HandRSocket);
+		return GetMesh()->GetSocketLocation(HandLSocket);
 	}
 	if (CombatSocketTag.MatchesTagExact(GameplayTags.combatSocket_handR))
 	{
-		return GetMesh()->GetSocketLocation(HandLSocket);
+		return GetMesh()->GetSocketLocation(HandRSocket);
 	}
 	return FVector();
+}
+
+USkeletalMeshComponent* AREnemy::GetMeleeDamageMesh() const
+{
+	if (IsValid(WeaponRH) && WeaponRH->GetSkeletalMeshAsset() && WeaponRH->DoesSocketExist(WeaponDamageSocket)) return WeaponRH;
+	if (IsValid(WeaponLH) && WeaponLH->GetSkeletalMeshAsset() && WeaponLH->DoesSocketExist(WeaponDamageSocket)) return WeaponLH;
+	return nullptr;
+}
+
+void AREnemy::GetMeleeRangeForTarget(const AActor* Target, float& Minimum, float& Preferred, float& Maximum) const
+{
+	const ACharacter* TargetCharacter = Cast<ACharacter>(Target);
+	const bool bCrouchedTarget = TargetCharacter && TargetCharacter->bIsCrouched;
+	Minimum = FMath::Max(1.f, bCrouchedTarget ? MinMeleeDistance : StandingMinMeleeDistance);
+	Maximum = FMath::Max(Minimum, bCrouchedTarget ? MaxMeleeDistance : StandingMaxMeleeDistance);
+	Preferred = FMath::Clamp(bCrouchedTarget ? PreferredMeleeDistance : StandingPreferredMeleeDistance, Minimum, Maximum);
 }
 
 void AREnemy::Die(const FVector& DeathImpulse)
@@ -200,32 +196,30 @@ AActor* AREnemy::GetCombatTarget_Implementation() const
 void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting || bStunned ? 0.f : BaseWalkSpeed * (bFrozen ? 0.65f : 1.f);
 	if (AIC && AIC->GetBlackboardComponent())
 	{
 		AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 	}
 }
 
-void AREnemy::SetToStunned(bool bIsStunned) const
+void AREnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) { SetToStunned(NewCount > 0); }
+void AREnemy::FreezeTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
-	if (bStunned)
-  	{
- 		bIsStunned = true;
-  		if (AIC && AIC->GetBlackboardComponent())
-  		{
-  			AIC->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), bStunned);
-  		}
-  	}
- 	bIsStunned = false;
+	bFrozen = NewCount > 0 && (!ElementalResistanceProfile || !ElementalResistanceProfile->bImmuneToControl);
+	GetCharacterMovement()->MaxWalkSpeed = bStunned || bHitReacting ? 0.f : BaseWalkSpeed * (bFrozen ? 0.65f : 1.f);
+}
+
+void AREnemy::SetToStunned(bool bIsStunned)
+{
+	bStunned = bIsStunned;
+	GetCharacterMovement()->MaxWalkSpeed = bStunned || bHitReacting ? 0.f : BaseWalkSpeed * (bFrozen ? 0.65f : 1.f);
+	if (AIC && AIC->GetBlackboardComponent()) AIC->GetBlackboardComponent()->SetValueAsBool(TEXT("Stunned"), bStunned);
 }
 
 void AREnemy::SetToEndStun()
 {
-	if (AIC && AIC->GetBlackboardComponent())
-	{
-		AIC->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), false);
-	}
+	SetToStunned(AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(FRGameplayTags::Get().Debuff_Stun));
 }
 
 void AREnemy::InitAbilityActorInfo()
