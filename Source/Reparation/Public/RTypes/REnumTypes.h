@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include "CoreMinimal.h"
+#include "REnumTypes.generated.h"   // must be the last include
+
+//Enums and Structs
 class UInputMappingContext;
 class URGameplayAbility;
 
@@ -47,13 +51,26 @@ enum class ERGameDifficulty : uint8
 	VeryHard
 };
 
+UENUM(BlueprintType)
+enum class ERXPSource : uint8
+{
+	Main, Dungeon, MajorSide, MinorSide, Teleport,
+	Collectible, RareCollectible, Combat, Companion,
+	Secret, LoreSet, Discovery
+};
 
+USTRUCT(BlueprintType)
+struct FRSourceXP
+{
+	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly) ERXPSource Source = ERXPSource::Main;
 
+	// 10 entries, index 0 = chapter 1
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly) TArray<int32> XPByChapter;
 
-
-
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly) bool bCatchUpEligible = false;
+};
 
 
 

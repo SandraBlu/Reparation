@@ -14,6 +14,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChange, const FGameplayTag&
 DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquipped, const FGameplayTag&, const FGameplayTag&, const FGameplayTag&, const FGameplayTag&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivatePassiveAbility, const FGameplayTag& /*AbilityTag*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FActivatePassiveEffect, const FGameplayTag&, bool);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRParrySucceeded, AActor*, Attacker, bool, bInterrupted);
 
 USTRUCT()
 struct FRSkillPurchaseRecord
@@ -35,6 +36,9 @@ class REPARATION_API URAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Skills") TObjectPtr<class UAbilityInfo> SkillDefinitions;
 	const UAbilityInfo* GetSkillData() const;
+    /** A drawn sword or staff; ranged weapons and throwable props do not qualify. */
+    UFUNCTION(BlueprintPure, Category="Skills|Equipment") bool HasEquippedMeleeWeapon() const;
+    virtual bool AreAbilityTagsBlocked(const FGameplayTagContainer& Tags) const override;
 	UPROPERTY(Replicated, BlueprintReadOnly, Category="Skills|Progression") int32 CoreSkillPointsSpent = 0;
 	UPROPERTY(Replicated, BlueprintReadOnly, Category="Skills|Progression") TArray<FName> ProgressionUnlocks;
 	UFUNCTION(BlueprintPure, Category="Skills|Progression") bool IsSkillQuestEligible(FName UnlockId) const;
@@ -109,6 +113,11 @@ public:
 	UFUNCTION(Server, Reliable) void ServerUnequipAbility(FGameplayTag AbilityTag);
 	void RefreshPassiveSlotLimits();
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Melee|Counter") void RecordSuccessfulBlock(AActor* Attacker);
+	/** Called on actual guard state transitions; holding guard cannot reopen the timing window. */
+	void NotifyGuardStateChanged(bool bGuarding);
+	UPROPERTY(BlueprintAssignable, Category="Melee|Parry") FRParrySucceeded OnParrySucceeded;
+	UFUNCTION(BlueprintPure, Category="Melee|Parry") bool IsParryWindowOpen();
+	bool TryParryConfirmedBlock(AActor* Attacker);
 	UFUNCTION(BlueprintPure, Category="Melee|Counter") AActor* GetCounterstrikeTarget() const;
 	bool ConsumeCounterstrike();
 	UPROPERTY(EditDefaultsOnly, Category="Melee|Counter", meta=(ClampMin="0.1")) float CounterstrikeWindow = 1.25f;
@@ -131,6 +140,8 @@ public:
 protected:
 	TWeakObjectPtr<AActor> CounterstrikeAttacker;
 	double CounterstrikeExpires = -1;
+    bool bParryGuardHeld = false;
+    double ParryExpires = -1;
 
 	virtual void OnRep_ActivateAbilities() override;
 

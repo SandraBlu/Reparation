@@ -165,11 +165,13 @@ void UREquipItem_Weapon::HandleUnequip_Implementation()
 {
 	if (!GetOwningPawn()) return;
 	UREquipmentComponent* EquipmentComponent = Cast<UREquipmentComponent>(GetOwningPawn()->GetComponentByClass(UREquipmentComponent::StaticClass()));
-	if (EquipmentComponent && IsValid(EquipmentComponent->EquippedWeapon))
+	if (!EquipmentComponent) return;
+	ARWeapon*& EquippedActor = Slot == EEquipSlot::ES_Throwable ? EquipmentComponent->EquippedThrowable : EquipmentComponent->EquippedWeapon;
+	if (IsValid(EquippedActor))
 	{
-		EquipmentComponent->EquippedWeapon->OnUnEquip();
-		EquipmentComponent->EquippedWeapon->Destroy();
-		EquipmentComponent->EquippedWeapon = nullptr;
+		EquippedActor->OnUnEquip();
+		EquippedActor->Destroy();
+		EquippedActor = nullptr;
 		EquipmentComponent->OnWeaponChanged.Broadcast();
 	}
 }
@@ -180,7 +182,9 @@ void UREquipItem_Weapon::HandleEquip_Implementation()
 	if (WeaponClass)
 	{
 		UREquipmentComponent* EquipmentComponent = Cast<UREquipmentComponent>(GetOwningPawn()->GetComponentByClass(UREquipmentComponent::StaticClass()));
-		if (!EquipmentComponent || IsValid(EquipmentComponent->EquippedWeapon)) return;
+		if (!EquipmentComponent) return;
+		ARWeapon*& EquippedActor = Slot == EEquipSlot::ES_Throwable ? EquipmentComponent->EquippedThrowable : EquipmentComponent->EquippedWeapon;
+		if (IsValid(EquippedActor)) return;
 		//Spawn in Weapon
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -188,10 +192,14 @@ void UREquipItem_Weapon::HandleEquip_Implementation()
 
 		if (ARWeapon* Weapon = GetWorld()->SpawnActor<ARWeapon>(WeaponClass, SpawnParams))
 		{
-			EquipmentComponent->EquippedWeapon = Weapon;
+			EquippedActor = Weapon;
 			//Attach Weapon to Pawn
 			Weapon->IsEquipped = false;
-			if (EquipmentComponent->bArmNewWeapon) Weapon->OnEquip();
+			if (Slot == EEquipSlot::ES_Throwable)
+			{
+				Weapon->OnEquip();
+			}
+			else if (EquipmentComponent->bArmNewWeapon) Weapon->OnEquip();
 			else Weapon->OnUnEquip();
 			EquipmentComponent->OnWeaponChanged.Broadcast();
 		}
@@ -205,5 +213,6 @@ bool UREquipItem_Weapon::ShouldUseOnAdd_Implementation() const
 {
 	APawn* Pawn = GetOwningPawn();
 	UREquipmentComponent* Equipment = Pawn ? Pawn->FindComponentByClass<UREquipmentComponent>() : nullptr;
-	return WeaponClass && Equipment && !Equipment->GetEquippedItemAtSlot(Slot) && !IsValid(Equipment->GetEquippedWeapon());
+	return WeaponClass && Equipment && !Equipment->GetEquippedItemAtSlot(Slot)
+		&& !IsValid(Slot == EEquipSlot::ES_Throwable ? Equipment->EquippedThrowable : Equipment->EquippedWeapon);
 }

@@ -74,6 +74,7 @@ void FRGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Debuff_Dark = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.dark"), FString("De-buff to Dark Damage"));
 	GameplayTags.Debuff_Poison = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.poison"), FString("Poison damage over time"));
 	GameplayTags.Debuff_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.stun"), FString("De-buff to Electric damage"));
+	GameplayTags.Debuff_Stagger = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.stagger"), FString("Brief melee stagger, separate from stun and elemental freeze"));
 	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.burn"), FString("De-buff to fire damage"));
 	GameplayTags.Debuff_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("debuff.freeze"), FString("De-buff to ice damage"));
 

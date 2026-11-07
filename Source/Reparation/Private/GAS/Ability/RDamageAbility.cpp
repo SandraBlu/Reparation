@@ -57,6 +57,8 @@ void URDamageAbility::CauseDamage(AActor* TargetActor)
 	const float ScaledDamage = Damage.GetValueAtLevel(GetDamageScalingLevel());
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ScaledDamage);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
+	if (auto* Enemy = Cast<AREnemy>(TargetActor); Enemy && KnockdownSeconds > 0.f)
+		Enemy->ApplyKnockdown(KnockdownSeconds,GetAvatarActorFromActorInfo());
 }
 
 FDamageEffectParams URDamageAbility::MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor,
@@ -69,6 +71,7 @@ FDamageEffectParams URDamageAbility::MakeDamageEffectParamsFromClassDefaults(AAc
 	Params.SourceAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
 	Params.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	Params.BaseDamage = Damage.GetValueAtLevel(GetDamageScalingLevel());
+	Params.KnockdownSeconds = KnockdownSeconds;
 	Params.bSilentAttack = bSilentAttack;
 	Params.AbilityLevel = GetAbilityLevel();
 	Params.DamageType = DamageType;

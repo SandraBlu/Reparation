@@ -121,6 +121,7 @@ void UREquipmentComponent::EquipItem(class UREquipItem* Equippable)
 		if (const UREquipItem_Weapon* WeaponItem = Cast<UREquipItem_Weapon>(Equippable))
 		{
 			if (!WeaponItem->WeaponClass) return;
+			if (WeaponItem->Slot == EEquipSlot::ES_Weapon) StowEquippedThrowable();
 		}
 		if (GetEquippedItemAtSlot(Equippable->Slot) == Equippable) return;
 		//Remove the old item from our equipped items if one is already equipped
@@ -152,10 +153,11 @@ void UREquipmentComponent::UnequipItem(class UREquipItem* Equippable)
 	}
 }
 
-void UREquipmentComponent::OnWeaponEquipped() const
+void UREquipmentComponent::OnWeaponEquipped()
 {
 	if (EquippedWeapon)
 	{
+		StowEquippedThrowable();
 		EquippedWeapon->OnEquip();
 	}
 }
@@ -167,6 +169,7 @@ bool UREquipmentComponent::IsWeaponArmed() const
 
 void UREquipmentComponent::DrawWeapon()
 {
+	StowEquippedThrowable();
 	const bool bWasArmed = IsWeaponArmed();
 	if (!IsValid(EquippedWeapon))
 	{
@@ -189,6 +192,23 @@ void UREquipmentComponent::DrawWeapon()
 	}
 	if (IsValid(EquippedWeapon) && !bWasArmed) EquippedWeapon->ArmWithMontage();
 	OnWeaponChanged.Broadcast();
+}
+
+void UREquipmentComponent::StowEquippedThrowable()
+{
+	if (UREquipItem* Item = GetEquippedItemAtSlot(EEquipSlot::ES_Throwable))
+	{
+		Item->SetActive(false);
+		// Also clean up equipment restored with an inactive item flag.
+		if (GetEquippedItemAtSlot(EEquipSlot::ES_Throwable) == Item) UnequipItem(Item);
+	}
+	if (IsValid(EquippedThrowable))
+	{
+		EquippedThrowable->OnUnEquip();
+		EquippedThrowable->Destroy();
+		EquippedThrowable = nullptr;
+		OnWeaponChanged.Broadcast();
+	}
 }
 
 void UREquipmentComponent::DisarmWeapon()

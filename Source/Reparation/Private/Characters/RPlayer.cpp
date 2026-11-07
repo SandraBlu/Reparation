@@ -21,6 +21,7 @@
 #include "Locomotion/RCharacterMovementComponent.h"
 #include "Locomotion/RLocomotionComponent.h"
 #include "GAS/RAbilitySystemComponent.h"
+#include "GAS/Ability/RPlayerMeleeSkills.h"
 #include "GAS/Data/LevelUpInfo.h"
 #include "Input/RInputComponent.h"
 #include "UI/GAS/RHUD.h"
@@ -242,7 +243,25 @@ bool ARPlayer::GetIsUsingBlock()
 
 bool ARPlayer::SetIsUsingBlock(bool block)
 {
+    if (HasAuthority() && block)
+        if (auto* ASC = GetASC()) block = ASC->HasEquippedMeleeWeapon() && ASC->GetLearnedSkillRank(FRGameplayTags::Get().ability_block) > 0;
 	bUsingBlock = block;
+	if (HasAuthority())
+		if (auto* ASC = GetASC())
+		{
+			ASC->NotifyGuardStateChanged(block);
+            if (block)
+                if (auto* Spec = ASC->GetSpecFromAbilityTag(FRGameplayTags::Get().ability_block); Spec && !Spec->IsActive())
+                    ASC->TryActivateAbility(Spec->Handle);
+			if (!block)
+			{
+				// Sword guard owns its blocking tag; the legacy input removes only effects.
+				TArray<FGameplayAbilitySpecHandle> Guards;
+				for (const auto& Spec : ASC->GetActivatableAbilities())
+					if (Spec.IsActive() && Spec.Ability && Spec.Ability->IsA<URSwordBlock>()) Guards.Add(Spec.Handle);
+				for (auto Guard : Guards) ASC->CancelAbilityHandle(Guard);
+			}
+		}
 	return bUsingBlock;
 }
 
@@ -301,7 +320,8 @@ void ARPlayer::AbilityInputTagPressed(FGameplayTag InputTag)
 	if (CompanionCommands && CompanionCommands->IsCommandInputActive()) return;
 	if (InputTag.ToString() == TEXT("ability.weapon.equip")) { DrawWeapon(); return; }
 	if (InputTag.ToString() == TEXT("ability.weapon.disarm")) { DisarmWeapon(); return; }
-	if (Gear->EquippedWeapon == nullptr ) return;
+	// Loaded skills validate their own equipment requirements in CanActivateAbility.
+	// Throwables and other independent skills also work without a primary weapon.
 	if (GetASC() == nullptr) return;
 	if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 }

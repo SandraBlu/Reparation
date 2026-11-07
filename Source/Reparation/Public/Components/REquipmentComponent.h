@@ -87,6 +87,9 @@ public:
 	//Mark the item as equipped/unequipped
 	virtual void EquipItem(class UREquipItem* Equippable);
 	virtual void UnequipItem(class UREquipItem* Equippable);
+	/** Return an unused held throwable to inventory without consuming its quantity. */
+	UFUNCTION(BlueprintCallable, Category="Equipment|Weapon")
+	void StowEquippedThrowable();
 
 	/**Body mesh supplying clothing poses and accessory attachment sockets.*/
 	UPROPERTY()
@@ -109,10 +112,14 @@ public:
 	TMap<EEquipSlot, UREquipItem*> EquippedItems;
 	
 	UFUNCTION()
-	void OnWeaponEquipped() const;
+	void OnWeaponEquipped();
 	
 	 UPROPERTY(EditAnywhere, Category = "Weapon")
 	 class ARWeapon* EquippedWeapon;
+
+	/** Actor belonging to the separate inventory throwable slot. */
+	UPROPERTY(BlueprintReadOnly, Category = "Equipment")
+	class ARWeapon* EquippedThrowable = nullptr;
 	
 	 UFUNCTION(BlueprintPure)
 	 FORCEINLINE ARWeapon* GetEquippedWeapon() const { return EquippedWeapon; }

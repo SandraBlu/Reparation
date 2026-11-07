@@ -68,7 +68,6 @@ public:
 	TSubclassOf<URCompanionAttackAbility> AttackAbility;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Companion|Signature Skill") TSubclassOf<UGameplayAbility> SignatureAbility;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Companion|Signature Skill") FText SignatureSkillName;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Companion|Signature Skill", meta=(ClampMin="1")) float SignatureCooldown = 15.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Companion")
 	FText CompanionDisplayName;
@@ -79,7 +78,6 @@ protected:
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeAttributes() const override;
 private:
-	double NextSignatureTime = 0.0;
 	UPROPERTY(Transient) TObjectPtr<AActor> CombatTarget;
 	bool bAttributesInitialized = false;
 };

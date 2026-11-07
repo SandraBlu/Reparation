@@ -10,6 +10,7 @@
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/Data/RCharacterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "RTypes/REnumTypes.h"
 #include "UI/GAS/RHUD.h"
 #include "RAbilitySystemLibrary.generated.h"
@@ -51,6 +52,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|CharacterClassDefaults")
 	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass);
+
 	//Class/AbilityInfo
 	UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
 	static URCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
@@ -58,6 +60,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="RBFL|CharacterClassDefaults")
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
 
+	//XP
+	// Server only. UniqueID = NAME_None for repeatable XP (enemy kills).
+	// One-time items (quests, collectibles, teleports, secrets) must pass a unique ID.
+	UFUNCTION(BlueprintCallable, Category="XP")
+	static void AwardXP(AActor* PlayerActor, ERXPSource Source, FName UniqueID = NAME_None);
+
+	UFUNCTION(BlueprintCallable, Category="XP", meta=(WorldContext="WorldContextObject"))
+	static void AwardXPToPlayer(const UObject* WorldContextObject, ERXPSource Source, FName UniqueID = NAME_None);
+
+	
 	//Getters Damage Parameters
 	UFUNCTION(BlueprintPure, Category = "RBFL|GameplayEffects")
 	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
@@ -138,7 +150,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "AOBFL|GAMelee")
 	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
 
-	static int32 GetXPRewardForEnemySlay(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel);
+	static int32 GetXPRewardForEnemySlay(const UObject* WorldContextObject, ECharacterClass CharacterClass);
 
 	UFUNCTION(BlueprintCallable, Category = "RBFL|DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);

@@ -195,6 +195,9 @@ public:
 
 UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual bool UseItem(class URItem* Item);
+	/** Finish a launched throwable after its ability ends, without toggling equipment on. */
+	bool CompleteThrowableUse(class UREquipItem_Weapon* Item);
+
 	
 	/**Add an item to our inventory using a loot table instead of an item class. Current loads the granted items syncrounously and may cause hitching depending on how heavy the item is. */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")

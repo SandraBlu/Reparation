@@ -32,6 +32,9 @@ struct FCharClassInfo
 
 	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults")
 	FScalableFloat XPReward = FScalableFloat();
+
+	UPROPERTY(EditDefaultsOnly, Category="XP")
+	float XPMultiplier = 1.f;
 };
 
 /**

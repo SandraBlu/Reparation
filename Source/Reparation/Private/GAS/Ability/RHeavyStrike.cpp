@@ -50,16 +50,24 @@ TArray<int32> URHeavyStrike::GetAvailableAttackIndices() const
     const auto* PS = Player ? Player->GetPlayerState<ARPlayerState>() : nullptr;
     const int32 Level = PS ? PS->GetPlayerLevel() : 1;
     TArray<int32> Result;
-    for (int32 Index=0; Index<ThrustAttacks.Num(); ++Index)
-        if (IsValid(ThrustAttacks[Index].Montage) && Level >= FMath::Clamp(ThrustAttacks[Index].RequiredCharacterLevel,1,40))
-            Result.Add(Attacks.Num()+Index);
+    const auto& Options = GetThrustMontages();
+    for (int32 Index=0; Index<Options.Num(); ++Index)
+        if (IsValid(Options[Index].Montage) && Level >= FMath::Clamp(Options[Index].RequiredCharacterLevel,1,40))
+            Result.Add(GetAttackMontages().Num()+Index);
     return Result;
 }
 
 FRMeleeAttack URHeavyStrike::GetCurrentAttack() const
 {
-    const int32 Index = CurrentAttackIndex-Attacks.Num();
-    return bThrustAttack && ThrustAttacks.IsValidIndex(Index) ? ThrustAttacks[Index] : Super::GetCurrentAttack();
+    const int32 Index = CurrentAttackIndex-GetAttackMontages().Num();
+    const auto& Options = GetThrustMontages();
+    return bThrustAttack && Options.IsValidIndex(Index) ? Options[Index] : Super::GetCurrentAttack();
+}
+
+const TArray<FRMeleeAttack>& URHeavyStrike::GetThrustMontages() const
+{
+    if (bThrustMontagesLatched) return ActiveThrustMontages;
+    return UsesStaffMontages() ? StaffThrustAttacks : ThrustAttacks;
 }
 
 bool URHeavyStrike::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* Info,
@@ -78,6 +86,8 @@ void URHeavyStrike::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 {
     Super::ActivateAbility(Handle,Info,Activation,Event);
     if (!IsActive()) return;
+    ActiveThrustMontages = GetThrustMontages();
+    bThrustMontagesLatched = true;
     bThrustAttack = ShouldUseThrust();
     // Missing/level-gated thrust alternatives fall back to an authored slash.
     if (GetAvailableAttackIndices().IsEmpty()) bThrustAttack = false;
@@ -88,7 +98,7 @@ void URHeavyStrike::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
     auto* Close = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this,FRGameplayTags::Get().Event_MeleeEnd,nullptr,false,true);
     Close->EventReceived.AddDynamic(this,&URHeavyStrike::CloseHitWindow); Close->ReadyForActivation();
     const FRMeleeAttack Attack = GetCurrentAttack();
-    auto* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this,NAME_None,Attack.Montage,FMath::Max(.1f,PlayRate),Attack.SectionName);
+    auto* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this,NAME_None,Attack.Montage,FMath::Max(.1f,PlayRate),Attack.SectionName,true,1.f,0.f,true);
     Task->OnCompleted.AddDynamic(this,&URHeavyStrike::Completed);
     Task->OnInterrupted.AddDynamic(this,&URHeavyStrike::Interrupted);
     Task->OnCancelled.AddDynamic(this,&URHeavyStrike::Interrupted);
@@ -105,6 +115,8 @@ void URHeavyStrike::EndAbility(const FGameplayAbilitySpecHandle Handle,const FGa
     if (!IsEndAbilityValid(Handle,Info)) return;
     Super::EndAbility(Handle,Info,Activation,bReplicate,bCancelled);
     bThrustAttack = false;
+    bThrustMontagesLatched = false;
+    ActiveThrustMontages.Reset();
 }
 
 void URHeavyStrike::ProcessMeleeHit(const FHitResult& Hit)

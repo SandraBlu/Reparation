@@ -8,11 +8,19 @@
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "RGameplayTags.h"
 #include "AIController.h"
-URCompanionInterrupt::URCompanionInterrupt() { InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor; NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly; }
+#include "NativeGameplayTags.h"
+UE_DEFINE_GAMEPLAY_TAG_STATIC(CompanionCounterSkill,"ability.companion.katanaCounter");
+UE_DEFINE_GAMEPLAY_TAG_STATIC(CompanionCounterCooldown,"cooldown.companion.katanaCounter");
+URCompanionInterrupt::URCompanionInterrupt()
+{
+    InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+    NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
+    SetAssetTags(FGameplayTagContainer(CompanionCounterSkill));
+}
 bool URCompanionInterrupt::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
     const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-    if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags)) return false;
+    if (!GetCooldownGameplayEffect() || !Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags)) return false;
     ARCompanion* Companion = ActorInfo ? Cast<ARCompanion>(ActorInfo->AvatarActor.Get()) : nullptr;
     AREnemy* Enemy = Companion ? Cast<AREnemy>(Companion->GetCombatTarget_Implementation()) : nullptr;
     if (!Enemy || Enemy->IsDead_Implementation() || Companion->GetDistanceTo(Enemy) > 250.f || (Enemy->ElementalResistanceProfile && Enemy->ElementalResistanceProfile->bImmuneToControl)) return false;

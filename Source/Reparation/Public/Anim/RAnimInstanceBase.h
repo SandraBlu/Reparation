@@ -24,10 +24,44 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	/** Enable only on the main player ABP, never its linked layer instances. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon Layers") bool bManageWeaponLayers = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon Layers") TSubclassOf<UAnimInstance> KatanaAnimationLayers;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon Layers") TSubclassOf<UAnimInstance> BowAnimationLayers;
+	UPROPERTY(BlueprintReadOnly, Transient, Category="Weapon Layers") float WeaponGroundSpeed = 0.f;
+	UPROPERTY(BlueprintReadOnly, Transient, Category="Weapon Layers") float WeaponDirection = 0.f;
+    UPROPERTY(BlueprintReadOnly, Transient, Category="Bow|Aim") float BowAimAlpha = 0.f;
+    UPROPERTY(BlueprintReadOnly, Transient, Category="Bow|Aim") float BowAimYaw = 0.f;
+    UPROPERTY(BlueprintReadOnly, Transient, Category="Bow|Aim") float BowAimPitch = 0.f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Bow|Aim", meta=(ClampMin="0.1")) float BowAimBlendSpeed = 10.f;
+	UPROPERTY(BlueprintReadOnly, Transient, Category="Weapon Layers") TSubclassOf<UAnimInstance> ActiveWeaponAnimationLayers;
+	/** Also callable after an equipment change; NativeUpdate handles direct equip/holster paths. */
+	UFUNCTION(BlueprintCallable, Category="Weapon Layers") void RefreshWeaponAnimationLayers();
+	/** Override automatic equipment selection. None restores the original movement poses until reset. */
+	UFUNCTION(BlueprintCallable, Category="Weapon Layers") void SetWeaponAnimationLayerOverride(TSubclassOf<UAnimInstance> LayerClass);
+	/** Return control to automatic equipment selection. */
+	UFUNCTION(BlueprintCallable, Category="Weapon Layers") void ResetWeaponAnimationLayerOverride();
+	UPROPERTY(BlueprintReadOnly, Transient, Category="Weapon Layers") bool bHasWeaponAnimationLayerOverride = false;
+
+	/** Opt in only on animation blueprints that contain the terrain foot-placement graph. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Foot IK")
+	bool bEnableFootIK = false;
+
+	/** Blend back into terrain alignment after landing or a montage finishes. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Foot IK", meta=(ClampMin="0.1", ClampMax="30"))
+	float FootIKBlendInSpeed = 8.f;
+
+	/** Ground-only weight. Montages/root motion/traversal bypass IK to preserve authored foot lifts. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category="Foot IK")
+	float FootIKAlpha = 0.f;
+
 private:
+	friend class FRTerrainFootIKTest;
 
 	/** Caches the owner and its locomotion component. Safe to call repeatedly. */
 	void ResolveLocomotionComponent();
+	void UpdateFootIK(float DeltaSeconds);
+	UPROPERTY(Transient) TSubclassOf<UAnimInstance> WeaponAnimationLayerOverride;
 	
 protected:
 	UPROPERTY()

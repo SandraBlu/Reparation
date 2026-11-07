@@ -19,6 +19,11 @@ public:
 	URFootstepsComponent();
 
 	void HandleFootstep(EFoot Foot);
+	UFUNCTION(BlueprintPure, Category="Footsteps|AI Noise") float GetNoiseHearingRange() const;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Footsteps|AI Noise", meta=(ClampMin="0"))
+	float NoiseHearingRange=1000.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Footsteps|AI Noise", meta=(ClampMin="0",ClampMax="1"))
+	float CrouchedNoiseLoudness=.35f;
 
 protected:
 	

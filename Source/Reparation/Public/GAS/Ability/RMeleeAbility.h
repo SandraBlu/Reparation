@@ -57,7 +57,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Melee|Weapon")
 	ARWeapon* GetMeleeWeapon() const;
 
-	/** False if the mesh is missing either melee socket. */
+	/** Reads the configured weapon or character-mesh sockets; false if either is missing. */
 	UFUNCTION(BlueprintCallable, Category = "Melee|Weapon")
 	bool GetMeleeTraceLocations(FVector& Start, FVector& End) const;
 
@@ -102,6 +102,18 @@ public:
 		bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+    /** The double-bladed master weapon uses the existing Staff combat type. */
+    bool UsesStaffMontages() const;
+    const TArray<FRMeleeAttack>& GetAttackMontages() const;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Single Attacks", meta=(DisplayName="Staff Single Attacks"))
+    TArray<FRMeleeAttack> StaffAttacks;
+    /** Complete two-hit montage alternatives selected after purchasing ability.melee.combo2. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Combo Attacks", meta=(EditCondition="bUseTechniquePurchases"))
+    TArray<FRMeleeAttack> ComboAttacks;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Combo Attacks", meta=(EditCondition="bUseTechniquePurchases"))
+    TArray<FRMeleeAttack> StaffComboAttacks;
+    bool HasPurchasedCombo() const;
+    bool UsesMontageAlternatives() const;
     /** Opt in for a full-combo montage: a closed/reopened window represents a new strike. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Damage")
     bool bResetHitsPerDamageWindow = false;
@@ -122,11 +134,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Trace", meta = (ClampMin = "0.001"))
 	float TraceInterval = 0.01f;
 
+	/** Unarmed attacks use the same notify windows and hit tracking, tracing character sockets instead of a weapon. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Trace")
+	bool bTraceFromCharacterMesh = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Trace", meta=(EditCondition="bTraceFromCharacterMesh"))
+	FName TraceStartSocket = "foot_r";
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Trace", meta=(EditCondition="bTraceFromCharacterMesh"))
+	FName TraceEndSocket = "ball_r";
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Trace")
 	bool bDrawDebugTrace = false;
 
 	/** Sequential: execution order. Random: individual alternatives with character-level gates. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Combo")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee|Single Attacks", meta=(DisplayName="Single Attacks"))
 	TArray<FRMeleeAttack> Attacks;
 
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Melee|Combo")
@@ -142,6 +162,10 @@ protected:
 	bool bDamageWindowOpen = false;
 
 private:
+    bool bAttackMontagesLatched = false;
+    bool bActiveFullCombo = false;
+    UPROPERTY(Transient) TArray<FRMeleeAttack> ActiveAttackMontages;
+	bool IsMeleeTraceSourceValid() const;
 	void ResetMeleeState();
 	void TraceCurrentAttack();
 	FTimerHandle MeleeTraceTimer;

@@ -80,6 +80,13 @@ void ARPlayerState::SetLevel(int32 InLevel)
 	OnLevelChangeDelegate.Broadcast(Level);
 }
 
+bool ARPlayerState::TryMarkAwarded(FName ID)
+{
+	bool bAlreadyIn = false;
+	AwardedIDs.Add(ID, &bAlreadyIn);
+	return !bAlreadyIn;
+}
+
 void ARPlayerState::ApplyPIETestOverrides()
 {
 #if WITH_EDITOR

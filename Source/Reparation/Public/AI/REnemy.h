@@ -23,6 +23,8 @@ class REPARATION_API AREnemy : public ARCharacterBase
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Stealth|Assassination")
+	bool bCanBeAssassinated = true;
 
 	AREnemy(const FObjectInitializer& ObjectInitializer);
 
@@ -65,6 +67,28 @@ public:
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	void FreezeTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	void StaggerTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	/** Duration and overlap belong to GAS; callers never own recovery timers. */
+	UFUNCTION(BlueprintCallable, Category="Combat|Control")
+	bool ApplyControlEffect(bool bStagger, float Seconds, AActor* Source = nullptr);
+	/** Shared blast-back/down/get-up flow. Seconds belongs to the attacking ability. */
+	UFUNCTION(BlueprintCallable, Category="Combat|Control")
+	bool ApplyKnockdown(float Seconds, AActor* Source = nullptr);
+	/** Brief parry reaction; never requests blast-back or get-up presentation. */
+	UFUNCTION(BlueprintCallable, Category="Combat|Control")
+	bool ApplyParryStagger(float Seconds, AActor* Source = nullptr);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta=(DisplayName="Parried Montage", ToolTip="Reaction to a successful player parry. Uses the Parry ability stagger duration and does not trigger blast-back/get-up. No fallback when unassigned."))
+	TObjectPtr<UAnimMontage> ParriedMontage;
+	UPROPERTY(BlueprintReadOnly, Category="Combat|Control") bool bRecovering = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta=(DisplayName="Knockdown Recovery Montage"))
+	TObjectPtr<UAnimMontage> KnockdownRecoveryMontage;
+	UFUNCTION(BlueprintCallable, Category="Combat|Control")
+	void ApplyLegacyStun(bool Stunned, float StunDuration);
+	UPROPERTY(BlueprintReadOnly, Category="Combat|Control") bool bStaggered = false;
+	/** Reaction played while debuff.stagger is applied. Override per enemy Blueprint or placed enemy. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta=(DisplayName="Stagger Montage", ToolTip="Animation montage for ordinary stagger/knockdown (Jump Strike or Kick). Parry uses Parried Montage instead. Change here for this enemy; this does not change stagger duration."))
+	TObjectPtr<UAnimMontage> StaggerMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Combat|Control") TObjectPtr<UAnimMontage> StunRecoveryMontage;
 	bool bFrozen = false;
 	
 	UFUNCTION(BlueprintCallable)
@@ -96,6 +120,18 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeAttributes() const override;
+	void BindControlTags();
+	void RefreshControlMovement();
+	void CancelControlAttacks();
+	void PlayControlMontage(UAnimMontage* Montage, bool bLoop);
+	UFUNCTION() void ParriedPresentationEnded(UAnimMontage* Montage, bool bInterrupted);
+	void StartKnockdownRecovery();
+	void FinishKnockdownRecovery(UAnimMontage* Montage, bool bInterrupted, uint32 Generation);
+	bool bNeedsKnockdownRecovery = false;
+	bool bApplyingParryReaction = false;
+	UPROPERTY(Transient) TObjectPtr<UAnimMontage> ActiveStaggerMontage;
+	uint32 RecoveryGeneration = 0;
+	friend class FEnemyControlTest;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent* HealthBar;

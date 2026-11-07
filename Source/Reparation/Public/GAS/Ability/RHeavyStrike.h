@@ -24,6 +24,7 @@ protected:
     friend class FHeavyStrikeTest;
     /** Attacks (inherited) holds heavy slashes; this separate array holds forward thrusts. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Heavy Strike") TArray<FRMeleeAttack> ThrustAttacks;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Weapon Montages") TArray<FRMeleeAttack> StaffThrustAttacks;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Attack", meta=(ClampMin="0.1")) float PlayRate = 1.f;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Attack", meta=(ClampMin="0")) float DamageMultiplier = 1.5f;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Melee|Heavy Strike", meta=(ClampMin="0")) float MinimumForwardSpeed = 30.f;
@@ -34,6 +35,9 @@ protected:
     UFUNCTION() void Completed();
     UFUNCTION() void Interrupted();
 private:
+    const TArray<FRMeleeAttack>& GetThrustMontages() const;
+    bool bThrustMontagesLatched = false;
+    UPROPERTY(Transient) TArray<FRMeleeAttack> ActiveThrustMontages;
     // Latched once at activation, so changing movement cannot change an ongoing attack.
     bool bThrustAttack = false;
 };

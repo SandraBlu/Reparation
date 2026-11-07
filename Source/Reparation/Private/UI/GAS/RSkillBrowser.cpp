@@ -225,7 +225,9 @@ void URSkillBrowser::RefreshDetails()
     const FString ElementName = CurrentElement.IsValid() ? CurrentMastery.DisplayName.ToString() : TEXT("Physical");
     MeleeElement->SetText(FText::FromString(TEXT("Melee: ") + ElementName));
     const FRAbilityInfo Entry = Controller->GetSkillDefinition(SelectedSkill);
-    PurchaseButton->SetIsEnabled(Entry.AbilityTag.IsValid() && ASC->GetSkillUpgradeIssue(SelectedSkill).IsEmpty());
+    const FText PurchaseIssue=ASC->GetSkillUpgradeIssue(SelectedSkill);
+    PurchaseButton->SetIsEnabled(Entry.AbilityTag.IsValid() && PurchaseIssue.IsEmpty());
+    PurchaseButton->SetToolTipText(PurchaseIssue);
     const bool bElement = Entry.AbilityTag.IsValid() && Entry.Discipline == ERSkillDiscipline::Elemental;
     ElementButton->SetVisibility(bElement ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     ElementButton->SetIsEnabled(bElement && ASC->GetLearnedSkillRank(SelectedSkill) > 0 && CurrentElement != SelectedSkill);

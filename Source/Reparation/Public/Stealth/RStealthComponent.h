@@ -20,6 +20,13 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="Stealth") 
 	bool IsConcealed() const;
+	/** Call from player noise/footstep Blueprint events too; AI hearing records detected noise here. */
+	UFUNCTION(BlueprintCallable, Category="Stealth|Noise")
+	void RecordNoise(float Loudness = 1.f);
+	UFUNCTION(BlueprintPure, Category="Stealth|Noise")
+	bool IsQuiet(float MaximumSpeed, float QuietSeconds) const;
+	UFUNCTION(BlueprintPure, Category="Stealth|Noise")
+	float GetMovementNoiseRangeMultiplier() const;
 
 	/** Cover blocks sight at any distance, including for previously spotted targets. */
 	bool IsConcealedFrom(const FVector& ObserverLocation, bool bPreviouslyVisible) const;
@@ -31,6 +38,7 @@ public:
 	bool bConcealmentEnabled = true;
 
 private:
+	double LastNoiseTime = -1.e20;
 	bool bLastConcealed = false;
 	bool FindConcealment() const;
 };

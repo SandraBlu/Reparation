@@ -75,7 +75,9 @@ void UROverlayWidgetController::BindCallbacksToDependencies()
 void UROverlayWidgetController::OnXPChange(int32 NewXP)
 {
 	const ULevelUpInfo* LevelUpInfo = GetRPS()->LevelUpInfo;
+	if (!LevelUpInfo) return;
 	OnXPPercentChangeDelegate.Broadcast(LevelUpInfo ? LevelUpInfo->GetProgressForXP(NewXP) : 0.f);
+	OnXPProgressChangedDelegate.Broadcast(LevelUpInfo ? LevelUpInfo->GetXPIntoLevel(NewXP) : 0,LevelUpInfo ? LevelUpInfo->GetXPToNextLevel(NewXP) : 0);
 }
 
 void UROverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PrevSlot) const

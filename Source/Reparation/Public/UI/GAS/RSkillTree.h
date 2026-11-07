@@ -60,12 +60,24 @@ class REPARATION_API URSkillTreeNode : public URSkillBrowserButton
 {
     GENERATED_BODY()
 public:
-    UPROPERTY(BlueprintReadOnly, Category="Skill Tree") FName NodeId;
+    /** Matches an Id in DA_SkillTreeLayout. Place nodes on TreeCanvas and drag them in Designer. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Skill Tree") FName NodeId;
+    /** Ability selected by this Designer node. Empty uses the parent Skill Links map, then the layout. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintSetter=SetSkillTag, Category="Skill Tree", meta=(Categories="ability")) FGameplayTag SkillTag;
+    UFUNCTION(BlueprintCallable, Category="Skill Tree") void SetSkillTag(FGameplayTag NewSkillTag);
+    /** Per-node artwork override; takes precedence over the skill data icon. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintSetter=SetIconTexture, Category="Skill Icon", meta=(ExposeOnSpawn=true, DisplayName="Icon")) TObjectPtr<UTexture2D> IconTexture;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintSetter=SetIconSize, Category="Skill Icon", meta=(ExposeOnSpawn=true, ClampMin="16", DisplayName="Icon Size")) float IconPixelSize = 56.f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintSetter=SetCircleSize, Category="Skill Icon", meta=(ExposeOnSpawn=true, ClampMin="32", DisplayName="Circle Size")) float CircleDiameter = 88.f;
+    UFUNCTION(BlueprintCallable, Category="Skill Icon") void SetIconTexture(UTexture2D* NewIcon);
+    UFUNCTION(BlueprintCallable, Category="Skill Icon") void SetIconSize(float NewSize);
+    UFUNCTION(BlueprintCallable, Category="Skill Icon") void SetCircleSize(float NewSize);
+    virtual void SynchronizeProperties() override;
     UPROPERTY(BlueprintReadOnly, Category="Skill Tree") bool bLearned = false;
     UPROPERTY(BlueprintReadOnly, Category="Skill Tree") bool bAvailable = false;
     UPROPERTY(BlueprintReadOnly, Category="Skill Tree") bool bPlanned = false;
     UPROPERTY(BlueprintReadOnly, Category="Skill Tree") bool bPassive = false;
-    ERSkillTreeBranch Branch = ERSkillTreeBranch::Melee;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Skill Tree") ERSkillTreeBranch Branch = ERSkillTreeBranch::Melee;
     FLinearColor LearnedHighlight = FLinearColor(1.f,.77f,.25f,1);
     float LearnedRingWidth = 3.f;
     void UpdateVisual(UTexture2D* Icon, FText Rank, FLinearColor Color, bool bSelected);
@@ -78,6 +90,8 @@ protected:
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UImage> SkillIcon;
     UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional)) TObjectPtr<UTextBlock> RankText;
     bool bHasIcon = false;
+    UPROPERTY(Transient) TObjectPtr<UTexture2D> DataIcon;
+    void ApplyIconAppearance();
 };
 
 UCLASS()
@@ -104,6 +118,15 @@ class REPARATION_API URSkillTree : public URSkillBrowser
     GENERATED_BODY()
 public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Skill Tree") TSoftObjectPtr<URSkillTreeLayout> LayoutAsset;
+    /** Node Id -> skill ability tag. Overrides the layout link for this widget Blueprint only.
+     * Unlisted nodes use the layout asset. Use SetSkillLink to change a link during play. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Skill Tree|Skill Links", meta=(Categories="ability"))
+    TMap<FName, FGameplayTag> SkillLinks;
+    /** Set or replace a node's skill link and refresh its selection, details and loadout controls. */
+    UFUNCTION(BlueprintCallable, Category="Skill Tree|Skill Links") void SetSkillLink(FName NodeId, FGameplayTag SkillTag);
+    /** Restore this node's link from the layout asset. */
+    UFUNCTION(BlueprintCallable, Category="Skill Tree|Skill Links") void ClearSkillLink(FName NodeId);
+    UFUNCTION(BlueprintCallable, Category="Skill Tree|Skill Links") void RefreshSkillLinks();
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Skill Tree") TSubclassOf<URSkillTreeNode> NodeClass;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Skill Tree|Loadout") TSubclassOf<URSkillLoadoutSlot> SlotWidgetClass;
     UFUNCTION(BlueprintCallable, Category="Skill Tree") void SelectTreeNode(FName Id);
@@ -125,7 +148,10 @@ protected:
     virtual void RefreshDetails() override;
 private:
     UPROPERTY() TObjectPtr<URSkillTreeLayout> Layout;
+    /** Per-widget resolved links; never modify the shared layout asset at runtime. */
+    UPROPERTY(Transient) TArray<FRSkillTreeEntry> ResolvedEntries;
     UPROPERTY() TArray<TObjectPtr<URSkillTreeNode>> TreeNodes;
+    /** Only generated content is discarded during refresh; Designer widgets retain their slots. */
     FName SelectedNode;
     bool bChoosingSlot = false;
     bool bConfirmRespec = false;

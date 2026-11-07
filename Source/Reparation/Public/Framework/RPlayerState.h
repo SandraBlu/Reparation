@@ -52,6 +52,10 @@ public:
 	void SetXP(int32 InXP);
 	void SetLevel(int32 InLevel);
 
+	int32 GetCurrentChapter() const { return CurrentChapter; }
+	void SetCurrentChapter(int32 InChapter) { CurrentChapter = FMath::Max(1, InChapter); }
+	bool TryMarkAwarded(FName ID);   // false if this ID was already paid
+
 	// Called before player attributes and eligible abilities initialize. Once per PIE player state.
 	void ApplyPIETestOverrides();
 
@@ -69,7 +73,7 @@ private:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
 	int32 Level = 1;
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_XP)
-	int32 XP = 1;
+	int32 XP = 0; //int32 XP = 1;
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_AttributePoints)
 	int32 AttributePoints = 0;
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_AbilityPoints)
@@ -83,5 +87,11 @@ private:
 	void OnRep_AttributePoints(int32 OldAttributePoints);
 	UFUNCTION()
 	void OnRep_AbilityPoints(int32 OldAbilityPoints);
+
+	UPROPERTY(SaveGame)
+	int32 CurrentChapter = 1;
+	
+	UPROPERTY(SaveGame)
+	TSet<FName> AwardedIDs;
 	
 };

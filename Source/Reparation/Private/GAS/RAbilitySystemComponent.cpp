@@ -4,6 +4,7 @@
 #include "GAS/RAbilitySystemComponent.h"
 #include "GAS/Ability/RElementalMastery.h"
 #include "GAS/Ability/RMeleeAbility.h"
+#include "GAS/Ability/RThrowMaster.h"
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
@@ -25,6 +26,28 @@ void URAbilitySystemComponent::PreserveDebuffPeriod(FActiveGameplayEffectHandle 
 #include "Framework/RPlayerState.h"
 #include "GAS/Data/LevelUpInfo.h"
 #include "GAS/RAttributeSet.h"
+#include "Components/REquipmentComponent.h"
+#include "Actors/RWeapon.h"
+
+bool URAbilitySystemComponent::HasEquippedMeleeWeapon() const
+{
+    const AActor* Avatar = GetAvatarActor();
+    const auto* Gear = Avatar ? Avatar->FindComponentByClass<UREquipmentComponent>() : nullptr;
+    const ARWeapon* Weapon = Gear ? Gear->EquippedWeapon : nullptr;
+    return IsValid(Weapon) && Weapon->IsEquipped
+        && (Weapon->CombatType == ECombatType::ECT_LightSword || Weapon->CombatType == ECombatType::ECT_Staff);
+}
+
+bool URAbilitySystemComponent::AreAbilityTagsBlocked(const FGameplayTagContainer& Tags) const
+{
+    if (Super::AreAbilityTagsBlocked(Tags)) return true;
+    if (Cast<ARPlayer>(GetAvatarActor()) && !HasEquippedMeleeWeapon())
+        if (const UAbilityInfo* Data = GetSkillData())
+            for (const FRAbilityInfo& Skill : Data->AbilityInfo)
+                if (Skill.Discipline == ERSkillDiscipline::Melee && Skill.AbilityTag.IsValid() && Tags.HasTagExact(Skill.AbilityTag))
+                    return true;
+    return false;
+}
 
 void URAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -39,7 +62,8 @@ void URAbilitySystemComponent::AddGrantedAbilities(const TArray<TSubclassOf<UGam
 		if (const UAbilityInfo* Data = GetSkillData(); Cast<ARPlayer>(GetAvatarActor()) && Data)
 		{
 			const FRAbilityInfo Info = Data->FindAbilityInfoForTag(GetAbilityTagFromSpec(AbilitySpec));
-			if (Info.AbilityTag.IsValid() && (!Info.bSkillTreePurchasable || Info.AbilityTag == Data->AutomaticTierReward)) continue;
+			if (Info.AbilityTag.IsValid() && ((!Info.bSkillTreePurchasable && Info.AbilityTag != FRGameplayTags::Get().ability_Melee) || Info.AbilityTag == Data->AutomaticTierReward
+                || (Info.AbilityType != FRGameplayTags::Get().ability_type_dynamic && Info.AbilityType != FRGameplayTags::Get().ability_type_passive))) continue;
 		}
 		if (const URGameplayAbility* RAbility = Cast<URGameplayAbility>(AbilitySpec.Ability))
 		{
@@ -106,7 +130,7 @@ void URAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Input
 {
 	const FRGameplayTags GameplayTags = FRGameplayTags::Get();
 	
-	if (!InputTag.IsValid() || !InputTag.MatchesTag(GameplayTags.InputTag_MustBeHeld))
+	if (!InputTag.IsValid())
 	{
 		return;
 	}
@@ -116,7 +140,10 @@ void URAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Input
  	{
  		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag) && AbilitySpec.IsActive())
  		{
- 			CancelAbilityHandle(AbilitySpec.Handle);
+            const auto* Throw = Cast<URThrowMaster>(AbilitySpec.GetPrimaryInstance());
+            const bool bConfirmThrow = Throw && Throw->bAimBeforeThrow;
+            if (!bConfirmThrow && !InputTag.MatchesTag(GameplayTags.InputTag_MustBeHeld)) continue;
+ 			if (!bConfirmThrow) CancelAbilityHandle(AbilitySpec.Handle);
  			AbilitySpecInputReleased(AbilitySpec);
 			// Instanced abilities each hold their own activation info; the copy on the
 			// spec is deprecated and only ever applied to non-instanced abilities.
@@ -397,7 +424,7 @@ FText URAbilitySystemComponent::GetSkillUpgradeIssue(const FGameplayTag& Ability
 	const FRAbilityInfo Entry = Data ? Data->FindAbilityInfoForTag(AbilityTag) : FRAbilityInfo();
 	if (Data && (!Entry.AbilityTag.IsValid() || !Entry.Ability)) return FText::FromString(TEXT("This technique is not available yet."));
 	if (!Entry.bSkillTreePurchasable) return FText::FromString(Data && AbilityTag == Data->AutomaticTierReward
-		? TEXT("Granted automatically after completing the required tier; no purchase needed.") : TEXT("This effect is not purchased through the skill tree."));
+		? TEXT("Granted automatically through skill progression; no purchase or loadout slot needed.") : TEXT("This effect is not purchased through the skill tree."));
 	if (PS->GetPlayerLevel() < Entry.LevelRequirement) return FText::FromString(FString::Printf(TEXT("Requires character level %d."), Entry.LevelRequirement));
 	if (!IsBranchTierUnlocked(Entry.Discipline, Entry.BranchTier, Entry.PreviousTierSkillsRequired))
 		return FText::FromString(FString::Printf(TEXT("Learn %d skill(s) in the preceding branch tier first."), FMath::Max(1, Entry.PreviousTierSkillsRequired)));
@@ -413,7 +440,7 @@ FText URAbilitySystemComponent::GetSkillUpgradeIssue(const FGameplayTag& Ability
 	}
 	for (const FRSkillPrerequisite& Required : Entry.Prerequisites)
 	{
-		if (GetLearnedSkillRank(Required.AbilityTag) < FMath::Max(1, Required.RequiredRank))
+		if (GetLearnedSkillRank(Required.AbilityTag) < FMath::Max(0, Required.RequiredRank))
 		{
 			const FRAbilityInfo Prerequisite = Data->FindAbilityInfoForTag(Required.AbilityTag);
 			const FString Name = Prerequisite.DisplayName.IsEmpty() ? Required.AbilityTag.ToString() : Prerequisite.DisplayName.ToString();
@@ -503,6 +530,7 @@ void URAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplay
 						DeactivatePassiveAbilityDelegate.Broadcast(GetAbilityTagFromSpec(*SpecWithSlot));
 						CancelAbilityHandle(SpecWithSlot->Handle);
 					}
+					if (SpecWithSlot->IsActive()) CancelAbilityHandle(SpecWithSlot->Handle);
 					ClearSlot(SpecWithSlot);
 					SpecWithSlot->GetDynamicSpecSourceTags().RemoveTag(Tag.ability_status_equipped);
 					SpecWithSlot->GetDynamicSpecSourceTags().AddTag(Tag.ability_status_unlocked);
@@ -573,6 +601,7 @@ void URAbilitySystemComponent::ServerUnequipAbility_Implementation(FGameplayTag 
 		CancelAbilityHandle(Spec->Handle);
 		MulticastActivatePassiveEffect(AbilityTag, false);
 	}
+	if (Spec->IsActive()) CancelAbilityHandle(Spec->Handle);
 	ClearSlot(Spec);
 	const auto& Tags = FRGameplayTags::Get();
 	Spec->GetDynamicSpecSourceTags().RemoveTag(Tags.ability_status_equipped);

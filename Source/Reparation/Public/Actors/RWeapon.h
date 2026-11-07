@@ -35,6 +35,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	FGameplayTag WeaponTag;
+
+	/** Optional linked animation layer implementation for this weapon's character poses. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon|Animation")
+	TSubclassOf<class UAnimInstance> WeaponAnimationLayers;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
 	FName ActiveWeaponSocket;

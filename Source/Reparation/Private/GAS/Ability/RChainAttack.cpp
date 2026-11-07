@@ -2,6 +2,7 @@
 #include "NativeGameplayTags.h"
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(ChainAttackSkill, "ability.technique.chainAttack");
+UE_DEFINE_GAMEPLAY_TAG_STATIC(ChainAttackCooldown, "cooldown.chainAttack");
 
 URChainAttack::URChainAttack()
 {

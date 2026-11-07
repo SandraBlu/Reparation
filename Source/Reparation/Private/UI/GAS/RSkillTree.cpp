@@ -6,6 +6,8 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Components/ButtonSlot.h"
+#include "Components/OverlaySlot.h"
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "Components/VerticalBox.h"
@@ -28,6 +30,45 @@ FLinearColor URSkillTreeLayout::GetBranchColor(ERSkillTreeBranch Branch) const
 void URSkillLoadoutSlot::NativePreConstruct()
 {
     Super::NativePreConstruct();
+    // Active/passive columns may stretch their rows; keep the layered icon itself square.
+    if (WidgetTree)
+    {
+        if (auto* Circle = Cast<USizeBox>(WidgetTree->FindWidget(TEXT("CircleSize"))))
+        {
+            const float Side = Circle->IsWidthOverride() ? FMath::Max(1.f, Circle->GetWidthOverride()) : 92.f;
+            Circle->SetWidthOverride(Side); Circle->SetHeightOverride(Side);
+            Circle->SetMinDesiredWidth(Side); Circle->SetMaxDesiredWidth(Side);
+            Circle->SetMinDesiredHeight(Side); Circle->SetMaxDesiredHeight(Side);
+            Circle->SetMinAspectRatio(1.f); Circle->SetMaxAspectRatio(1.f);
+            if (auto* CircleSlot = Cast<UVerticalBoxSlot>(Circle->Slot))
+            {
+                CircleSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+                CircleSlot->SetHorizontalAlignment(HAlign_Center);
+                CircleSlot->SetVerticalAlignment(VAlign_Center);
+            }
+        }
+        if (Button)
+        {
+            auto Style = Button->GetStyle();
+            Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
+            Button->SetStyle(Style);
+        }
+        if (auto* Layers = WidgetTree->FindWidget(TEXT("HudIconLayers")))
+            if (auto* LayerContentSlot = Cast<UButtonSlot>(Layers->Slot))
+            {
+                LayerContentSlot->SetPadding(FMargin(0.f));
+                LayerContentSlot->SetHorizontalAlignment(HAlign_Fill); LayerContentSlot->SetVerticalAlignment(VAlign_Fill);
+            }
+        for (const TCHAR* Name : {TEXT("AbilityBG"), TEXT("SkillIcon"), TEXT("Glass"), TEXT("SkillRing")})
+            if (auto* Layer = WidgetTree->FindWidget(FName(Name)))
+                if (auto* ImageSlot = Cast<UOverlaySlot>(Layer->Slot))
+                {
+                    const FMargin ImagePadding = ImageSlot->GetPadding();
+                    const float Inset = FMath::Max(FMath::Max(ImagePadding.Left, ImagePadding.Right), FMath::Max(ImagePadding.Top, ImagePadding.Bottom));
+                    ImageSlot->SetPadding(FMargin(Inset));
+                    ImageSlot->SetHorizontalAlignment(HAlign_Fill); ImageSlot->SetVerticalAlignment(VAlign_Fill);
+                }
+    }
     if (Button) { Button->OnClicked.RemoveDynamic(this, &URSkillBrowserButton::Clicked); Button->OnClicked.AddUniqueDynamic(this, &URSkillLoadoutSlot::SelectSlot); }
 }
 void URSkillLoadoutSlot::SelectSlot()
@@ -52,9 +93,47 @@ void URSkillLoadoutSlot::UpdateSlotVisual(UTexture2D* Icon, UMaterialInterface* 
     if (SlotNameText) SlotNameText->SetText(Name);
 }
 
+void URSkillTreeNode::SetIconTexture(UTexture2D* NewIcon)
+{
+    IconTexture = NewIcon;
+    ApplyIconAppearance();
+}
+void URSkillTreeNode::SetIconSize(float NewSize)
+{
+    IconPixelSize = FMath::Max(16.f, NewSize);
+    ApplyIconAppearance();
+}
+void URSkillTreeNode::SetCircleSize(float NewSize)
+{
+    CircleDiameter = FMath::Max(32.f, NewSize);
+    ApplyIconAppearance();
+}
+void URSkillTreeNode::SynchronizeProperties()
+{
+    Super::SynchronizeProperties();
+    ApplyIconAppearance();
+}
+void URSkillTreeNode::ApplyIconAppearance()
+{
+    if (WidgetTree)
+    {
+        if (auto* Size = Cast<USizeBox>(WidgetTree->FindWidget(TEXT("CircleSize"))))
+        { Size->SetWidthOverride(CircleDiameter); Size->SetHeightOverride(CircleDiameter); }
+        if (auto* Size = Cast<USizeBox>(WidgetTree->FindWidget(TEXT("IconSize"))))
+        { Size->SetWidthOverride(IconPixelSize); Size->SetHeightOverride(IconPixelSize); }
+    }
+    UTexture2D* DisplayIcon = IconTexture ? IconTexture.Get() : DataIcon.Get();
+    bHasIcon = DisplayIcon != nullptr;
+    if (SkillIcon)
+    {
+        SkillIcon->SetBrushFromTexture(DisplayIcon);
+        SkillIcon->SetVisibility(DisplayIcon ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    }
+}
 void URSkillTreeNode::NativePreConstruct()
 {
     Super::NativePreConstruct();
+    ApplyIconAppearance();
     if (Button)
     {
         Button->OnClicked.RemoveDynamic(this, &URSkillBrowserButton::Clicked);
@@ -72,6 +151,8 @@ FVector2D URSkillTreeNode::GetConnectionPoint() const
 }
 void URSkillTreeNode::UpdateVisual(UTexture2D* Icon, FText Rank, FLinearColor Color, bool bIsSelected)
 {
+    DataIcon = Icon;
+    if (IconTexture) Icon = IconTexture;
     bHasIcon = Icon != nullptr;
     SetSelected(bIsSelected);
     if (SkillIcon)
@@ -142,59 +223,96 @@ void URSkillTree::RebuildList()
     if (!Controller || !TreeCanvas) return;
     Layout = LayoutAsset.LoadSynchronous();
     if (!Layout) return;
+    TreeNodes.Reset();
+    TMap<FName, URSkillTreeNode*> DesignerNodes;
+    WidgetTree->ForEachWidget([&DesignerNodes](UWidget* Widget)
+    {
+        if (auto* Node = Cast<URSkillTreeNode>(Widget)) DesignerNodes.Add(Node->NodeId, Node);
+    });
+    ResolvedEntries = Layout->Nodes;
+    // Blueprint owns which nodes exist. Layout data must never recreate deleted widgets.
+    ResolvedEntries.RemoveAll([&DesignerNodes](const FRSkillTreeEntry& Entry)
+    {
+        return !DesignerNodes.Contains(Entry.Id);
+    });
+    // A Designer-authored node can call its skill without a duplicate layout entry.
+    for (const auto& Pair : DesignerNodes)
+        if (!Pair.Key.IsNone() && (Pair.Value->SkillTag.IsValid() || SkillLinks.Contains(Pair.Key))
+            && !ResolvedEntries.ContainsByPredicate([&Pair](const FRSkillTreeEntry& Entry){ return Entry.Id == Pair.Key; }))
+        {
+            FRSkillTreeEntry Entry;
+            Entry.Id = Pair.Key;
+            Entry.Skill = Pair.Value->SkillTag;
+            Entry.Branch = Pair.Value->Branch;
+            ResolvedEntries.Add(Entry);
+        }
+    for (FRSkillTreeEntry& Entry : ResolvedEntries)
+    {
+        const URSkillTreeNode* DesignerNode = DesignerNodes.FindRef(Entry.Id);
+        const FGameplayTag* Link = DesignerNode && DesignerNode->SkillTag.IsValid() ? &DesignerNode->SkillTag : SkillLinks.Find(Entry.Id);
+        if (Link)
+        {
+            Entry.Skill = *Link;
+            if (Link->IsValid())
+            {
+                Entry.bPlanned = false;
+                Entry.bJunction = false;
+                const FRAbilityInfo Info = Controller->GetSkillDefinition(*Link);
+                if (!Info.DisplayName.IsEmpty()) Entry.Title = Info.DisplayName;
+                Entry.Description = Info.Summary;
+            }
+        }
+    }
     if (USizeBox* Bounds = Cast<USizeBox>(WidgetTree->FindWidget(TEXT("TreeBounds"))))
     {
         Bounds->SetWidthOverride(Layout->CanvasSize.X);
         Bounds->SetHeightOverride(Layout->CanvasSize.Y);
     }
-    TreeCanvas->ClearChildren(); TreeNodes.Reset();
-    if (PassiveChoices) PassiveChoices->ClearChildren();
-    for (ERSkillTreeBranch Branch : {ERSkillTreeBranch::Stealth,ERSkillTreeBranch::Melee,ERSkillTreeBranch::Archer})
-        for (int32 Tier=1; Tier<=5; ++Tier)
-        {
-            FVector2D Center = FVector2D::ZeroVector; int32 Count=0; FText TierName;
-            for (const FRSkillTreeEntry& Entry : Layout->Nodes) if (Entry.Branch == Branch && Entry.Tier == Tier
-                && !(PassiveChoices && (Entry.bPassive || Controller->GetSkillDefinition(Entry.Skill).AbilityType == FRGameplayTags::Get().ability_type_passive)))
-            { Center += Entry.Position; ++Count; TierName = Entry.TierName; }
-            if (!Count) continue;
-            Center /= Count;
-            auto* Heading = WidgetTree->ConstructWidget<UTextBlock>();
-            const TCHAR* BranchName = Branch == ERSkillTreeBranch::Stealth ? TEXT("STEALTH") : Branch == ERSkillTreeBranch::Melee ? TEXT("MELEE") : TEXT("RANGED");
-            Heading->SetText(FText::FromString(FString::Printf(TEXT("%s / %s / %d POINT(S)"), BranchName, *TierName.ToString().ToUpper(), Tier)));
-            Heading->SetJustification(ETextJustify::Center); Heading->SetColorAndOpacity(Layout->GetBranchColor(Branch));
-            auto Font = Heading->GetFont(); Font.Size=16; Heading->SetFont(Font);
-            Heading->SetVisibility(ESlateVisibility::HitTestInvisible);
-            auto* HeadingSlot = TreeCanvas->AddChildToCanvas(Heading);
-            HeadingSlot->SetPosition(Center + FVector2D(Layout->NodeSize.X*.5f-240,-32)); HeadingSlot->SetSize(FVector2D(480,28));
-        }
-    for (const FRSkillTreeEntry& Entry : Layout->Nodes)
+    // Branch titles are editable Designer widgets below the tree, not runtime tier overlays.
+    for (const FRSkillTreeEntry& Entry : ResolvedEntries)
     {
-        URSkillTreeNode* Node = CreateWidget<URSkillTreeNode>(GetOwningPlayer(), NodeClass ? NodeClass.Get() : URSkillTreeNode::StaticClass());
+        URSkillTreeNode* Node = DesignerNodes.FindRef(Entry.Id);
+        if (!Node) continue;
         Node->Browser = this; Node->NodeId = Entry.Id; Node->Skill = Entry.Skill; Node->Label = Entry.Title;
         Node->bPlanned = Entry.bPlanned; Node->Branch = Entry.Branch;
         Node->LearnedHighlight = Layout->LearnedColor; Node->LearnedRingWidth = Layout->LearnedRingWidth;
         Node->bApplyMenuStyle = false;
         const FRAbilityInfo Info = Controller->GetSkillDefinition(Entry.Skill);
         Node->bPassive = Entry.bPassive || Info.AbilityType == FRGameplayTags::Get().ability_type_passive;
-        if (Node->bPassive && PassiveChoices)
-            PassiveChoices->AddChildToVerticalBox(Node)->SetPadding(FMargin(0,0,0,10));
-        else
-        {
-            UCanvasPanelSlot* NodeSlot = TreeCanvas->AddChildToCanvas(Node);
-            NodeSlot->SetPosition(Entry.Position); NodeSlot->SetSize(Layout->NodeSize); NodeSlot->SetZOrder(1);
-        }
-        Node->SetRenderScale(FVector2D(FMath::Clamp(Entry.VisualScale * (Node->bPassive ? Layout->PassiveScale : 1.f), .5f, 2.5f)));
         TreeNodes.Add(Node);
     }
 }
 void URSkillTree::SelectTreeNode(FName Id)
 {
     if (!Layout) return;
-    if (const FRSkillTreeEntry* Node = Layout->Nodes.FindByPredicate([Id](const FRSkillTreeEntry& Entry) { return Entry.Id == Id; }))
+    if (const FRSkillTreeEntry* Node = ResolvedEntries.FindByPredicate([Id](const FRSkillTreeEntry& Entry) { return Entry.Id == Id; }))
     {
         bChoosingSlot = false; bConfirmRespec = false; SelectedNode = Id; SelectedSkill = Node->Skill;
         RefreshDetails();
     }
+}
+void URSkillTree::SetSkillLink(FName NodeId, FGameplayTag SkillTag)
+{
+    if (NodeId.IsNone()) return;
+    SkillLinks.Add(NodeId, SkillTag);
+    RefreshSkillLinks();
+}
+void URSkillTree::ClearSkillLink(FName NodeId)
+{
+    if (SkillLinks.Remove(NodeId) == 0) return;
+    RefreshSkillLinks();
+}
+void URSkillTree::RefreshSkillLinks()
+{
+    RebuildList();
+    if (!SelectedNode.IsNone()) SelectTreeNode(SelectedNode);
+    else RefreshDetails();
+}
+void URSkillTreeNode::SetSkillTag(FGameplayTag NewSkillTag)
+{
+    if (SkillTag == NewSkillTag) return;
+    SkillTag = NewSkillTag;
+    if (auto* Tree = Cast<URSkillTree>(Browser)) Tree->RefreshSkillLinks();
 }
 void URSkillTree::RefreshDetails()
 {
@@ -209,7 +327,7 @@ void URSkillTree::RefreshDetails()
     Points->SetText(FText::FromString(FString::Printf(TEXT("%d POINTS  /  %d INVESTED"), Controller->GetSkillPoints(), ASC->CoreSkillPointsSpent)));
     for (URSkillTreeNode* Node : TreeNodes)
     {
-        const FRSkillTreeEntry* Entry = Layout->Nodes.FindByPredicate([Node](const FRSkillTreeEntry& Item) { return Item.Id == Node->NodeId; });
+        const FRSkillTreeEntry* Entry = ResolvedEntries.FindByPredicate([Node](const FRSkillTreeEntry& Item) { return Item.Id == Node->NodeId; });
         if (!Entry) continue;
         const FRAbilityInfo Info = Controller->GetSkillDefinition(Entry->Skill);
         const int32 Rank = ASC->GetLearnedSkillRank(Entry->Skill);
@@ -224,11 +342,11 @@ void URSkillTree::RefreshDetails()
     }
     if (SelectedNode.IsNone() && !SelectedSkill.IsValid())
     {
-        Details->SetText(FText::FromString(TEXT("CHOOSE YOUR PATH\n\nStealth, Melee or Archer. Invest in any branch to reach the shared disciplines above.\n\nSelect an icon to inspect ranks and requirements. Grey nodes remain visible so you can plan ahead.\n\nPoison comes first. Advanced Projectiles and Dark require their own teaching quests.")));
+        Details->SetText(FText::FromString(TEXT("CHOOSE YOUR PATH\n\nMelee and Bow share the central Stealth path. Advance through both skills in each combat tier; Stealth requires its preceding skill.\n\nEither Master leads to Death Mark, then four separate elements: Fire, Ice, Electric and Poison. Dark requires all four.\n\nSelect an icon to inspect its path and current purchase requirements. Planned skills and Master rewards still require gameplay authoring.")));
         PurchaseButton->SetIsEnabled(false);
         return;
     }
-    const FRSkillTreeEntry* Entry = Layout->Nodes.FindByPredicate([this](const FRSkillTreeEntry& Item) { return Item.Id == SelectedNode; });
+    const FRSkillTreeEntry* Entry = ResolvedEntries.FindByPredicate([this](const FRSkillTreeEntry& Item) { return Item.Id == SelectedNode; });
     if (!Entry)
     {
         FString Current, Next;
@@ -240,7 +358,7 @@ void URSkillTree::RefreshDetails()
     if (Entry->bJunction)
     {
         Details->SetText(FText::FromString(Entry->Title.ToString() + TEXT("\n\n") + Entry->Description.ToString()
-            + FString::Printf(TEXT("\n\n%d points invested across the lower branches.\n\nSelect Poison, Advanced Projectiles or Dark to see its investment and quest requirements."), ASC->CoreSkillPointsSpent)));
+            + TEXT("\n\nSelect a connected skill to inspect its requirements.")));
         PurchaseButton->SetIsEnabled(false);
         ElementButton->SetVisibility(ESlateVisibility::Collapsed);
     }
@@ -257,7 +375,7 @@ void URSkillTree::RefreshDetails()
     {
         Details->SetText(FText::FromString(Entry->Title.ToString() + TEXT("\n\n") + Entry->Description.ToString()
             + (Entry->Tier > 0 ? FString::Printf(TEXT("\n\n%s / Tier %d\nPlanned cost: %d point(s).\n%s"), *Entry->TierName.ToString(), Entry->Tier, Entry->PointCost,
-                Entry->Tier > 1 ? TEXT("Learn a skill in the previous tier to unlock this tier.") : TEXT("Foundation tier.")) : TEXT(""))
+                Entry->Tier > 1 ? TEXT("See the path requirements above.") : TEXT("Foundation tier.")) : TEXT(""))
             + TEXT("\n\nFuture technique. Not available to purchase yet.")));
         PurchaseButton->SetIsEnabled(false);
         ElementButton->SetVisibility(ESlateVisibility::Collapsed);
@@ -266,7 +384,10 @@ void URSkillTree::RefreshDetails()
     {
         FString Current, Next;
         ASC->GetDescriptionByAbilityTag(SelectedSkill, Current, Next);
-        FString Text = TEXT("<Title>Current Skill</>\n") + Current + TEXT("\n\n<Title>Next Upgrade</>\n") + Next;
+        const FText PurchaseIssue=ASC->GetSkillUpgradeIssue(SelectedSkill);
+        FString Text = TEXT("<Title>") + Entry->Title.ToString() + TEXT("</>\n")
+            + (PurchaseIssue.IsEmpty() ? FString() : PurchaseIssue.ToString()+TEXT("\n\n")) + Entry->Description.ToString()
+            + TEXT("\n\n<Title>Current Skill</>\n") + Current + TEXT("\n\n<Title>Next Upgrade</>\n") + Next;
         // Older authored descriptions may contain escaped newlines.
         Text.ReplaceInline(TEXT("\\n"), TEXT("\n"));
         Text += FString::Printf(TEXT("\n\n<Title>Requirements</>\nCharacter level <Level>%d</>"), Info.LevelRequirement);
@@ -276,7 +397,8 @@ void URSkillTree::RefreshDetails()
             Info.BranchTier > 1 ? TEXT("Requires learned skills in the preceding branch tier.") : TEXT("Foundation tier."));
         if (Info.MinimumCorePointsSpent > 0) Text += FString::Printf(TEXT("\n%d points invested across any branches (%d / %d)"), Info.MinimumCorePointsSpent, ASC->CoreSkillPointsSpent, Info.MinimumCorePointsSpent);
         for (const FRSkillPrerequisite& Required : Info.Prerequisites)
-            Text += FString::Printf(TEXT("\n%s rank %d"), *Controller->GetSkillDefinition(Required.AbilityTag).DisplayName.ToString(), Required.RequiredRank);
+            if (Required.RequiredRank > 0)
+                Text += FString::Printf(TEXT("\n%s rank %d"), *Controller->GetSkillDefinition(Required.AbilityTag).DisplayName.ToString(), Required.RequiredRank);
         if (!Info.RequiredProgressionUnlock.IsNone())
         {
             if (const UAbilityInfo* Data = ASC->GetSkillData()) for (const FRSkillQuestUnlock& Quest : Data->QuestUnlocks)
@@ -294,9 +416,9 @@ int32 URSkillTree::NativePaint(const FPaintArgs& Args, const FGeometry& Geometry
 {
     const int32 Result = Super::NativePaint(Args, Geometry, Culling, Elements, Layer, Style, bEnabled);
     if (!Layout || !TreeCanvas) return Result;
-    for (const FRSkillTreeEntry& Entry : Layout->Nodes)
+    for (const FRSkillTreeEntry& Entry : ResolvedEntries)
         for (FName Parent : Entry.Connections)
-            if (const FRSkillTreeEntry* Other = Layout->Nodes.FindByPredicate([Parent](const FRSkillTreeEntry& Node) { return Node.Id == Parent; }))
+            if (const FRSkillTreeEntry* Other = ResolvedEntries.FindByPredicate([Parent](const FRSkillTreeEntry& Node) { return Node.Id == Parent; }))
             {
                 // Passive choices live in their own column; never draw tree lines across the UI to them.
                 auto IsCanvasNode = [this](FName Id)
@@ -330,7 +452,7 @@ void URSkillTree::HandleAction(int32 Action, FGameplayTag Skill, ERSkillDiscipli
     if (Action == 8)
     {
         if (!Controller || !Layout) return;
-        const FRSkillTreeEntry* Entry = Layout->Nodes.FindByPredicate([this](const FRSkillTreeEntry& E) { return E.Id == SelectedNode; });
+        const FRSkillTreeEntry* Entry = ResolvedEntries.FindByPredicate([this](const FRSkillTreeEntry& E) { return E.Id == SelectedNode; });
         const ERSkillDiscipline Branch = Entry ? (Entry->Branch == ERSkillTreeBranch::Melee ? ERSkillDiscipline::Melee : Entry->Branch == ERSkillTreeBranch::Stealth ? ERSkillDiscipline::Stealth : Entry->Branch == ERSkillTreeBranch::Archer ? ERSkillDiscipline::Ranged : Controller->GetSkillDefinition(Entry->Skill).Discipline) : Controller->GetSkillDefinition(SelectedSkill).Discipline;
         if (!Controller->GetSkillASC()->GetBranchRespecIssue(Branch).IsEmpty()) return;
         if (bConfirmRespec) { bConfirmRespec = false; Controller->GetSkillASC()->ServerRespecBranch(Branch); }
@@ -367,7 +489,7 @@ void URSkillTree::RefreshLoadout()
     const auto& T = FRGameplayTags::Get();
     if (RespecButton)
     {
-        const FRSkillTreeEntry* Entry = Layout->Nodes.FindByPredicate([this](const FRSkillTreeEntry& E) { return E.Id == SelectedNode; });
+        const FRSkillTreeEntry* Entry = ResolvedEntries.FindByPredicate([this](const FRSkillTreeEntry& E) { return E.Id == SelectedNode; });
         const ERSkillDiscipline Branch = Entry ? (Entry->Branch == ERSkillTreeBranch::Melee ? ERSkillDiscipline::Melee : Entry->Branch == ERSkillTreeBranch::Stealth ? ERSkillDiscipline::Stealth : Entry->Branch == ERSkillTreeBranch::Archer ? ERSkillDiscipline::Ranged : Controller->GetSkillDefinition(Entry->Skill).Discipline) : Controller->GetSkillDefinition(SelectedSkill).Discipline;
         const UAbilityInfo* Data = ASC->GetSkillData();
         const FText Issue = ASC->GetBranchRespecIssue(Branch);

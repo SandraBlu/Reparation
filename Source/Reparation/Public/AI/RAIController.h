@@ -29,6 +29,12 @@ public:
 	void StartSearchMovement();
 	void TickSearchMovement(float DeltaSeconds);
 	void NotifyDamagedBy(AActor* Attacker, float Damage);
+	UFUNCTION(BlueprintPure, Category="AI|Hearing")
+	bool ShouldHearNoise(AActor* Source, const FAIStimulus& Stimulus) const;
+	void HandleHearingNoise(AActor* Source, const FAIStimulus& Stimulus);
+    bool CanInvestigateDistraction(bool bAllowInCombat = false) const;
+    /** Investigate a lure without assigning it or its thrower as a combat target. */
+    bool InvestigateDistraction(const FVector& Location, float Duration = 0.f, bool bAllowInCombat = false);
 	/** Angle to each side of the pawn's forward direction. 60 means a 120-degree cone. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="AI|Sight", meta=(ClampMin="0", ClampMax="180"))
 	float SightHalfAngle = 60.f;
@@ -57,6 +63,8 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Behavior Tree")
 	class UAISenseConfig_Sight* AISightConfig;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI|Hearing")
+	class UAISenseConfig_Hearing* AIHearingConfig;
 
 	UFUNCTION()
 	virtual void OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
@@ -71,6 +79,7 @@ private:
 	void SelectCombatTarget(AActor* Actor, const FVector& SeenLocation);
 	bool bBehaviorTreeSearchEnabled = false;
 	TWeakObjectPtr<AActor> SightTarget;
+    double DistractionEndTime = 0.0;
 	float SearchStepTime = 0.f;
 	bool bSearchWasMoving = false;
 	float SearchMoveElapsed = 0.f;

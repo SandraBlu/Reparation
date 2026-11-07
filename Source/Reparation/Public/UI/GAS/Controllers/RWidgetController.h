@@ -17,6 +17,7 @@ class UAbilitySystemComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangeSignature, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FRAbilityInfo&, Info);
 
+
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
 {
@@ -60,6 +61,7 @@ public:
 	FAbilityInfoSignature AbilityInfoDelegate;
 
 	void BroadcastAbilityInfo();
+
 
 protected:
 

@@ -22,6 +22,7 @@
 #include "GAS/RAbilitySystemComponent.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 URAttributeSet::URAttributeSet()
 {
@@ -174,14 +175,15 @@ void URAttributeSet::SendXPEvent(const FEffectProperties& Props)
 {
 	if (Props.TargetCharacter->Implements<URCombatInterface>())
 	{
-		const int32 TargetLevel = IRCombatInterface::Execute_GetPlayerLevel(Props.TargetCharacter);
+		ACharacter* Player = UGameplayStatics::GetPlayerCharacter(Props.TargetCharacter, 0);
+		if (!Player) return;
 		const ECharacterClass TargetClass = IRCombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
-		const int32 XPReward = URAbilitySystemLibrary::GetXPRewardForEnemySlay(Props.TargetCharacter, TargetClass, TargetLevel);
+		const int32 XPReward = URAbilitySystemLibrary::GetXPRewardForEnemySlay(Props.TargetCharacter, TargetClass);
 		const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
 		FGameplayEventData Payload;
 		Payload.EventTag = GameplayTags.Attributes_meta_xp;
 		Payload.EventMagnitude = XPReward;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_meta_xp, Payload);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, GameplayTags.Attributes_meta_xp, Payload);
 	}
 }
 
@@ -262,7 +264,11 @@ void URAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		{
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FRGameplayTags::Get().ability_HitReact);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			// Repeated hits/DoT must not replace an active control reaction montage.
+			if (!Props.TargetASC->HasMatchingGameplayTag(FRGameplayTags::Get().Debuff_Stun)
+				&& !Props.TargetASC->HasMatchingGameplayTag(FRGameplayTags::Get().Debuff_Stagger)
+				&& !(Cast<AREnemy>(Props.TargetAvatarActor) && Cast<AREnemy>(Props.TargetAvatarActor)->bRecovering))
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			const FVector& KnockbackForce = URAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (!KnockbackForce.IsNearlyZero(1.f))
 			{

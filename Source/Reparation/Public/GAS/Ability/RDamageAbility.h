@@ -39,6 +39,9 @@ public:
 		FVector KnockbackOverride = FVector::ZeroVector, bool bOverrideDeathImpulse = false, FVector DeathImpulseOverride = FVector::ZeroVector, bool bOverridePitch = false, float PitchOverride = 0.f) const;
 
 protected:
+	/** Zero disables blast knockdown. Copied into delayed projectile damage parameters. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage|Knockdown", meta=(ClampMin="0",ClampMax="30"))
+	float KnockdownSeconds = 0.f;
 	virtual float GetDamageScalingLevel() const { return GetAbilityLevel(); }
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

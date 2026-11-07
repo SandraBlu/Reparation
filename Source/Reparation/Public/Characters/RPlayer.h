@@ -33,6 +33,7 @@ UCLASS()
 class REPARATION_API ARPlayer : public ARCharacterBase , public IRPlayerInterface
 {
 	GENERATED_BODY()
+	friend class FThrowableAbilitiesTest;
 
 public:
 	

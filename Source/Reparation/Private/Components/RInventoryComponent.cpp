@@ -6,6 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/PlayerState.h"
 #include "Items/RItem.h"
+#include "Items/REquipItem.h"
 #include "Kismet/GameplayStatics.h"
 
 #define LOCTEXT_NAMESPACE "Inventory"
@@ -46,29 +47,33 @@ bool URInventoryComponent::UseItem(URItem* Item)
 
 	if (Item && Item->CanUse())
 	{
+		const auto* WeaponItem = Cast<UREquipItem_Weapon>(Item);
+		const bool bEquippingThrowable = WeaponItem && WeaponItem->Slot == EEquipSlot::ES_Throwable;
 		const float UseTime = GetWorld()->GetTimeSeconds();
 
 		if (UseTime - Item->GetLastUseTime() > Item->UseRechargeDuration)
 		{
 			//If the item is consumable like food, but it can't be removed from the inventory then disallow using the item 
-			if (!Item->CanBeRemoved() && Item->bConsumeOnUse)
+			if (!bEquippingThrowable && !Item->CanBeRemoved() && Item->bConsumeOnUse)
 			{
 				return false;
 			}
 
-			Item->OnUse();
-			Item->Use();
-
-			OnItemUsed.Broadcast(Item);
+			if (!bEquippingThrowable)
+			{
+				Item->OnUse();
+				Item->Use();
+				OnItemUsed.Broadcast(Item);
+			}
 
 			if (GetOwnerRole() < ROLE_Authority)
 			{
 				return true;
 			}
 
-			Item->SetLastUseTime(UseTime);
+			if (!bEquippingThrowable) Item->SetLastUseTime(UseTime);
 
-			if (Item->bConsumeOnUse)
+			if (!bEquippingThrowable && Item->bConsumeOnUse)
 			{
 				ConsumeItem(Item, 1);
 			}
@@ -83,6 +88,19 @@ bool URInventoryComponent::UseItem(URItem* Item)
 	}
 
 	return false;
+}
+
+bool URInventoryComponent::CompleteThrowableUse(UREquipItem_Weapon* Item)
+{
+	if (!IsValid(Item) || Item->Slot != EEquipSlot::ES_Throwable || GetOwnerRole() < ROLE_Authority
+		|| !Items.Contains(Item) || Item->GetQuantity() <= 0) return false;
+	// The ability has already ended and removed its throwing tags. This is consumption, not an equip toggle.
+	if (Item->GetQuantity() == 1) Item->SetActive(false);
+	Item->OnUse();
+	Item->Use();
+	OnItemUsed.Broadcast(Item);
+	Item->SetLastUseTime(GetWorld()->GetTimeSeconds());
+	return ConsumeItem(Item, 1) == 1;
 }
 
 void URInventoryComponent::TryAddFromLootTable(FLootTableRoll LootTable, TArray<FItemAddResult>& OutItemAddResults)

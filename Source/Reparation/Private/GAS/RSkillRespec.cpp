@@ -12,16 +12,24 @@ bool URAbilitySystemComponent::IsTierRewardEarned()
     int32 Completed = 0;
     for (ERSkillDiscipline Branch : {ERSkillDiscipline::Melee, ERSkillDiscipline::Ranged, ERSkillDiscipline::Stealth})
     {
+        if (!Data->bRewardRequiresAllBranches && Data->RewardDiscipline != ERSkillDiscipline::Other && Data->RewardDiscipline != Branch) continue;
         int32 Authored = 0, Learned = 0;
         TSet<FGameplayTag> Seen;
         for (const FRAbilityInfo& Entry : Data->AbilityInfo)
-            if (Entry.Discipline == Branch && Entry.BranchTier == Data->RewardTier && Entry.AbilityTag.IsValid() && !Seen.Contains(Entry.AbilityTag))
+            if (Entry.Discipline == Branch
+                && (Data->bRewardCountsPurchasedSkills ? Entry.BranchTier >= 1 && Entry.BranchTier <= Data->RewardTier : Entry.BranchTier == Data->RewardTier)
+                && Entry.AbilityTag != Data->AutomaticTierReward
+                && (!Data->bRewardCountsPurchasedSkills || Entry.bSkillTreePurchasable)
+                && Entry.AbilityTag.IsValid() && !Seen.Contains(Entry.AbilityTag))
             {
                 Seen.Add(Entry.AbilityTag); ++Authored;
-                if (GetLearnedSkillRank(Entry.AbilityTag) > 0) ++Learned;
+                const bool bPurchased = !Data->bRewardCountsPurchasedSkills || SkillPurchases.ContainsByPredicate(
+                    [&Entry](const FRSkillPurchaseRecord& Record) { return Record.Skill == Entry.AbilityTag && Record.Points > 0; });
+                if (bPurchased && GetLearnedSkillRank(Entry.AbilityTag) > 0) ++Learned;
             }
         // Missing planned abilities never shrink a full tier into an easier reward.
-        if (Authored >= FMath::Max(1,Data->RewardSkillsPerBranch) && Learned == Authored) ++Completed;
+        if (Data->bRewardCountsPurchasedSkills ? Learned >= FMath::Max(1,Data->RewardSkillsPerBranch)
+            : Authored >= FMath::Max(1,Data->RewardSkillsPerBranch) && Learned == Authored) ++Completed;
     }
     return Completed >= (Data->bRewardRequiresAllBranches ? 3 : 1);
 }

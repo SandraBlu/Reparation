@@ -24,6 +24,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GAS/Ability/RMeleeAbility.h"
+#include "GAS/Data/LevelUpInfo.h"
 #include "Interfaces/RPlayerInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -149,15 +150,29 @@ UAbilityInfo* URAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContext
 	return RGameMode->AbilityInfo;
 }
 
-int32 URAbilitySystemLibrary::GetXPRewardForEnemySlay(const UObject* WorldContextObject, ECharacterClass CharacterClass,
-                                                      int32 CharacterLevel)
+void URAbilitySystemLibrary::AwardXP(AActor* PlayerActor, ERXPSource Source, FName UniqueID)
 {
-	URCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
-	if (CharacterClassInfo == nullptr) return 0;
-	const FCharClassInfo& Info = CharacterClassInfo->GetClassInfo(CharacterClass);
-	const float XPReward = Info.XPReward.GetValueAtLevel(CharacterLevel);
+	APawn* Pawn = Cast<APawn>(PlayerActor);
+	if (!Pawn || !Pawn->HasAuthority()) return;
+	ARPlayerState* PS = Pawn->GetPlayerState<ARPlayerState>();
+	if (!PS || !PS->LevelUpInfo) return;
 
-	return static_cast<int32>(XPReward);
+	if (UniqueID != NAME_None && !PS->TryMarkAwarded(UniqueID)) return;   // already paid
+
+	const int32 Amount = PS->LevelUpInfo->GetAwardedXP(Source, PS->GetCurrentChapter(), PS->GetPlayerLevel());
+	if (Amount <= 0) return;
+
+	// Same mechanism SendXPEvent uses, so quests, pickups and kills all reach HandleIncomingXP.
+	const FRGameplayTags& GameplayTags = FRGameplayTags::Get();
+	FGameplayEventData Payload;
+	Payload.EventTag = GameplayTags.Attributes_meta_xp;
+	Payload.EventMagnitude = Amount;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Pawn, GameplayTags.Attributes_meta_xp, Payload);
+}
+
+void URAbilitySystemLibrary::AwardXPToPlayer(const UObject* WorldContextObject, ERXPSource Source, FName UniqueID)
+{
+	AwardXP(UGameplayStatics::GetPlayerCharacter(WorldContextObject, 0), Source, UniqueID);
 }
 
 FGameplayEffectContextHandle URAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
@@ -187,6 +202,8 @@ FGameplayEffectContextHandle URAbilitySystemLibrary::ApplyDamageEffect(const FDa
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
 
 	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+	if (auto* Enemy = Cast<AREnemy>(CombatTarget); Enemy && DamageEffectParams.KnockdownSeconds > 0.f)
+		Enemy->ApplyKnockdown(DamageEffectParams.KnockdownSeconds,CombatSource);
 	return EffectContextHandle;
 }
 
@@ -608,6 +625,20 @@ bool URAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor
 	return !bFriend;
 }
 
+int32 URAbilitySystemLibrary::GetXPRewardForEnemySlay(const UObject* WorldContextObject, ECharacterClass CharacterClass)
+{
+	URCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (!CharacterClassInfo) return 0;
+
+	const ARPlayerState* PS = UGameplayStatics::GetPlayerState(WorldContextObject, 0)
+	  ? Cast<ARPlayerState>(UGameplayStatics::GetPlayerState(WorldContextObject, 0)) : nullptr;
+	if (!PS || !PS->LevelUpInfo) return 0;
+
+	const int32 BaseXP = PS->LevelUpInfo->GetItemXP(ERXPSource::Combat, PS->GetCurrentChapter());
+	const FCharClassInfo& Info = CharacterClassInfo->GetClassInfo(CharacterClass);
+	return FMath::RoundToInt(BaseXP * Info.XPMultiplier);
+}
+
 URAbilitySystemComponent* URAbilitySystemLibrary::NativeGetRASCFromActor(AActor* InActor)
 {
 	return IsValid(InActor) ? Cast<URAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor)) : nullptr;
@@ -713,7 +744,12 @@ bool URAbilitySystemLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender
 bool URAbilitySystemLibrary::IsActorBlocking(AActor* Defender)
 {
 	if (!IsValid(Defender)) return false;
-	if (ARPlayer* Player = Cast<ARPlayer>(Defender); Player && Player->GetIsUsingBlock()) return true;
+	if (ARPlayer* Player = Cast<ARPlayer>(Defender))
+    {
+        const auto* PlayerASC = Cast<URAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Player));
+        return PlayerASC && PlayerASC->HasEquippedMeleeWeapon()
+            && (Player->GetIsUsingBlock() || PlayerASC->HasMatchingGameplayTag(FRGameplayTags::Get().status_blocking));
+    }
 	const UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Defender);
 	return ASC && ASC->HasMatchingGameplayTag(FRGameplayTags::Get().status_blocking);
 }

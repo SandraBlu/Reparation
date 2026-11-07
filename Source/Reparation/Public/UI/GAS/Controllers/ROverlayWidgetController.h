@@ -33,6 +33,7 @@ class URUserWidget;
 struct FOnAttributeChangeData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetSignature, FUIMessageRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnXPProgressChangedSignature, int32, XPIntoLevel, int32, XPToNext);
 
 
 /**
@@ -74,6 +75,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
 	FOnPlayerStatChangeSignature OnLevelChangeDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
+	FOnXPProgressChangedSignature OnXPProgressChangedDelegate;
 
 protected:
 

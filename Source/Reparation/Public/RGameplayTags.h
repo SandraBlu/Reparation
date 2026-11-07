@@ -89,6 +89,7 @@ public:
 	FGameplayTag Debuff_Dark;
 	FGameplayTag Debuff_Poison;
 	FGameplayTag Debuff_Stun;
+	FGameplayTag Debuff_Stagger;
 	FGameplayTag Debuff_Burn;
 	FGameplayTag Debuff_Freeze;
 

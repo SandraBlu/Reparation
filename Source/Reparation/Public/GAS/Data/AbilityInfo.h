@@ -109,6 +109,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Tier Reward", meta=(ClampMin="1",ClampMax="5")) int32 RewardTier = 2;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Tier Reward", meta=(ClampMin="1")) int32 RewardSkillsPerBranch = 3;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Tier Reward") bool bRewardRequiresAllBranches = false;
+	/** Other accepts any branch; ignored when all branches are required. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Tier Reward") ERSkillDiscipline RewardDiscipline = ERSkillDiscipline::Other;
+	/** Count distinct purchased skills through RewardTier instead of requiring every skill in that exact tier. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Tier Reward") bool bRewardCountsPurchasedSkills = false;
 
 	FRAbilityInfo FindAbilityInfoForTag(const FGameplayTag& AbilityTag, bool bLogNotFound = false) const;
 	
