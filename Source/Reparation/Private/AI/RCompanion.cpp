@@ -192,8 +192,8 @@ bool ARCompanion::IsAttackActive() const
 
 bool ARCompanion::TryAttack()
 {
-	if (IsCombatReady() && CanAttackTarget(CombatTarget) && !IsAttackActive() && SignatureAbility && GetWorld()->GetTimeSeconds() >= NextSignatureTime)
-		if (AbilitySystemComponent->TryActivateAbilityByClass(SignatureAbility, false)) NextSignatureTime = GetWorld()->GetTimeSeconds() + FMath::Max(1.f, SignatureCooldown);
+	if (IsCombatReady() && CanAttackTarget(CombatTarget) && !IsAttackActive() && SignatureAbility)
+		AbilitySystemComponent->TryActivateAbilityByClass(SignatureAbility, false); // GAS checks/commits its cooldown GE.
 	return IsCombatReady() && CanAttackTarget(CombatTarget) && AbilitySystemComponent->TryActivateAbilityByClass(AttackAbility, false) && IsAttackActive();
 }
 

@@ -10,6 +10,7 @@
 #include "RGameplayTags.h"
 #include "Characters/RPlayer.h"
 #include "Components/BoxComponent.h"
+#include "Components/REquipmentComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -29,7 +30,10 @@ ARWeapon::ARWeapon()
 void ARWeapon::OnEquip()
 {
     CancelWeaponTransition();
-    if (!IsValid(PawnOwner) || IsEquipped) return;
+    if (!IsValid(PawnOwner)) return;
+    if (auto* Gear=PawnOwner->FindComponentByClass<UREquipmentComponent>(); Gear && Gear->EquippedWeapon==this)
+        Gear->StowEquippedThrowable();
+    if (IsEquipped) return;
     AttachMeshToPawn(PawnOwner->GetMesh(), ActiveWeaponSocket);
     IsEquipped = true;
     if (EquipSFX) UGameplayStatics::PlaySoundAtLocation(this, EquipSFX, GetActorLocation());

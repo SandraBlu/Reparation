@@ -36,7 +36,7 @@ int32 URCombatCoordinator::GetAttackerCount(AActor* Target)
 
 bool URCombatCoordinator::CanStartAttack(AREnemy* Enemy, AActor* Target)
 {
-    if (!IsValid(Enemy) || !Enemy->HasAuthority() || Enemy->IsDead_Implementation() || !IsValid(Target)) return false;
+    if (!IsValid(Enemy) || !Enemy->HasAuthority() || Enemy->IsDead_Implementation() || Enemy->bStunned || Enemy->bStaggered || Enemy->bRecovering || !IsValid(Target)) return false;
     if (const ARCharacterBase* CharacterBase = Cast<ARCharacterBase>(Target); CharacterBase &&
         (CharacterBase->IsDead_Implementation() || CharacterBase->Stealth->IsConcealed())) return false;
     PruneReservations();

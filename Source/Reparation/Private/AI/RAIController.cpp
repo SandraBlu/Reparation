@@ -10,6 +10,8 @@
 #include "RDebugHelper.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Hearing.h"
+#include "Perception/AISense_Hearing.h"
 #include "BrainComponent.h"
 #include "Characters/RCharacterBase.h"
 #include "Stealth/RStealthComponent.h"
@@ -42,6 +44,12 @@ ARAIController::ARAIController(const FObjectInitializer& ObjectInitializer)
 
 	PerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>("PerceptionComp");
 	PerceptionComp->ConfigureSense(*AISightConfig);
+	AIHearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("AIHearingConfig"));
+	AIHearingConfig->HearingRange = 2500.f;
+	AIHearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+	AIHearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
+	AIHearingConfig->DetectionByAffiliation.bDetectFriendlies = false;
+	PerceptionComp->ConfigureSense(*AIHearingConfig);
 	PerceptionComp->SetDominantSense(UAISenseConfig_Sight::StaticClass());
 	PerceptionComp->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::OnEnemyPerceptionUpdated);
 
@@ -95,8 +103,62 @@ void ARAIController::BeginPlay()
 
 void ARAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
+	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
+	{
+		HandleHearingNoise(Actor,Stimulus);
+		return;
+	}
 	if (Stimulus.Type != UAISense::GetSenseID<UAISense_Sight>()) return;
 	HandleSightUpdate(Actor, Stimulus.WasSuccessfullySensed(), Stimulus.StimulusLocation);
+}
+
+bool ARAIController::ShouldHearNoise(AActor* Source,const FAIStimulus& Stimulus) const
+{
+    if (!Stimulus.WasSuccessfullySensed()) return false;
+    const auto* Player=Cast<ARPlayer>(Source);
+    const bool bMovement=Stimulus.Tag.IsNone() || Stimulus.Tag==TEXT("Footstep") || Stimulus.Tag==TEXT("Footsteps")
+        || Stimulus.Tag==TEXT("Movement") || Stimulus.Tag==TEXT("Landing");
+    if (!Player || !Player->Stealth || !bMovement) return true;
+    const float Multiplier=Player->Stealth->GetMovementNoiseRangeMultiplier();
+    if (Multiplier>=1.f) return true;
+    const float Range=(AIHearingConfig ? AIHearingConfig->HearingRange : 0.f)*FMath::Max(0.f,Stimulus.Strength)*Multiplier;
+    return Range>0.f && FVector::DistSquared(Stimulus.ReceiverLocation,Stimulus.StimulusLocation)<=FMath::Square(Range);
+}
+
+void ARAIController::HandleHearingNoise(AActor* Source,const FAIStimulus& Stimulus)
+{
+    // A real noise still breaks assassination's quiet window even if this listener cannot hear it.
+    if (Stimulus.WasSuccessfullySensed())
+        if (auto* NoiseCharacter=Cast<ARCharacterBase>(Source); NoiseCharacter && NoiseCharacter->Stealth)
+            NoiseCharacter->Stealth->RecordNoise(Stimulus.Strength);
+    if (!ShouldHearNoise(Source,Stimulus)) return;
+    // Never convert a sound into a visible combat target or interrupt an existing fight.
+    if (Stimulus.Tag==TEXT("Distraction") || Cast<ARPlayer>(Source))
+        InvestigateDistraction(Stimulus.StimulusLocation);
+}
+
+bool ARAIController::CanInvestigateDistraction(bool bAllowInCombat) const
+{
+    const auto* Enemy = Cast<AREnemy>(GetPawn());
+    return Enemy && !Enemy->IsDead_Implementation() && (bAllowInCombat || !(SightTarget.IsValid() && !bSearching));
+}
+
+bool ARAIController::InvestigateDistraction(const FVector& Location, float Duration, bool bAllowInCombat)
+{
+    if (!CanInvestigateDistraction(bAllowInCombat)) return false;
+    DistractionEndTime = FMath::Max(DistractionEndTime, static_cast<double>(GetWorld()->GetTimeSeconds() + FMath::Max(0.f, Duration)));
+    SightTarget.Reset();
+    const bool bAlreadySearching = bSearching;
+    // Repeated pulses must not restart movement while inspecting the same point.
+    if (bAlreadySearching && LastKnownLocation.Equals(Location, 1.f)) return true;
+    LastKnownLocation = Location;
+    BeginSearch();
+    if (bAlreadySearching)
+    {
+        if (UsesBehaviorTreeSearch()) GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownLocation"), LastKnownLocation);
+        else StartSearchMovement();
+    }
+    return true;
 }
 
 void ARAIController::ClearCombatTarget()
@@ -168,6 +230,7 @@ void ARAIController::HandleSightUpdate(AActor* Actor, bool bVisible, const FVect
 
 void ARAIController::SelectCombatTarget(AActor* Actor, const FVector& SeenLocation)
 {
+    if (GetWorld()->GetTimeSeconds() < DistractionEndTime) return;
 	if (!IsValid(Actor)) return;
 	if (const ARCharacterBase* Guard = Cast<ARCharacterBase>(GetPawn()); Guard && Guard->Protection && !Guard->Protection->CanEngage(Actor)) return;
 	const bool bChanged = SightTarget.Get() != Actor;
@@ -191,6 +254,7 @@ void ARAIController::SelectCombatTarget(AActor* Actor, const FVector& SeenLocati
 void ARAIController::NotifyDamagedBy(AActor* Attacker, float Damage)
 {
 	if (!IsValid(Attacker) || Damage <= 0.f || !GetPawn() || GetTeamAttitudeTowards(*Attacker) != ETeamAttitude::Hostile) return;
+    DistractionEndTime = 0.0;
 	if (ARCharacterBase* Guard = Cast<ARCharacterBase>(GetPawn()); Guard && Guard->Protection) Guard->Protection->NotifyProvoked(Attacker);
 	FThreatEntry* Entry = Threats.FindByPredicate([Attacker](const FThreatEntry& T) { return T.Actor.Get() == Attacker; });
 	if (!Entry) { FThreatEntry New; New.Actor = Attacker; Threats.Add(New); Entry = &Threats.Last(); }

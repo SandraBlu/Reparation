@@ -20,6 +20,17 @@
 #include "Reparation/Reparation.h"
 #include "UI/GAS/RUserWidget.h"
 #include "GAS/Data/RElementalResistanceProfile.h"
+#include "GAS/Ability/RDamageAbility.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
+#include "HAL/IConsoleManager.h"
+
+static bool IsParryPresentationDebugEnabled()
+{
+	const auto* Variable=IConsoleManager::Get().FindConsoleVariable(TEXT("r.Combat.ParryDebug"));
+	return Variable && Variable->GetInt()!=0;
+}
 
 AREnemy::AREnemy(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -90,8 +101,6 @@ void AREnemy::BeginPlay()
 		);
 		//Call Hit React/Stunned function
 		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().ability_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::HitReactTagChanged);
-		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::StunTagChanged);
-		AbilitySystemComponent->RegisterGameplayTagEvent(FRGameplayTags::Get().Debuff_Freeze, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AREnemy::FreezeTagChanged);
 		//Broadcast Initial Values
 		OnHealthChange.Broadcast(AS->GetHealth());
 		OnMaxHealthChange.Broadcast(AS->GetMaxHealth());
@@ -180,6 +189,11 @@ void AREnemy::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	bDead = true;
+	bNeedsKnockdownRecovery = false;
+	bRecovering = false;
+	++RecoveryGeneration;
+	SetToStunned(false);
+	StaggerTagChanged(FRGameplayTags::Get().Debuff_Stagger,0);
 	OnDeath.Broadcast(this);
 }
 
@@ -196,7 +210,7 @@ AActor* AREnemy::GetCombatTarget_Implementation() const
 void AREnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting || bStunned ? 0.f : BaseWalkSpeed * (bFrozen ? 0.65f : 1.f);
+	RefreshControlMovement();
 	if (AIC && AIC->GetBlackboardComponent())
 	{
 		AIC->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
@@ -207,14 +221,178 @@ void AREnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) { S
 void AREnemy::FreezeTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bFrozen = NewCount > 0 && (!ElementalResistanceProfile || !ElementalResistanceProfile->bImmuneToControl);
-	GetCharacterMovement()->MaxWalkSpeed = bStunned || bHitReacting ? 0.f : BaseWalkSpeed * (bFrozen ? 0.65f : 1.f);
+	RefreshControlMovement();
 }
 
 void AREnemy::SetToStunned(bool bIsStunned)
 {
-	bStunned = bIsStunned;
-	GetCharacterMovement()->MaxWalkSpeed = bStunned || bHitReacting ? 0.f : BaseWalkSpeed * (bFrozen ? 0.65f : 1.f);
-	if (AIC && AIC->GetBlackboardComponent()) AIC->GetBlackboardComponent()->SetValueAsBool(TEXT("Stunned"), bStunned);
+	const bool bWasStunned = bStunned;
+	bStunned = bIsStunned && !bDead && (!ElementalResistanceProfile || !ElementalResistanceProfile->bImmuneToControl);
+	if (!bStunned && bWasStunned && !bStaggered && !bDead && bNeedsKnockdownRecovery) bRecovering = true;
+	RefreshControlMovement();
+	if (bStunned && !bWasStunned) { CancelControlAttacks(); PlayControlMontage(GetStunnedMontage_Implementation(),true); }
+	else if (!bStunned && bWasStunned)
+	{
+		if (auto* Anim = GetMesh()->GetAnimInstance(); Anim && GetStunnedMontage_Implementation()) Anim->Montage_Stop(.15f,GetStunnedMontage_Implementation());
+		if (!bDead && !bStaggered)
+		{
+			if (bNeedsKnockdownRecovery) StartKnockdownRecovery();
+			else PlayControlMontage(StunRecoveryMontage,false);
+		}
+	}
+}
+
+void AREnemy::RefreshControlMovement()
+{
+	GetCharacterMovement()->MaxWalkSpeed = bDead || bStunned || bStaggered || bRecovering || bHitReacting ? 0.f : BaseWalkSpeed * (bFrozen ? .65f : 1.f);
+	if (AIC && AIC->GetBlackboardComponent()) AIC->GetBlackboardComponent()->SetValueAsBool(TEXT("Stunned"),bStunned || bStaggered || bRecovering);
+}
+void AREnemy::CancelControlAttacks()
+{
+	TArray<FGameplayAbilitySpecHandle> Handles;
+	for (const auto& Spec : AbilitySystemComponent->GetActivatableAbilities())
+		if (Spec.IsActive() && Spec.Ability && Spec.Ability->IsA<URDamageAbility>()) Handles.Add(Spec.Handle);
+	for (const auto Handle : Handles) AbilitySystemComponent->CancelAbilityHandle(Handle);
+}
+void AREnemy::PlayControlMontage(UAnimMontage* Montage,bool bLoop)
+{
+	if (bApplyingParryReaction && IsParryPresentationDebugEnabled())
+		UE_LOG(LogTemp,Display,TEXT("ParryDebug: %s requests enemy reaction %s (anim=%s dead=%d)."),
+			*GetName(),*GetNameSafe(Montage),*GetNameSafe(GetMesh()->GetAnimInstance()),bDead);
+	if (!Montage || bDead) return;
+	if (auto* Anim = GetMesh()->GetAnimInstance())
+	{
+		const float PlayedLength=Anim->Montage_Play(Montage);
+		if (bApplyingParryReaction && IsParryPresentationDebugEnabled())
+			UE_LOG(LogTemp,Display,TEXT("ParryDebug: %s enemy montage playback returned %.3fs."),*GetName(),PlayedLength);
+		if (PlayedLength>0.f && bApplyingParryReaction)
+			Anim->OnMontageEnded.AddUniqueDynamic(this,&AREnemy::ParriedPresentationEnded);
+		if (PlayedLength>0.f && bLoop && Montage->CompositeSections.Num()>0)
+			Anim->Montage_SetNextSection(Montage->GetSectionName(Montage->CompositeSections.Num()-1),Montage->GetSectionName(0),Montage);
+	}
+}
+void AREnemy::ParriedPresentationEnded(UAnimMontage* Montage,bool bInterrupted)
+{
+	if (Montage!=ParriedMontage) return;
+	if (IsParryPresentationDebugEnabled())
+		UE_LOG(LogTemp,Display,TEXT("ParryDebug: %s enemy reaction %s ended (interrupted=%d, staggered=%d, stunned=%d, dead=%d)."),
+			*GetName(),*GetNameSafe(Montage),bInterrupted,bStaggered,bStunned,bDead);
+}
+void AREnemy::StaggerTagChanged(const FGameplayTag CallbackTag,int32 NewCount)
+{
+	const bool bWas = bStaggered;
+	bStaggered = NewCount>0 && !bDead && (!ElementalResistanceProfile || !ElementalResistanceProfile->bImmuneToControl);
+	if (!bStaggered && bWas && !bStunned && !bDead && bNeedsKnockdownRecovery) bRecovering = true;
+	RefreshControlMovement();
+	if (bStaggered && !bWas)
+	{
+		CancelControlAttacks();
+		if (!bStunned)
+		{
+			ActiveStaggerMontage = bApplyingParryReaction ? ParriedMontage : StaggerMontage;
+			PlayControlMontage(ActiveStaggerMontage,false);
+		}
+	}
+	else if (!bStaggered && bWas && !bStunned)
+	{
+		if (bNeedsKnockdownRecovery && !bDead) StartKnockdownRecovery();
+		else if (auto* Anim = GetMesh()->GetAnimInstance(); Anim && ActiveStaggerMontage) Anim->Montage_Stop(.1f,ActiveStaggerMontage);
+	}
+}
+bool AREnemy::ApplyParryStagger(float Seconds, AActor* Source)
+{
+	TGuardValue<bool> ParryReaction(bApplyingParryReaction,true);
+	const bool bWasStaggered = bStaggered;
+	if (!ApplyControlEffect(true,Seconds,Source))
+	{
+		if (IsParryPresentationDebugEnabled())
+			UE_LOG(LogTemp,Display,TEXT("ParryDebug: %s rejected enemy parry control (duration=%.3f, dead=%d, authority=%d)."),*GetName(),Seconds,bDead,HasAuthority());
+		return false;
+	}
+	if (bStunned && IsParryPresentationDebugEnabled())
+		UE_LOG(LogTemp,Display,TEXT("ParryDebug: %s defers enemy parry presentation because full stun is active."),*GetName());
+	if (bWasStaggered && !bStunned && !bNeedsKnockdownRecovery)
+	{
+		if (auto* Anim = GetMesh()->GetAnimInstance(); Anim && ActiveStaggerMontage)
+			Anim->Montage_Stop(.1f,ActiveStaggerMontage);
+		ActiveStaggerMontage = ParriedMontage;
+		PlayControlMontage(ActiveStaggerMontage,false);
+	}
+	return true;
+}
+bool AREnemy::ApplyKnockdown(float Seconds, AActor* Source)
+{
+	const bool bWasStaggered = bStaggered;
+	if (!ApplyControlEffect(true,Seconds,Source)) return false;
+	bNeedsKnockdownRecovery = true;
+	if (bWasStaggered && !bStunned)
+	{
+		ActiveStaggerMontage = StaggerMontage;
+		PlayControlMontage(ActiveStaggerMontage,false);
+	}
+	// Hold the final blast-back pose until the ability's timed stagger expires.
+	if (auto* Anim = GetMesh()->GetAnimInstance())
+		if (auto* Instance = Anim->GetActiveInstanceForMontage(StaggerMontage)) Instance->bEnableAutoBlendOut = false;
+	return true;
+}
+void AREnemy::StartKnockdownRecovery()
+{
+	if (bDead || bStunned || bStaggered || !bNeedsKnockdownRecovery) return;
+	const uint32 Generation = ++RecoveryGeneration;
+	bRecovering = true;
+	RefreshControlMovement();
+	CancelControlAttacks();
+	auto* Anim = GetMesh()->GetAnimInstance();
+	if (!KnockdownRecoveryMontage || !Anim || Anim->Montage_Play(KnockdownRecoveryMontage) <= 0.f)
+	{
+		if (Anim && StaggerMontage) Anim->Montage_Stop(.1f,StaggerMontage);
+		FinishKnockdownRecovery(KnockdownRecoveryMontage,true,Generation);
+		return;
+	}
+	FOnMontageEnded Ended;
+	Ended.BindWeakLambda(this,[this,Generation](UAnimMontage* Montage,bool bInterrupted)
+	{
+		FinishKnockdownRecovery(Montage,bInterrupted,Generation);
+	});
+	Anim->Montage_SetEndDelegate(Ended,KnockdownRecoveryMontage);
+}
+void AREnemy::FinishKnockdownRecovery(UAnimMontage* Montage,bool bInterrupted,uint32 Generation)
+{
+	if (Generation != RecoveryGeneration) return;
+	bRecovering = false;
+	// A new control effect interrupts get-up and will retry it on its own expiry.
+	if (!bStunned && !bStaggered) bNeedsKnockdownRecovery = false;
+	RefreshControlMovement();
+}
+void AREnemy::BindControlTags()
+{
+	const auto& ControlTags=FRGameplayTags::Get();
+	AbilitySystemComponent->RegisterGameplayTagEvent(ControlTags.Debuff_Stun).RemoveAll(this);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ControlTags.Debuff_Stun).AddUObject(this,&AREnemy::StunTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ControlTags.Debuff_Stagger).RemoveAll(this);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ControlTags.Debuff_Stagger).AddUObject(this,&AREnemy::StaggerTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ControlTags.Debuff_Freeze).RemoveAll(this);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ControlTags.Debuff_Freeze).AddUObject(this,&AREnemy::FreezeTagChanged);
+	StunTagChanged(ControlTags.Debuff_Stun,AbilitySystemComponent->GetTagCount(ControlTags.Debuff_Stun));
+	StaggerTagChanged(ControlTags.Debuff_Stagger,AbilitySystemComponent->GetTagCount(ControlTags.Debuff_Stagger));
+	FreezeTagChanged(ControlTags.Debuff_Freeze,AbilitySystemComponent->GetTagCount(ControlTags.Debuff_Freeze));
+}
+bool AREnemy::ApplyControlEffect(bool bStagger,float Seconds,AActor* Source)
+{
+	if (!HasAuthority() || bDead || !FMath::IsFinite(Seconds) || Seconds<=0 || (ElementalResistanceProfile && ElementalResistanceProfile->bImmuneToControl)) return false;
+	BindControlTags();
+	auto* Effect=NewObject<UGameplayEffect>();
+	Effect->DurationPolicy=EGameplayEffectDurationType::HasDuration;
+	Effect->DurationMagnitude=FScalableFloat(FMath::Clamp(Seconds,.01f,30.f));
+	FInheritedTagContainer GrantedTags; GrantedTags.Added.AddTag(bStagger ? FRGameplayTags::Get().Debuff_Stagger : FRGameplayTags::Get().Debuff_Stun);
+	Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>().SetAndApplyTargetTagChanges(GrantedTags);
+	auto Context=AbilitySystemComponent->MakeEffectContext(); Context.AddSourceObject(Source);
+	return AbilitySystemComponent->ApplyGameplayEffectToSelf(Effect,1.f,Context).IsValid();
+}
+void AREnemy::ApplyLegacyStun(bool Stunned,float StunDuration)
+{
+	if (Stunned) ApplyControlEffect(false,StunDuration);
+	else SetToEndStun(); // A legacy recovery request cannot clear another active GAS effect.
 }
 
 void AREnemy::SetToEndStun()
@@ -225,6 +403,7 @@ void AREnemy::SetToEndStun()
 void AREnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	BindControlTags();
 	Cast<URAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	if (HasAuthority())
 	{
